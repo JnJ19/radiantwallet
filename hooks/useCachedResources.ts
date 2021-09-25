@@ -2,6 +2,18 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
+import {
+  useFonts,
+  Inter_100Thin,
+  Inter_200ExtraLight,
+  Inter_300Light,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  Inter_900Black,
+} from '@expo-google-fonts/inter';
 
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -15,6 +27,15 @@ export default function useCachedResources() {
         // Load fonts
         await Font.loadAsync({
           ...FontAwesome.font,
+          Inter_100Thin,
+          Inter_200ExtraLight,
+          Inter_300Light,
+          Inter_400Regular,
+          Inter_500Medium,
+          Inter_600SemiBold,
+          Inter_700Bold,
+          Inter_800ExtraBold,
+          Inter_900Black,
           'JuniorFlyweight': require('../assets/fonts/Knockout-HTF26-JuniorFlyweight.otf'),
           'JuniorBantamwt': require('../assets/fonts/Knockout-HTF27-JuniorBantamwt.otf'),
           'JuniorFeatherwt': require('../assets/fonts/Knockout-HTF28-JuniorFeatherwt.otf'),
@@ -32,7 +53,7 @@ export default function useCachedResources() {
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF51-Middleweight.otf'),
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF52-Cruiserweight.otf'),
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF53-Heviweight.otf'),
-          // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF54-Sumo.otf'),
+          'Sumo': require('../assets/fonts/Knockout-HTF54-Sumo.otf'),
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF66-FullFlyweight.otf'),
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF67-FullBantamwt.otf'),
           // 'knockout-junior-flyweight': require('../assets/fonts/Knockout-HTF68-FullFeatherwt.otf'),

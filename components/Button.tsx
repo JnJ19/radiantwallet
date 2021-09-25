@@ -14,6 +14,7 @@ const Button = ({ mode, style, children, ...props }: Props) => (
     ]}
     labelStyle={styles.text}
     mode={mode}
+  uppercase={false}
     {...props}
   >
     {children}
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
     lineHeight: 26,
+    fontFamily: "Inter_600SemiBold",
   },
 });
 
