@@ -14,6 +14,7 @@ import {
   BackupScreen,
   QRScannerScreen,
   ImportWalletScreen,
+  DashboardScreen2,
 } from "../screens";
 
 export default function Onboarding() {
@@ -85,6 +86,11 @@ function RootNavigator() {
         <Stack.Screen
         name="Import Wallet"
         component={ImportWalletScreen}
+        options={{ headerShown: false }}
+        />
+        <Stack.Screen
+        name="Dashboard"
+        component={DashboardScreen2}
         options={{ headerShown: false }}
       />
       </Stack.Navigator>
