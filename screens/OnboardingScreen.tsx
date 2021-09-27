@@ -19,7 +19,7 @@ const OnboardingScreen = ({ navigation }: Props) => (
     <Button mode="outlined" onPress={() => navigation.navigate("Set Pin")}>
       Create Wallet
     </Button>
-    <Button mode="contained" onPress={() => navigation.navigate("Set Pin")}>
+    <Button mode="contained" onPress={() => navigation.navigate("Import Wallet")}>
       Import Wallet
     </Button>
   </Background>

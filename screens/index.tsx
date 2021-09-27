@@ -1,6 +1,7 @@
 export { default as OnboardingScreen } from "./OnboardingScreen";
 export { default as SetPinScreen } from "./SetPinScreen";
 export { default as DashboardScreen } from "./DashboardScreen";
+export { default as ImportWalletScreen } from "./ImportWalletScreen";
 
 export { default as ReceiveScreen } from "./ReceiveScreen";
 export { default as SendScreen } from "./SendScreen";

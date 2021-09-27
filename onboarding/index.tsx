@@ -6,7 +6,7 @@ import {
   OnboardingScreen,
   SetPinScreen,
   CreateWalletScreen,
-  ModalScreen,
+  ImportWalletScreen,
 } from "../screens";
 
 export default function Onboarding() {
@@ -31,6 +31,11 @@ function RootNavigator() {
       <Stack.Screen
         name="Onboarding"
         component={OnboardingScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Import Wallet"
+        component={ImportWalletScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

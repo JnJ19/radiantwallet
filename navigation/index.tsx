@@ -13,6 +13,7 @@ import {
   SettingsScreen,
   BackupScreen,
   QRScannerScreen,
+  ImportWalletScreen,
 } from "../screens";
 
 export default function Onboarding() {
@@ -41,6 +42,11 @@ function RootNavigator() {
           component={ReceiveScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+        name="Import Wallet"
+        component={ImportWalletScreen}
+        options={{ headerShown: false }}
+      />
         <Stack.Screen
           name="Send"
           component={SendScreen}
@@ -76,6 +82,11 @@ function RootNavigator() {
           component={SetPinScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+        name="Import Wallet"
+        component={ImportWalletScreen}
+        options={{ headerShown: false }}
+      />
       </Stack.Navigator>
     );
   }

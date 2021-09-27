@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: theme.colors.surface,
+    color: "#000"
   },
   error: {
     fontSize: 14,
