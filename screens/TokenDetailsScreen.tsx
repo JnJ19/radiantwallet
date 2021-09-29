@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { SafeAreaView, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView, Text } from "react-native";
 import { Background, Button, BackButton, Paragraph, TextInput, Header } from "../components";
 import { Navigation } from "../types";
 import { StatusBar } from 'expo-status-bar';
@@ -16,7 +16,7 @@ type Props = {
   navigation: Navigation;
 };
 
-const DashboardScreen2 = ({ navigation }: Props) => {
+const TokenDetailsScreen = ({ navigation }: Props) => {
 
     const [name, setName] = useState('');
     const [secret, setSecret] = useState('');
@@ -25,14 +25,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
     return (
             <SafeAreaView style={{margin: 16}}>
 
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
             
-            <Header>Dashboard</Header>
+            <Header>Token Details</Header>
         <BackButton goBack={() => navigation.navigate("Import Wallet")} />
             <Shadow viewStyle={{alignSelf:"stretch"}}>
 
             <View style={{ backgroundColor: "white", borderRadius: 8, padding: 8 }}>
-                <Text style={{marginLeft: 8, marginTop: 8, }}>$5,502</Text>
+                <Text style={{marginLeft: 8, marginTop: 8, }}>$12.56</Text>
                 
             <AreaChart
                 style={{ height: 200 }}
@@ -50,7 +50,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
             <View style={{marginTop: 24, marginBottom: 8}}>
                 <Text>Portfolio</Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Token Details")}>
             <Card.Title
                 title="SOL"
                 titleStyle={{color: '#1F1F1F', fontSize: 17}}
@@ -75,8 +74,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
                     )
                 }}
             />
-
-            </TouchableOpacity>
             <Card.Title
                 title="SOL"
                 titleStyle={{color: '#1F1F1F', fontSize: 17}}
@@ -160,4 +157,4 @@ const DashboardScreen2 = ({ navigation }: Props) => {
     );
 }
 
-export default memo(DashboardScreen2);
+export default memo(TokenDetailsScreen);

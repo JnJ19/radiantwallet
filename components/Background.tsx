@@ -3,6 +3,7 @@ import {
   ImageBackground,
   StyleSheet,
   KeyboardAvoidingView,
+  SafeAreaView, View,
 } from "react-native";
 
 
@@ -12,36 +13,35 @@ type Props = {
 };
 
 const Background = ({ children, position }: Props) => (
-  <ImageBackground
-    source={require("../assets/images/background.jpg")}
-    resizeMode="cover"
-    style={styles.background}
-  >
+  // <ImageBackground
+  //   source={require("../assets/images/background.jpg")}
+  //   resizeMode="cover"
+  //   style={styles.background}
+  // >
+  <SafeAreaView style={{backgroundColor: 'white', height: '100%'}}>
+
     <KeyboardAvoidingView
-      style={[
-        styles.container,
-        position === "bottom" ? styles.bottom : undefined,
-      ]}
-      behavior="padding"
-    >
+      style={styles.container}
+      // behavior="padding"
+      >
       {children}
     </KeyboardAvoidingView>
-  </ImageBackground>
+
+      </SafeAreaView>
+  // </ImageBackground>
 );
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: "100%",
-  },
   container: {
-    flex: 1,
-    padding: 20,
+    // flex: 1,
+    padding: 16,
+    // paddingBottom: 32,
     width: "100%",
-    maxWidth: 340,
+    // maxWidth: 340,
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: 'white',
   },
 
   bottom: {

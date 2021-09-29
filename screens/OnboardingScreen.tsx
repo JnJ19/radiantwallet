@@ -10,8 +10,8 @@ type Props = {
 };
 
 const OnboardingScreen = ({ navigation }: Props) => (
-  <Background position="bottom">
-    <StatusBar style="light" />
+  <Background position="top">
+    <StatusBar style="dark" />
     <Header>radiant</Header>
     <Paragraph bold center>The easiest way to swap tokens in the Solana ecosystem</Paragraph>
 

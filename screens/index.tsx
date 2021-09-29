@@ -3,6 +3,7 @@ export { default as SetPinScreen } from "./SetPinScreen";
 export { default as DashboardScreen } from "./DashboardScreen";
 export { default as DashboardScreen2 } from "./DashboardScreen2";
 export { default as ImportWalletScreen } from "./ImportWalletScreen";
+export { default as TokenDetailsScreen } from "./TokenDetailsScreen";
 
 export { default as ReceiveScreen } from "./ReceiveScreen";
 export { default as SendScreen } from "./SendScreen";

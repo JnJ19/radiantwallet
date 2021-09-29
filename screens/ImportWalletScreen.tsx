@@ -16,7 +16,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
     
     return (
       <Background position="bottom">
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <BackButton goBack={() => navigation.navigate("Onboarding")} />
             
         <Header>Import Wallet</Header>
