@@ -7,6 +7,7 @@ import {
   SetPinScreen,
   CreateWalletScreen,
   ImportWalletScreen,
+  TestScreen,
 } from "../screens";
 
 export default function Onboarding() {

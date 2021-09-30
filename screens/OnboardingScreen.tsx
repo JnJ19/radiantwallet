@@ -15,7 +15,7 @@ const OnboardingScreen = ({ navigation }: Props) => (
     <Header>radiant</Header>
     <Paragraph bold center>The easiest way to swap tokens in the Solana ecosystem</Paragraph>
 
-    <View style={{height: 450}}></View>
+    {/* <View style={{height: 450}}></View> */}
     <Button mode="outlined" onPress={() => navigation.navigate("Set Pin")}>
       Create Wallet
     </Button>

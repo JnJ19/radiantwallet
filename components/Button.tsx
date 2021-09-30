@@ -9,10 +9,10 @@ const Button = ({ mode, style, children, ...props }: Props) => (
   <PaperButton
     style={[
       styles.button,
-      mode === "outlined" && { backgroundColor: theme.colors.surface },
+      mode === "outlined" && { backgroundColor: '#C9F977' },
       style,
     ]}
-    labelStyle={styles.text}
+    labelStyle={[styles.text, mode === "outlined" && {color: '#1E2122'}, style]}
     mode={mode}
   uppercase={false}
     {...props}
@@ -24,13 +24,16 @@ const Button = ({ mode, style, children, ...props }: Props) => (
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    marginVertical: 10,
+    marginBottom: 8,
+    borderRadius: 30,
+    backgroundColor: '#1E2122',
   },
   text: {
     fontWeight: "bold",
     fontSize: 15,
     lineHeight: 26,
     fontFamily: "Inter_600SemiBold",
+    color: '#C9F977',
   },
 });
 

@@ -152,7 +152,12 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
             />
             
     
-        
+        <Button mode="outlined" onPress={() => navigation.navigate("Set Pin")}>
+      Create Wallet
+    </Button>
+    <Button mode="contained" onPress={() => navigation.navigate("Import Wallet")}>
+      Import Wallet
+    </Button>
             </SafeAreaView>
     );
 }

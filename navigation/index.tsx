@@ -16,6 +16,7 @@ import {
   ImportWalletScreen,
   DashboardScreen2,
   TokenDetailsScreen,
+  TestScreen,
 } from "../screens";
 
 export default function Onboarding() {
@@ -77,6 +78,11 @@ function RootNavigator() {
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Test Screen"
+          component={TestScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

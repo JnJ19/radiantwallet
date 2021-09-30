@@ -18,7 +18,7 @@ const Background = ({ children, position }: Props) => (
   //   resizeMode="cover"
   //   style={styles.background}
   // >
-  <SafeAreaView style={{backgroundColor: 'white', height: '100%'}}>
+  <SafeAreaView style={{backgroundColor: 'white', height: '100%', flex: 1}}>
 
     <KeyboardAvoidingView
       style={styles.container}
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     // maxWidth: 340,
     alignSelf: "center",
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: 'white',
+    justifyContent: "space-between",
+    // backgroundColor: 'white',
   },
 
   bottom: {
