@@ -23,9 +23,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
     const data = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10]
     
     return (
-            <SafeAreaView style={{margin: 16}}>
-
-        <StatusBar style="dark" />
+        <Background>
+            
             
             <Header>Dashboard</Header>
         <BackButton goBack={() => navigation.navigate("Import Wallet")} />
@@ -156,7 +155,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
             
     
         
-            </SafeAreaView>
+        </Background>
     );
 }
 

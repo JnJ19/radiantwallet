@@ -3,12 +3,14 @@ import { SafeAreaView, Text } from "react-native";
 import { Background, Button, BackButton, Paragraph, TextInput, Header } from "../components";
 import { Navigation } from "../types";
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { DashboardScreen } from ".";
 import { AreaChart, Grid } from 'react-native-svg-charts'
+import { LinearGradient } from 'react-native-svg';
 import * as shape from 'd3-shape'
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
+import { theme } from "../core/theme";
 
 
 
@@ -23,16 +25,26 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
     const data = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10]
     
     return (
-            <SafeAreaView style={{margin: 16}}>
-
-        <StatusBar style="light" />
-            
+        <Background>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{borderWidth: 1, borderColor: theme.colors.border, justifyContent: 'center', height: 40, width: 40, borderRadius: 16, marginRight: 16}}> 
+                <Image
+                    source={require('../assets/icons/left-arrow.jpg')}
+                    fadeDuration={0}
+                    style={{ width: 16, height: 16, alignSelf: 'center' }}
+                />
+            </TouchableOpacity>
             <Header>Token Details</Header>
-        <BackButton goBack={() => navigation.navigate("Import Wallet")} />
-            <Shadow viewStyle={{alignSelf:"stretch"}}>
+            {/* <BackButton goBack={() => navigation.navigate("Import Wallet")} /> */}
+            </View>
 
-            <View style={{ backgroundColor: "white", borderRadius: 8, padding: 8 }}>
-                <Text style={{marginLeft: 8, marginTop: 8, }}>$12.56</Text>
+            <View style={{ borderWidth: 1, borderColor: theme.colors.border, backgroundColor: "white", borderRadius: 8, padding: 16 }}>
+                <Text style={{ marginVertical: 8, fontFamily: 'Sumo', fontWeight: 'bold', fontSize: 17 }}>Price History</Text>
+                <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Text style={{fontSize: 24, marginRight: 8 }}>$5,302</Text>
+                <Text style={{color: '#07CC79' }}>Up 10% Today</Text>
+
+                </View>
                 
             <AreaChart
                 style={{ height: 200 }}
@@ -41,125 +53,54 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
                 animate={true}
                 contentInset={{ top: 30, bottom: 30 }}
                 curve={shape.curveNatural}
-                svg={{ fill: 'rgba(134, 65, 244, 0.2)', stroke: 'rgba(0, 0, 0, 1)' }}
+                svg={{ fill: theme.colors.accent, stroke: 'rgba(0, 0, 0, 1)' }}
                     >
-                {/* <Grid /> */}
             </AreaChart>
             </View>
-            </Shadow>
-            <View style={{marginTop: 24, marginBottom: 8}}>
-                <Text>Portfolio</Text>
-            </View>
-            <Card.Title
-                title="SOL"
-                titleStyle={{color: '#1F1F1F', fontSize: 17}}
-                subtitle="Solana"
-                subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
-                style={{backgroundColor: 'white', borderRadius: 8, marginBottom: 8}}
-                left={(props) => {
-                    console.log("props", props)
-                    return <Avatar.Icon {...props} icon="folder" />
-                } 
-                }
-                right={(props) => {
-                    return (
-                        <View style={{alignItems: 'flex-end', marginRight: 16}}>
-                            <Text style={{fontSize: 17, color: '#1F1F1F'}}>
-                                10.5
-                            </Text>
-                            <Text style={{fontSize: 14, color: '#727D8D'}}>
-                                $1,280
-                            </Text>
-                        </View>
-                    )
-                }}
-            />
-            <Card.Title
-                title="SOL"
-                titleStyle={{color: '#1F1F1F', fontSize: 17}}
-                subtitle="Solana"
-                subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
-                style={{backgroundColor: 'white', borderRadius: 8, marginBottom: 8}}
-                left={(props) => {
-                    console.log("props", props)
-                    return <Avatar.Icon {...props} icon="folder" />
-                } 
-                }
-                right={(props) => {
-                    return (
-                        <View style={{alignItems: 'flex-end', marginRight: 16}}>
-                            <Text style={{fontSize: 17, color: '#1F1F1F'}}>
-                                10.5
-                            </Text>
-                            <Text style={{fontSize: 14, color: '#727D8D'}}>
-                                $1,280
-                            </Text>
-                        </View>
-                    )
-                }}
-            />
-            <Card.Title
-                title="SOL"
-                titleStyle={{color: '#1F1F1F', fontSize: 17}}
-                subtitle="Solana"
-                subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
-                style={{backgroundColor: 'white', borderRadius: 8, marginBottom: 8}}
-                left={(props) => {
-                    console.log("props", props)
-                    return <Avatar.Icon {...props} icon="folder" />
-                } 
-                }
-                right={(props) => {
-                    return (
-                        <View style={{alignItems: 'flex-end', marginRight: 16}}>
-                            <Text style={{fontSize: 17, color: '#1F1F1F'}}>
-                                10.5
-                            </Text>
-                            <Text style={{fontSize: 14, color: '#727D8D'}}>
-                                $1,280
-                            </Text>
-                        </View>
-                    )
-                }}
-            />
-
-            <View style={{marginTop: 24, marginBottom: 8}}>
-                <Text>Popular Tokens</Text>
-            </View>
-            <Card.Title
-                title="SOL"
-                titleStyle={{color: '#1F1F1F', fontSize: 17}}
-                subtitle="Solana"
-                subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
-                style={{backgroundColor: 'white', borderRadius: 8, marginBottom: 8}}
-                left={(props) => {
-                    console.log("props", props)
-                    return <Avatar.Icon {...props} icon="folder" />
-                } 
-                }
-                right={(props) => {
-                    return (
-                        <View style={{alignItems: 'flex-end', marginRight: 16}}>
-                            <Text style={{fontSize: 17, color: '#1F1F1F'}}>
-                                10.5
-                            </Text>
-                            <Text style={{fontSize: 14, color: '#727D8D'}}>
-                                $1,280
-                            </Text>
-                        </View>
-                    )
-                }}
-            />
             
-    
+
+            <View style={{borderWidth: 1, borderColor: theme.colors.border, borderRadius: 16}}>
+                <View style={{ margin: 16 }}>
+                    <Text style={{fontFamily: 'Sumo', fontWeight: 'bold', fontSize: 17}}>Details</Text>
+                    <View style={{flexDirection:'row', justifyContent: 'space-between', marginVertical: 16}}>
+                        <Text style={styles.tableLabel}>Market Cap</Text>
+                        <Text style={styles.tableData}>$61.2 Billion</Text>
+                    </View>
+                        <View style={{height: 1, backgroundColor: theme.colors.border}}/>
+                    <View style={{flexDirection:'row', justifyContent: 'space-between', marginVertical: 16}}>
+                        <Text style={styles.tableLabel}>Market Rank</Text>
+                        <Text style={styles.tableData}>#7</Text>
+                    </View>
+                        <View style={{height: 1, backgroundColor: theme.colors.border}}/>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 16 }}>
+                        <Text style={styles.tableLabel}>24hr Volume</Text>
+                        <Text style={styles.tableData}>$544,384,983</Text>
+                    </View>
+                </View>
+            </View>
+            
+    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Button mode="outlined" onPress={() => navigation.navigate("Set Pin")}>
-      Create Wallet
-    </Button>
-    <Button mode="contained" onPress={() => navigation.navigate("Import Wallet")}>
-      Import Wallet
-    </Button>
-            </SafeAreaView>
+        Send
+                </Button>
+                <View style={{width: 8}}/>
+        <Button mode="contained" onPress={() => navigation.navigate("Import Wallet")}>
+        Swap
+        </Button>
+    </View>
+            </Background>
     );
 }
+
+const styles = StyleSheet.create({
+    tableLabel: {
+        fontSize: 14,
+        color: '#727D8D'
+    },
+    tableData: {
+        fontSize: 17,
+        color: theme.colors.primary,
+    }
+})
 
 export default memo(TokenDetailsScreen);

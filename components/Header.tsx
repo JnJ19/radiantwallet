@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontWeight: "bold",
     fontFamily: "Sumo",
-    paddingVertical: 14,
+    paddingVertical: 24,
   },
 });
 

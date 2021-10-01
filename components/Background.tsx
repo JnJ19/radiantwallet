@@ -33,13 +33,13 @@ const Background = ({ children, position }: Props) => (
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     padding: 16,
     // paddingBottom: 32,
     width: "100%",
     // maxWidth: 340,
-    alignSelf: "center",
-    alignItems: "center",
+    // alignSelf: "center",
+    // alignItems: "center",
     justifyContent: "space-between",
     // backgroundColor: 'white',
   },
