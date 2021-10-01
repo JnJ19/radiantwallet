@@ -9,6 +9,8 @@ import { AreaChart, Grid } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
+import { SubPageHeader } from "../components";
+
 
 
 
@@ -25,9 +27,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
     return (
         <Background>
             
-            
-            <Header>Dashboard</Header>
-        <BackButton goBack={() => navigation.navigate("Import Wallet")} />
+            <SubPageHeader>Dashboard</SubPageHeader>
             <Shadow viewStyle={{alignSelf:"stretch"}}>
 
             <View style={{ backgroundColor: "white", borderRadius: 8, padding: 8 }}>

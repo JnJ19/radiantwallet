@@ -9,3 +9,4 @@ export { default as Paragraph } from "./Paragraph";
 export { default as TextInput } from "./TextInput";
 export { default as Title } from "./Title";
 export { default as PriceHeader } from "./PriceHeader";
+export { default as SubPageHeader } from "./SubPageHeader";

@@ -24,7 +24,7 @@ const Button = ({ mode, style, children, ...props }: Props) => (
 const styles = StyleSheet.create({
   button: {
     // width: "auto",
-    flex: 1,
+    // flex: 1,
     marginBottom: 8,
     borderRadius: 30,
     backgroundColor: '#1E2122',

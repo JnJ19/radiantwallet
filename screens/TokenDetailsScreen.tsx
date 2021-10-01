@@ -11,6 +11,8 @@ import * as shape from 'd3-shape'
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { theme } from "../core/theme";
+import { SubPageHeader } from "../components";
+
 
 
 
@@ -26,17 +28,7 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
     
     return (
         <Background>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{borderWidth: 1, borderColor: theme.colors.border, justifyContent: 'center', height: 40, width: 40, borderRadius: 16, marginRight: 16}}> 
-                <Image
-                    source={require('../assets/icons/left-arrow.jpg')}
-                    fadeDuration={0}
-                    style={{ width: 16, height: 16, alignSelf: 'center' }}
-                />
-            </TouchableOpacity>
-            <Header>Token Details</Header>
-            {/* <BackButton goBack={() => navigation.navigate("Import Wallet")} /> */}
-            </View>
+            <SubPageHeader>Token Details</SubPageHeader>
 
             <View style={{ borderWidth: 1, borderColor: theme.colors.border, backgroundColor: "white", borderRadius: 8, padding: 16 }}>
                 <Text style={{ marginVertical: 8, fontFamily: 'Sumo', fontWeight: 'bold', fontSize: 17 }}>Price History</Text>
