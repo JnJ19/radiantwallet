@@ -34,9 +34,9 @@ type Props = {
 };
 
 const DashboardScreen2 = ({ navigation }: Props) => {
-	const [name, setName] = useState('');
-	const [secret, setSecret] = useState('');
-	const [logos, setLogos] = useState('');
+	// const [name, setName] = useState('');
+	// const [secret, setSecret] = useState('');
+	// const [logos, setLogos] = useState('');
 	const data2 = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
@@ -92,28 +92,76 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		);
 	};
 
+	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		const url = 'https://api.mainnet-beta.solana.com';
 		const connection = await new Connection(url);
 		const publicKey = await new PublicKey(
 			'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
 		);
-		const newBalance = await connection.getBalance(publicKey);
 		const programId = await new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
-
 		const ownedTokens = await connection.getTokenAccountsByOwner(
 			publicKey,
 			{ programId },
 		);
+		const result2 = await connection.getParsedAccountInfo(publicKey);
+		console.log('result2 ', result2);
+
 		let tokens2 = [];
+		const solBalance = await connection.getBalance(publicKey);
+		const realSolBalance = solBalance * 0.000000001;
+		if (solBalance > 0) {
+			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+
+			const priceData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=sol`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
+				},
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					const dataArray = Object.values(data.data);
+					const price = dataArray[0].quote.USD.price;
+					const change_24h =
+						dataArray[0].quote.USD.percent_change_24h;
+					return { price, change_24h };
+				})
+				.catch((error) => console.log(error));
+			const { price, change_24h } = priceData;
+			const tokenObject = {
+				mint: 'So11111111111111111111111111111111111111112',
+				amount: realSolBalance,
+				name: 'Solana',
+				symbol: 'SOL',
+				logoURI:
+					'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+				extensions: {
+					coingeckoId: 'solana',
+					discord: 'https://discord.com/invite/pquxPsq',
+					serumV3Usdc: '7xMDbYTCqQEcK2aM9LbetGtNFJpzKdfXzLL5juaLh4GJ',
+					twitter: 'https://twitter.com/solana',
+					website: 'https://solana.com/',
+				},
+				price,
+				change_24h,
+			};
+			tokens2.push(tokenObject);
+		}
 
 		await Promise.all(
 			ownedTokens.value.map(async (item) => {
 				const result = await connection.getParsedAccountInfo(
 					item.pubkey,
 				);
+				console.log('result: ', result);
+
 				const mint = result.value.data.parsed.info.mint;
 				const amount =
 					result.value.data.parsed.info.tokenAmount.uiAmount;
@@ -123,7 +171,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 
 				// let price = '';
-				const price = await fetch(
+
+				const priceData = await fetch(
 					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
 					{
 						headers: {
@@ -136,10 +185,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.then((response) => response.json())
 					.then((data) => {
 						const dataArray = Object.values(data.data);
-						const priceReal = dataArray[0].quote.USD.price;
-						return priceReal;
+						console.log('dataArray: ', dataArray);
+						const price = dataArray[0].quote.USD.price;
+						const change_24h =
+							dataArray[0].quote.USD.percent_change_24h;
+						return { price, change_24h };
 					})
 					.catch((error) => console.log(error));
+				const { price, change_24h } = priceData;
 				const tokenObject = {
 					mint,
 					amount,
@@ -148,17 +201,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					logoURI,
 					extensions,
 					price,
+					change_24h,
 				};
 				tokens2.push(tokenObject);
 			}),
 		);
-
 		setTokens(tokens2);
 	}
 
 	useEffect(() => {
 		getOwnedTokens();
-	}, []);
+	}, [tokenMap]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -179,9 +232,43 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
 	const token = tokenMap.get(address2);
 
+	const totals = tokens?.map((item) => {
+		return item.amount * item.price;
+	});
+	const todayTotal = totals.reduce((prev, current) => prev + current);
+
+	const yesterdayTotals = tokens?.map((item) => {
+		const change = item.change_24h * 0.001;
+		let multiplier;
+		change > 0 ? (multiplier = 1 - change) : (multiplier = 1 + change);
+
+		const total = item.amount * item.price;
+
+		const yesterday = total * multiplier;
+
+		return yesterday;
+	});
+
+	const yesterdayTotal = yesterdayTotals.reduce(
+		(prev, current) => prev + current,
+	);
+
+	const percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
+
+	console.log('changggeee', parseInt(percentChange, 10));
+
+	if (!tokens) {
+		return (
+			<Background>
+				<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
+				<Text>Loading...</Text>
+			</Background>
+		);
+	}
+
 	return (
 		<Background>
-			<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+			<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
 
 			<View
 				style={{
@@ -203,8 +290,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					Price History
 				</Text>
 				<View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-					<Text style={{ fontSize: 24, marginRight: 8 }}>$5,302</Text>
-					<Text style={{ color: '#07CC79' }}>Up 10% Today</Text>
+					<Text style={{ fontSize: 24, marginRight: 8 }}>
+						${todayTotal.toFixed(2)}
+					</Text>
+					<Text style={{ color: '#07CC79' }}>
+						{percentChange > 0 ? 'Up' : 'Down'}{' '}
+						{percentChange.toFixed(1)}% Today
+					</Text>
 				</View>
 
 				<AreaChart
@@ -223,11 +315,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 			<View style={{ marginTop: 24, marginBottom: 8 }}>
 				<Text style={{ marginBottom: 8 }}>Portfolio</Text>
-				<FlatList
-					data={tokens}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.address}
-				/>
+				{console.log('tokens', tokens)}
+				{tokens ? (
+					<FlatList
+						data={tokens}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.address}
+					/>
+				) : null}
 			</View>
 		</Background>
 	);
