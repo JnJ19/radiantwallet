@@ -232,30 +232,33 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
 	const token = tokenMap.get(address2);
 
-	const totals = tokens?.map((item) => {
-		return item.amount * item.price;
-	});
-	const todayTotal = totals.reduce((prev, current) => prev + current);
+	let todayTotal;
+	let percentChange;
+	if (tokens) {
+		const totals = tokens?.map((item) => {
+			return item.amount * item.price;
+		});
 
-	const yesterdayTotals = tokens?.map((item) => {
-		const change = item.change_24h * 0.001;
-		let multiplier;
-		change > 0 ? (multiplier = 1 - change) : (multiplier = 1 + change);
+		todayTotal = totals.reduce((prev, current) => prev + current);
 
-		const total = item.amount * item.price;
+		const yesterdayTotals = tokens?.map((item) => {
+			const change = item.change_24h * 0.001;
+			let multiplier;
+			change > 0 ? (multiplier = 1 - change) : (multiplier = 1 + change);
 
-		const yesterday = total * multiplier;
+			const total = item.amount * item.price;
 
-		return yesterday;
-	});
+			const yesterday = total * multiplier;
 
-	const yesterdayTotal = yesterdayTotals.reduce(
-		(prev, current) => prev + current,
-	);
+			return yesterday;
+		});
 
-	const percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
+		const yesterdayTotal = yesterdayTotals.reduce(
+			(prev, current) => prev + current,
+		);
 
-	console.log('changggeee', parseInt(percentChange, 10));
+		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
+	}
 
 	if (!tokens) {
 		return (
