@@ -27,7 +27,14 @@ import {
 	sendAndConfirmTransaction,
 	SystemProgram,
 	Transaction,
+	Keypair,
 } from '@solana/web3.js';
+import { generateMnemonic, mnemonicToSeed, accountFromSeed } from '../utils';
+import bip39 from 'bip39';
+
+import { Market } from '@project-serum/serum';
+
+console.log('market', Market);
 
 type Props = {
 	navigation: Navigation;
@@ -107,7 +114,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			{ programId },
 		);
 		const result2 = await connection.getParsedAccountInfo(publicKey);
-		console.log('result2 ', result2);
 
 		let tokens2 = [];
 		const solBalance = await connection.getBalance(publicKey);
@@ -160,7 +166,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const result = await connection.getParsedAccountInfo(
 					item.pubkey,
 				);
-				console.log('result: ', result);
 
 				const mint = result.value.data.parsed.info.mint;
 				const amount =
@@ -185,7 +190,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.then((response) => response.json())
 					.then((data) => {
 						const dataArray = Object.values(data.data);
-						console.log('dataArray: ', dataArray);
 						const price = dataArray[0].quote.USD.price;
 						const change_24h =
 							dataArray[0].quote.USD.percent_change_24h;
@@ -209,8 +213,112 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setTokens(tokens2);
 	}
 
+	async function testMarkets() {
+		const url = 'https://api.mainnet-beta.solana.com';
+		const connection = new Connection(url);
+		const marketAddress = new PublicKey(
+			'7xMDbYTCqQEcK2aM9LbetGtNFJpzKdfXzLL5juaLh4GJ',
+		);
+		const programAddress = new PublicKey(
+			'EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o',
+		);
+		//serum stuff
+		let market = await Market.load(
+			connection,
+			marketAddress,
+			{},
+			programAddress,
+		);
+
+		console.log('market', market);
+		// Fetching orderbooks
+		let bids = await market.loadBids(connection);
+		let asks = await market.loadAsks(connection);
+		console.log('bids', bids);
+		console.log('asks', asks);
+
+		// L2 orderbook data
+		for (let [price, size] of bids.getL2(20)) {
+			console.log(price, size);
+		}
+		// Full orderbook data
+		for (let order of asks) {
+			console.log('hello');
+			console.log(
+				order.orderId,
+				order.price,
+				order.size,
+				order.side, // 'buy' or 'sell'
+			);
+		}
+		console.log('account', Account);
+
+		let phrase = [
+			'spare',
+			'negative',
+			'unknown',
+			'jar',
+			'drink',
+			'wife',
+			'belt',
+			'olive',
+			'vacant',
+			'join',
+			'glow',
+			'debris',
+		];
+
+		let phrase2 =
+			'***REMOVED***';
+
+		const encoder = new TextEncoder();
+
+		// const key = encoder.encode(phrase);
+
+		// const uint8Seed = encoder.encode(seed);
+
+		// console.log('uint8 encoded', uint8Seed);
+
+		// console.log('seed', seed.slice(0, 32));
+
+		// const seed32 = seed.slice(0, 32).toString('hex');
+
+		// const fromHexString = (hexString) =>
+		// 	new Uint8Array(
+		// 		hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)),
+		// 	);
+
+		// const seed = await bip39.mnemonicToSeed(phrase2);
+
+		const bip39 = await import('bip39');
+		const seed = await bip39.mnemonicToSeed(phrase2);
+
+		const seed32 = seed.slice(0, 32);
+
+		const keyPairTest = Keypair.fromSeed(seed32);
+		console.log('keypair test ', keyPairTest);
+
+		const secretKey = keyPairTest.secretKey;
+		console.log('secretKey: ', secretKey);
+
+		// console.log('key', key);
+
+		let owner = new Account(secretKey);
+		console.log('owner', owner);
+		// let payer = new PublicKey('...'); // spl-token account
+		// await market.placeOrder(connection, {
+		// 	owner,
+		// 	payer,
+		// 	side: 'buy', // 'buy' or 'sell'
+		// 	price: 123.45,
+		// 	size: 17.0,
+		// 	orderType: 'limit', // 'limit', 'ioc', 'postOnly'
+		// });
+	}
+
 	useEffect(() => {
 		getOwnedTokens();
+		testMarkets();
 	}, [tokenMap]);
 
 	useEffect(() => {
@@ -318,7 +426,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 			<View style={{ marginTop: 24, marginBottom: 8 }}>
 				<Text style={{ marginBottom: 8 }}>Portfolio</Text>
-				{console.log('tokens', tokens)}
 				{tokens ? (
 					<FlatList
 						data={tokens}
