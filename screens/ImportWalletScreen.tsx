@@ -63,6 +63,13 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 					multiline={true}
 					minHeight={150}
 				/>
+				<View
+					style={{
+						borderBottomColor: theme.colors.black_seven,
+						borderBottomWidth: 1,
+						marginBottom: 8,
+					}}
+				></View>
 				<View style={{ flexDirection: 'row' }}>
 					<View
 						style={{
