@@ -9,6 +9,29 @@ export const theme = {
 		text: '#000',
 		background: '#ffffff',
 		border: '#DFE4EB',
+		black: {
+			one: '#0C0C0D',
+			two: '#1F2328',
+			three: '#30363F',
+			four: '#4A5059',
+			five: '#6E7681',
+			six: '#CBD0D6',
+			seven: '#E5E8EF',
+			eight: '#F6F9FF',
+			nine: '#FDFDFE',
+		},
+		error: {
+			one: '#E8083E',
+			two: '#F16B8B',
+			three: '#F9C1D2',
+			four: '#FEF2F6',
+		},
+		success: {
+			one: '#0CC36C',
+			two: '#8BECB8',
+			three: '#C5F6DB',
+			four: '#DDFAEA',
+		},
 	},
 	fonts: {
 		Nunito_Sans: {
