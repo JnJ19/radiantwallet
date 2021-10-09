@@ -1517,6 +1517,11 @@
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/inter/-/inter-0.2.0.tgz#2934c1e510d58b652e3a5150ca7f76f55b89e84a"
   integrity sha512-gIjkti/NxHABPc4xB/AlgSpbLJod/8Iill7DfW+rh2CHv3jjz7I7SLQY8u/3NoF8zZk0GNU8gTZkVwGQibuWcQ==
 
+"@expo-google-fonts/nunito-sans@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/nunito-sans/-/nunito-sans-0.2.0.tgz#87b005294ca9c8d4aecee96666bb1fe7340a1aa0"
+  integrity sha512-fFrlTdm5Dl6VraCw1yvEJ+tXLZEmg6jXXrMavLZR4Zyh6zmSjq8Ww1o/JVD36gHQInL1WQRLufN1p9qwoLgEVQ==
+
 "@expo/config-plugins@1.0.33":
   version "1.0.33"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-1.0.33.tgz#8ee78ea6f939f7e04606e9afa22b32139ea974a0"

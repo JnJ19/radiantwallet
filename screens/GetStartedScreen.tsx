@@ -10,14 +10,13 @@ import {
 } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
-import { theme } from '../core/theme';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 
 type Props = {
 	navigation: Navigation;
 };
 
-const ImportWalletScreen = ({ navigation }: Props) => {
+const GetStartedScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
 
@@ -67,4 +66,4 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 	);
 };
 
-export default memo(ImportWalletScreen);
+export default memo(GetStartedScreen);

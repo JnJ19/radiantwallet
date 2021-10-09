@@ -45,9 +45,7 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
 				<Text
 					style={{
 						marginVertical: 8,
-						fontFamily: 'Sumo',
-						fontWeight: 'bold',
-						fontSize: 17,
+						...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 					}}
 				>
 					Price History
@@ -81,9 +79,7 @@ const TokenDetailsScreen = ({ navigation }: Props) => {
 				<View style={{ margin: 16 }}>
 					<Text
 						style={{
-							fontFamily: 'Sumo',
-							fontWeight: 'bold',
-							fontSize: 17,
+							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 						}}
 					>
 						Details

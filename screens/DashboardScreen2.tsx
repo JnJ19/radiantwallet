@@ -214,13 +214,16 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function testMarkets() {
-		const url = 'https://api.mainnet-beta.solana.com';
+		// const url = 'https://api.mainnet-beta.solana.com';
+		const url = 'http://solana-api.projectserum.com';
 		const connection = new Connection(url);
+		//SOLUSDC market address
 		const marketAddress = new PublicKey(
-			'7xMDbYTCqQEcK2aM9LbetGtNFJpzKdfXzLL5juaLh4GJ',
+			'9wFFyRfZBsuAha4YcuxcXLKwMxJR43S7fPfQLusDBzvT',
 		);
+		//serum v3 program address
 		const programAddress = new PublicKey(
-			'EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o',
+			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
 		);
 		//serum stuff
 		let market = await Market.load(
@@ -242,78 +245,52 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			console.log(price, size);
 		}
 		// Full orderbook data
-		for (let order of asks) {
-			console.log('hello');
-			console.log(
-				order.orderId,
-				order.price,
-				order.size,
-				order.side, // 'buy' or 'sell'
-			);
-		}
-		console.log('account', Account);
+		// for (let order of asks) {
+		// 	console.log('hello');
+		// 	console.log(
+		// 		order.orderId,
+		// 		order.price,
+		// 		order.size,
+		// 		order.side, // 'buy' or 'sell'
+		// 	);
+		// }
 
-		let phrase = [
-			'spare',
-			'negative',
-			'unknown',
-			'jar',
-			'drink',
-			'wife',
-			'belt',
-			'olive',
-			'vacant',
-			'join',
-			'glow',
-			'debris',
-		];
-
-		let phrase2 =
+		let phrase =
 			'***REMOVED***';
 
-		const encoder = new TextEncoder();
-
-		// const key = encoder.encode(phrase);
-
-		// const uint8Seed = encoder.encode(seed);
-
-		// console.log('uint8 encoded', uint8Seed);
-
-		// console.log('seed', seed.slice(0, 32));
-
-		// const seed32 = seed.slice(0, 32).toString('hex');
-
-		// const fromHexString = (hexString) =>
-		// 	new Uint8Array(
-		// 		hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)),
-		// 	);
-
-		// const seed = await bip39.mnemonicToSeed(phrase2);
-
 		const bip39 = await import('bip39');
-		const seed = await bip39.mnemonicToSeed(phrase2);
+		const seed = await bip39.mnemonicToSeed(phrase);
 
+		//serum only cares about first 32 bytes
 		const seed32 = seed.slice(0, 32);
 
-		const keyPairTest = Keypair.fromSeed(seed32);
-		console.log('keypair test ', keyPairTest);
+		const keyPair = Keypair.fromSeed(seed32);
 
-		const secretKey = keyPairTest.secretKey;
+		const secretKey = keyPair.secretKey;
 		console.log('secretKey: ', secretKey);
-
-		// console.log('key', key);
 
 		let owner = new Account(secretKey);
 		console.log('owner', owner);
-		// let payer = new PublicKey('...'); // spl-token account
-		// await market.placeOrder(connection, {
-		// 	owner,
-		// 	payer,
-		// 	side: 'buy', // 'buy' or 'sell'
-		// 	price: 123.45,
-		// 	size: 17.0,
-		// 	orderType: 'limit', // 'limit', 'ioc', 'postOnly'
-		// });
+		//usdc account - not sure if this is right - maybe needs to be solana account? I don't freaking know
+		// let payer = new PublicKey(
+		// 	'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+		// ); // spl-token account
+		//solana account
+		console.log('connection', connection);
+		let payer = new PublicKey(
+			'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+		); // spl-token account
+		// await market
+		// 	.placeOrder(connection, {
+		// 		owner,
+		// 		payer,
+		// 		side: 'sell', // 'buy' or 'sell'
+		// 		price: 165.45,
+		// 		size: 1.0,
+		// 		orderType: 'limit', // 'limit', 'ioc', 'postOnly'
+		// 	})
+		// 	.then((response) => console.log(response))
+		// 	.catch((err) => console.log(err));
 	}
 
 	useEffect(() => {
@@ -393,9 +370,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				<Text
 					style={{
 						marginVertical: 8,
-						fontFamily: 'Sumo',
-						fontWeight: 'bold',
-						fontSize: 17,
+						...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 					}}
 				>
 					Price History
