@@ -41,53 +41,57 @@ export const theme = {
 				fontFamily: 'NunitoSans_700Bold',
 				fontSize: 24,
 			},
-			Body_Regular: {
+			Body_L_Bold: {
+				fontFamily: 'NunitoSans_700Bold',
+				fontSize: 20,
+			},
+			Body_M_Regular: {
 				fontFamily: 'NunitoSans_400Regular',
 				fontSize: 17,
 			},
-			Body_SemiBold: {
+			Body_M_SemiBold: {
 				fontFamily: 'NunitoSans_600SemiBold',
 				fontSize: 17,
 			},
-			Body_Bold: {
+			Body_M_Bold: {
 				fontFamily: 'NunitoSans_700Bold',
 				fontSize: 17,
 			},
-			Body_ExtraBold: {
+			Body_M_ExtraBold: {
 				fontFamily: 'NunitoSans_800ExtraBold',
 				fontSize: 17,
 			},
 			Caption_M_Regular: {
 				fontFamily: 'NunitoSans_400Regular',
-				fontSize: 17,
+				fontSize: 14,
 			},
 			Caption_M_SemiBold: {
 				fontFamily: 'NunitoSans_600SemiBold',
-				fontSize: 17,
+				fontSize: 14,
 			},
 			Caption_M_Bold: {
 				fontFamily: 'NunitoSans_700Bold',
-				fontSize: 17,
+				fontSize: 14,
 			},
 			Caption_S_Regular: {
 				fontFamily: 'NunitoSans_400Regular',
-				fontSize: 17,
+				fontSize: 12,
 			},
 			Caption_S_SemiBold: {
 				fontFamily: 'NunitoSans_600SemiBold',
-				fontSize: 17,
+				fontSize: 12,
 			},
 			Caption_S_Bold: {
 				fontFamily: 'NunitoSans_700Bold',
-				fontSize: 17,
+				fontSize: 12,
 			},
 			Caption_XS_SemiBold: {
 				fontFamily: 'NunitoSans_600SemiBold',
-				fontSize: 17,
+				fontSize: 10,
 			},
 			Caption_XS_Bold: {
 				fontFamily: 'NunitoSans_700Bold',
-				fontSize: 17,
+				fontSize: 10,
 			},
 		},
 		Azeret_Mono: {
