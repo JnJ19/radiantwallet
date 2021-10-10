@@ -1,43 +1,64 @@
-import React, { memo } from "react";
-import { Background, Button, Paragraph, Header } from "../components";
-import { Navigation } from "../types";
+import React, { memo } from 'react';
+import {
+	Background,
+	Button,
+	Paragraph,
+	Header,
+	SubPageHeader,
+} from '../components';
+import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet} from 'react-native';
-
+import { View, StyleSheet, Text, Image } from 'react-native';
+import { theme } from '../core/theme';
 
 type Props = {
-  navigation: Navigation;
+	navigation: Navigation;
 };
 
 const OnboardingScreen = ({ navigation }: Props) => (
-  <Background>
-    {/* <View style={styles.container}> */}
-    <View style={{alignItems: 'center', marginTop: '20%'}}>
-      {/* <View style={{marginBottom: 16}}> */}
-        
-      <Header>radiant</Header>
-      <Paragraph bold center>The easiest way to swap tokens in the Solana ecosystem</Paragraph>
-      </View>
+	<Background>
+		<SubPageHeader backButton={false}>Add Money</SubPageHeader>
+		{/* <View style={styles.container}> */}
+		<View style={{ alignItems: 'center', marginTop: 24 }}>
+			{/* <View style={{marginBottom: 16}}> */}
+			<Image
+				source={require('../assets/images/Add_Money_Graphic.jpg')}
+				style={{
+					width: 266,
+					height: 234,
+					alignSelf: 'center',
+					marginBottom: 24,
+				}}
+			/>
+			<Text style={theme.fonts.Nunito_Sans.Body_M_Regular}>
+				Import a wallet you already use or create a new wallet to
+				transfer Solana ecosystem.
+			</Text>
+		</View>
 
-    <View style={{ height: 450 }}>
-      
-      <View style={{flexDirection: 'column'}}>
-        <Button mode="outlined" onPress={() => navigation.navigate("Set Pin")}>
-          Create Wallet
-        </Button>
-        <Button mode="contained" onPress={() => navigation.navigate("Import Wallet")}>
-          Import Wallet
-        </Button>
-      </View>
-
-    </View>
-  </Background>
+		<View style={{ height: 450, marginTop: 48 }}>
+			<View style={{ flexDirection: 'column' }}>
+				<Button
+					mode="outlined"
+					onPress={() => navigation.navigate('Set Pin')}
+				>
+					Create Wallet
+				</Button>
+				<Button
+					mode="contained"
+					onPress={() => navigation.navigate('Import Wallet')}
+				>
+					Import Wallet
+				</Button>
+			</View>
+		</View>
+	</Background>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1
-  }
+	container: {
+		// flex: 1
+	},
 });
 
 export default memo(OnboardingScreen);

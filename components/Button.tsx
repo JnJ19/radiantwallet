@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 	button: {
 		// width: "auto",
 		// flex: 1,
-		marginBottom: 8,
+		marginBottom: 16,
 		borderRadius: 20,
 		height: 56,
 		backgroundColor: '#1E2122',
