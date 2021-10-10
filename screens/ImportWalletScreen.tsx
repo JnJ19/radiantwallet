@@ -182,9 +182,24 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 					index={1}
 					snapPoints={snapPoints}
 					onChange={handleSheetChanges}
-					style={{ margin: 16 }}
+					style={{
+						// margin: 16,
+						shadowColor: '#000',
+						shadowOffset: {
+							width: 0,
+							height: 6,
+						},
+						shadowOpacity: 0.37,
+						shadowRadius: 7.49,
+						elevation: 12,
+					}}
 				>
-					<View style={{ justifyContent: 'space-between' }}>
+					<View
+						style={{
+							justifyContent: 'space-between',
+							margin: 16,
+						}}
+					>
 						<View
 							style={{
 								marginBottom: 24,
