@@ -127,6 +127,10 @@ export const theme = {
 				fontFamily: 'AzeretMono_ExtraBold',
 				fontSize: 17,
 			},
+			Caption_M_Bold: {
+				fontFamily: 'AzeretMono_Bold',
+				fontSize: 14,
+			},
 		},
 	},
 };
