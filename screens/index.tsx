@@ -1,3 +1,4 @@
+export { default as IntroScreen } from './IntroScreen';
 export { default as OnboardingScreen } from './OnboardingScreen';
 export { default as SetPinScreen } from './SetPinScreen';
 export { default as DashboardScreen } from './DashboardScreen';

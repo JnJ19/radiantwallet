@@ -18,6 +18,7 @@ import {
 	TokenDetailsScreen,
 	TestScreen,
 	SearchTokensScreen,
+	IntroScreen,
 } from '../screens';
 
 export default function Onboarding() {
@@ -76,6 +77,11 @@ function RootNavigator() {
 	} else {
 		return (
 			<Stack.Navigator>
+				<Stack.Screen
+					name="Intro"
+					component={IntroScreen}
+					options={{ headerShown: false }}
+				/>
 				<Stack.Screen
 					name="Onboarding"
 					component={OnboardingScreen}
