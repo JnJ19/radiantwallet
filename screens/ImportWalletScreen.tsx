@@ -1,4 +1,11 @@
-import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
+import React, {
+	memo,
+	useState,
+	useMemo,
+	useRef,
+	useCallback,
+	useEffect,
+} from 'react';
 import {
 	Background,
 	Button,
@@ -25,6 +32,7 @@ import {
 	useBottomSheetModal,
 } from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as Clipboard from 'expo-clipboard';
 
 type Props = {
 	navigation: Navigation;
@@ -40,16 +48,41 @@ type Props = {
 const ImportWalletScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
-	// const { dismiss, dismissAll } = useBottomSheetModal();
+	const [copiedText, setCopiedText] = React.useState('');
 
-	type dismiss = () => void;
-	// ref
+	function wordCount(str: string) {
+		return str.split(' ').length;
+	}
+	const copyToClipboard = () => {
+		Clipboard.setString('hello world');
+	};
+
+	const fetchCopiedText = async () => {
+		const text = await Clipboard.getStringAsync();
+		console.log('text', text);
+		setCopiedText(text);
+	};
+
+	// const pollClipBoard = setInterval(() => {
+	// 	// fetchCopiedText();
+	// 	console.log('hellooooo');
+	// }, 1000);
+
+	// useEffect(() => {
+	// 	if (copiedText) {
+	// 		const count = wordCount(copiedText);
+	// 		console.log('count', count);
+	// 		if (count > 9 && count < 30) {
+	// 			clearInterval(pollClipBoard);
+	// 		}
+	// 	}
+	// }, [copiedText]);
+
+	// clearInterval(pollClipBoard);
+
+	// bottomsheet stuff
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-	// variables
 	const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-	// callbacks
 	const handlePresentModalPress = useCallback(() => {
 		bottomSheetModalRef.current?.present();
 	}, []);
@@ -101,7 +134,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 						}}
 					></View>
 					<View style={{ flexDirection: 'row' }}>
-						<View
+						<TouchableOpacity
 							style={{
 								flexDirection: 'row',
 								marginRight: 8,
@@ -126,8 +159,9 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 							>
 								Scan
 							</Text>
-						</View>
-						<View
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => fetchCopiedText()}
 							style={{
 								flexDirection: 'row',
 								marginRight: 8,
@@ -152,7 +186,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 							>
 								sport seek found
 							</Text>
-						</View>
+						</TouchableOpacity>
 					</View>
 				</View>
 				{/* <Button

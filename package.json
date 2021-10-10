@@ -34,6 +34,7 @@
     "expo": "~42.0.1",
     "expo-asset": "~8.3.2",
     "expo-barcode-scanner": "~10.2.2",
+    "expo-clipboard": "~1.1.0",
     "expo-constants": "~11.0.1",
     "expo-font": "~9.2.1",
     "expo-random": "^11.2.0",

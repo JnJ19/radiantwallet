@@ -9,7 +9,11 @@ const Button = ({ mode, style, children, ...props }: Props) => (
 	<PaperButton
 		style={[
 			styles.button,
-			mode === 'outlined' && { backgroundColor: '#C9F977' },
+			mode === 'outlined' && {
+				backgroundColor: '#C9F977',
+				borderColor: theme.colors.black_one,
+				borderWidth: 1,
+			},
 			style,
 		]}
 		labelStyle={[
@@ -30,11 +34,13 @@ const styles = StyleSheet.create({
 		// width: "auto",
 		// flex: 1,
 		marginBottom: 8,
-		borderRadius: 30,
+		borderRadius: 20,
+		height: 56,
 		backgroundColor: '#1E2122',
+		justifyContent: 'center',
 	},
 	text: {
-		...theme.fonts.Azeret_Mono.Caption_M_Bold,
+		...theme.fonts.Azeret_Mono.Body_M_Bold,
 		lineHeight: 26,
 		color: '#C9F977',
 	},
