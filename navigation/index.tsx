@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import * as React from 'react';
 
 import { useStoreState } from '../hooks/storeHooks';
@@ -21,103 +22,129 @@ import {
 	IntroScreen,
 } from '../screens';
 
-export default function Onboarding() {
-	return (
-		<NavigationContainer>
-			<RootNavigator />
-		</NavigationContainer>
-	);
-}
+const Tab = createMaterialBottomTabNavigator();
+
+console.log('tabs', Tab);
 
 const Stack = createNativeStackNavigator();
 
-function RootNavigator() {
-	const hasWallet = useStoreState((state) => state.hasWallet);
+function Dashboard() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Intro"
+				component={IntroScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Onboarding"
+				component={OnboardingScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Dashboard"
+				component={DashboardScreen2}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Token Details"
+				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
 
-	if (hasWallet) {
-		return (
-			<Stack.Navigator>
-				<Stack.Screen
-					name="Dashboard"
-					component={DashboardScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Receive"
-					component={ReceiveScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Import Wallet"
-					component={ImportWalletScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Send"
-					component={SendScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Settings"
-					component={SettingsScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Backup"
-					component={BackupScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="QR"
-					component={QRScannerScreen}
-					options={{ headerShown: false }}
-				/>
-			</Stack.Navigator>
-		);
-	} else {
-		return (
-			<Stack.Navigator>
-				<Stack.Screen
-					name="Intro"
-					component={IntroScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Onboarding"
-					component={OnboardingScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Test Screen"
-					component={TestScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Set Pin"
-					component={SetPinScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Import Wallet"
-					component={ImportWalletScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Token Details"
-					component={TokenDetailsScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Search Tokens"
-					component={SearchTokensScreen}
-					options={{ headerShown: false }}
-				/>
-				<Stack.Screen
-					name="Dashboard"
-					component={DashboardScreen2}
-					options={{ headerShown: false }}
-				/>
-			</Stack.Navigator>
-		);
-	}
+function Browse() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Search Tokens"
+				component={SearchTokensScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Token Details"
+				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
+
+function Wallets() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Test Screen"
+				component={TestScreen}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
+
+function RootNavigator2() {
+	return (
+		<Tab.Navigator>
+			<Tab.Screen name="Dashboard" component={Dashboard} />
+			<Tab.Screen name="Browse" component={Browse} />
+			<Tab.Screen name="Walet" component={Wallets} />
+		</Tab.Navigator>
+	);
+}
+
+function RootNavigator() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Intro"
+				component={IntroScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Onboarding"
+				component={OnboardingScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Test Screen"
+				component={TestScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Set Pin"
+				component={SetPinScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Import Wallet"
+				component={ImportWalletScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Token Details"
+				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Search Tokens"
+				component={SearchTokensScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Dashboard"
+				component={DashboardScreen2}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
+
+export default function Onboarding() {
+	return (
+		<NavigationContainer>
+			<RootNavigator2 />
+		</NavigationContainer>
+	);
 }

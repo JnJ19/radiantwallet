@@ -481,6 +481,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			>
 				Test Markets
 			</Button>
+			<MyTabs />
 			<View
 				style={{
 					borderWidth: 1,
