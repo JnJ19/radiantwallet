@@ -1,7 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
+import { Image, View, Text } from 'react-native';
 
 import { useStoreState } from '../hooks/storeHooks';
 
@@ -21,8 +23,10 @@ import {
 	SearchTokensScreen,
 	IntroScreen,
 } from '../screens';
+import { theme } from '../core/theme';
 
-const Tab = createMaterialBottomTabNavigator();
+// const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 console.log('tabs', Tab);
 
@@ -86,10 +90,101 @@ function Wallets() {
 
 function RootNavigator2() {
 	return (
-		<Tab.Navigator>
-			<Tab.Screen name="Dashboard" component={Dashboard} />
-			<Tab.Screen name="Browse" component={Browse} />
-			<Tab.Screen name="Walet" component={Wallets} />
+		<Tab.Navigator
+			screenOptions={({ route }) => ({
+				tabBarStyle: {
+					height: 87,
+					borderTopColor: '#D8DCE0',
+					borderTopWidth: 1,
+				},
+				tabBarLabelStyle: {
+					...theme.fonts.Nunito_Sans.Caption_S_Regular,
+				},
+				tabBarActiveTintColor: theme.colors.black_one,
+				tabBarLabel: ({ focused }) => {
+					if (focused) {
+						return (
+							<View style={{ alignItems: 'center' }}>
+								<Text
+									style={{
+										...theme.fonts.Nunito_Sans
+											.Caption_S_Bold,
+									}}
+								>
+									{route.name}
+								</Text>
+							</View>
+						);
+					}
+					return (
+						<View style={{ alignItems: 'center' }}>
+							<Text
+								style={{
+									...theme.fonts.Nunito_Sans
+										.Caption_S_Regular,
+								}}
+							>
+								{route.name}
+							</Text>
+						</View>
+					);
+				},
+			})}
+		>
+			<Tab.Screen
+				name="Dashboard"
+				component={Dashboard}
+				options={{
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<Image
+								source={require('../assets/icons/Dashboard_Active.png')}
+								style={{ width: 24, height: 24 }}
+							/>
+						) : (
+							<Image
+								source={require('../assets/icons/Dashboard.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="Browse"
+				component={Browse}
+				options={{
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<Image
+								source={require('../assets/icons/Search_Active.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						) : (
+							<Image
+								source={require('../assets/icons/Search.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
+				}}
+			/>
+			<Tab.Screen
+				name="Wallet"
+				component={Wallets}
+				options={{
+					tabBarIcon: ({ focused }) =>
+						focused ? (
+							<Image
+								source={require('../assets/icons/wallet_active.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						) : (
+							<Image
+								source={require('../assets/icons/wallet.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
+				}}
+			/>
 		</Tab.Navigator>
 	);
 }
