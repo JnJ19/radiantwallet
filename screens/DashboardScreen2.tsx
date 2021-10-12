@@ -281,10 +281,28 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						const price = dataArray[0].quote.USD.price;
 						const change_24h =
 							dataArray[0].quote.USD.percent_change_24h;
-						return { price, change_24h };
+						const change_30d =
+							dataArray[0].quote.USD.percent_change_30d;
+						const change_60d =
+							dataArray[0].quote.USD.percent_change_60d;
+						const change_90d =
+							dataArray[0].quote.USD.percent_change_90d;
+						return {
+							price,
+							change_24h,
+							change_30d,
+							change_60d,
+							change_90d,
+						};
 					})
 					.catch((error) => console.log(error));
-				const { price, change_24h } = priceData;
+				const {
+					price,
+					change_24h,
+					change_30d,
+					change_60d,
+					change_90d,
+				} = priceData;
 
 				const tokenObject = {
 					mint,
@@ -295,6 +313,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					extensions,
 					price,
 					change_24h,
+					change_30d,
+					change_60d,
+					change_90d,
 					associatedTokenAddress,
 					associatedTokenAddressHash,
 				};
@@ -491,7 +512,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	let todayTotal;
 	let percentChange;
 	if (tokens) {
-		console.log('tokens', tokens);
 		const totals = tokens?.map((item) => {
 			return item.amount * item.price;
 		});
@@ -499,9 +519,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		todayTotal = totals.reduce((prev, current) => prev + current);
 
 		const yesterdayTotals = tokens?.map((item) => {
-			const change = item.change_24h * 0.001;
-			let multiplier;
-			change > 0 ? (multiplier = 1 - change) : (multiplier = 1 + change);
+			const change = item.change_24h * 0.01;
+			let multiplier = 1 - change;
 
 			const total = item.amount * item.price;
 
@@ -513,6 +532,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const yesterdayTotal = yesterdayTotals.reduce(
 			(prev, current) => prev + current,
 		);
+
+		console.log('today total', todayTotal);
+		console.log('yeseterday total', yesterdayTotal);
 
 		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
@@ -555,14 +577,20 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					Price History
 				</Text>
 				<View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-					<Text style={{ fontSize: 24, marginRight: 8 }}>
-						${todayTotal.toFixed(2)}
+					<Text
+						style={{
+							...theme.fonts.Nunito_Sans.Header_L_Semibold,
+							marginRight: 4,
+						}}
+					>
+						{`$${todayTotal.toFixed(2)}`}
 					</Text>
 					{percentChange > 0 ? (
 						<View
 							style={{
 								flexDirection: 'row',
 								alignItems: 'center',
+								marginBottom: 2,
 							}}
 						>
 							<Image
@@ -583,7 +611,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							</Text>
 						</View>
 					) : (
-						<View style={{ flexDirection: 'row' }}>
+						<View
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								marginBottom: 2,
+							}}
+						>
 							<Image
 								source={require('../assets/icons/Downward_Big.jpg')}
 								style={{
@@ -602,10 +636,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							</Text>
 						</View>
 					)}
-					{/* <Text style={{ color: '#07CC79' }}>
-						{percentChange > 0 ? 'Up' : 'Down'}{' '}
-						{percentChange.toFixed(1)}% Today
-					</Text> */}
 				</View>
 
 				<AreaChart

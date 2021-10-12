@@ -33,8 +33,8 @@ export const theme = {
 				fontFamily: 'NunitoSans_400Regular',
 				fontSize: 32,
 			},
-			Header_L_Regular: {
-				fontFamily: 'NunitoSans_400Regular',
+			Header_L_Semibold: {
+				fontFamily: 'NunitoSans_600Semibold',
 				fontSize: 28,
 			},
 			Header_M_Regular: {
