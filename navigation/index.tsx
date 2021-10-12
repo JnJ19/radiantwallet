@@ -202,7 +202,7 @@ function Main() {
 }
 
 function RootNavigator2() {
-	const [hasWallet, setHasWallet] = useState(false);
+	const [hasWallet, setHasWallet] = useState(true);
 	if (!hasWallet) {
 		return (
 			<Stack.Navigator>

@@ -69,15 +69,23 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 
 	const renderItem = (data: object) => {
-		const { mint, price, amount, name, symbol, logoURI } = data.item;
+		const { mint, price, amount, name, symbol, logoURI, change_24h } =
+			data.item;
 
 		return (
 			<View>
 				<Card.Title
 					title={symbol}
-					titleStyle={{ color: '#1F1F1F', fontSize: 17 }}
+					titleStyle={{
+						color: '#1F1F1F',
+						...theme.fonts.Nunito_Sans.Body_M_Bold,
+						marginBottom: 0,
+					}}
 					subtitle={name}
-					subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
+					subtitleStyle={{
+						...theme.fonts.Nunito_Sans.Caption_M_SemiBold,
+						color: '#727D8D',
+					}}
 					style={{
 						backgroundColor: 'white',
 						borderRadius: 8,
@@ -102,15 +110,62 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								}}
 							>
 								<Text
-									style={{ fontSize: 17, color: '#1F1F1F' }}
-								>
-									{amount.toFixed(2)}
-								</Text>
-								<Text
-									style={{ fontSize: 14, color: '#727D8D' }}
+									style={{
+										...theme.fonts.Nunito_Sans.Body_M_Bold,
+										color: '#1F1F1F',
+										marginBottom: 4,
+									}}
 								>
 									${(amount * price).toFixed(2)}
 								</Text>
+								<View style={{ flexDirection: 'row' }}>
+									{change_24h > 0 ? (
+										<Image
+											source={require('../assets/icons/Upward.jpg')}
+											style={{
+												width: 10,
+												height: 10,
+												marginVertical: 2,
+											}}
+										/>
+									) : (
+										<Image
+											source={require('../assets/icons/Downward.jpg')}
+											style={{
+												width: 16,
+												height: 16,
+												marginVertical: 2,
+											}}
+										/>
+									)}
+									<Text
+										style={[
+											theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											change_24h > 0
+												? { color: 'green' }
+												: { color: 'red' },
+										]}
+									>{`${change_24h.toFixed(1)}%`}</Text>
+									<View
+										style={{
+											borderLeftColor:
+												theme.colors.black_six,
+											borderLeftWidth: 1,
+											marginHorizontal: 8,
+											marginVertical: 3,
+										}}
+									/>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: '#727D8D',
+										}}
+									>
+										{amount.toFixed(1)}
+									</Text>
+								</View>
 							</View>
 						);
 					}}
@@ -230,6 +285,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					})
 					.catch((error) => console.log(error));
 				const { price, change_24h } = priceData;
+
 				const tokenObject = {
 					mint,
 					amount,
@@ -502,10 +558,54 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					<Text style={{ fontSize: 24, marginRight: 8 }}>
 						${todayTotal.toFixed(2)}
 					</Text>
-					<Text style={{ color: '#07CC79' }}>
+					{percentChange > 0 ? (
+						<View
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+							}}
+						>
+							<Image
+								source={require('../assets/icons/Upward_Big.jpg')}
+								style={{
+									width: 24,
+									height: 24,
+								}}
+							/>
+							<Text
+								style={{
+									color: theme.colors.success_one,
+									...theme.fonts.Nunito_Sans
+										.Caption_M_SemiBold,
+								}}
+							>
+								{percentChange?.toFixed(1)}% Today
+							</Text>
+						</View>
+					) : (
+						<View style={{ flexDirection: 'row' }}>
+							<Image
+								source={require('../assets/icons/Downward_Big.jpg')}
+								style={{
+									width: 24,
+									height: 24,
+								}}
+							/>
+							<Text
+								style={{
+									color: theme.colors.error_one,
+									...theme.fonts.Nunito_Sans
+										.Caption_M_SemiBold,
+								}}
+							>
+								{percentChange?.toFixed(1)}% Today
+							</Text>
+						</View>
+					)}
+					{/* <Text style={{ color: '#07CC79' }}>
 						{percentChange > 0 ? 'Up' : 'Down'}{' '}
 						{percentChange.toFixed(1)}% Today
-					</Text>
+					</Text> */}
 				</View>
 
 				<AreaChart
