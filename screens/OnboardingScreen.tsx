@@ -38,12 +38,14 @@ const OnboardingScreen = ({ navigation }: Props) => (
 
 		<View style={{ height: 450, marginTop: 48 }}>
 			<View style={{ flexDirection: 'column' }}>
-				<Button
-					mode="outlined"
-					onPress={() => navigation.navigate('Set Pin')}
-				>
-					Create Wallet
-				</Button>
+				<View style={{ marginBottom: 16 }}>
+					<Button
+						mode="outlined"
+						onPress={() => navigation.navigate('Set Pin')}
+					>
+						Create Wallet
+					</Button>
+				</View>
 				<Button
 					mode="contained"
 					onPress={() => navigation.navigate('Import Wallet')}
