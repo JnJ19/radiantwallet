@@ -64,6 +64,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	// const [name, setName] = useState('');
 	// const [secret, setSecret] = useState('');
 	// const [logos, setLogos] = useState('');
+	const [chartData, setChartData] = useState('');
 	const data2 = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
@@ -123,8 +124,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 										<Image
 											source={require('../assets/icons/Upward.jpg')}
 											style={{
-												width: 10,
-												height: 10,
+												width: 16,
+												height: 16,
 												marginVertical: 2,
 											}}
 										/>
@@ -143,8 +144,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 											theme.fonts.Nunito_Sans
 												.Caption_M_SemiBold,
 											change_24h > 0
-												? { color: 'green' }
-												: { color: 'red' },
+												? {
+														color: theme.colors
+															.success_one,
+												  }
+												: {
+														color: theme.colors
+															.error_one,
+												  },
 										]}
 									>{`${change_24h.toFixed(1)}%`}</Text>
 									<View
@@ -194,7 +201,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		if (solBalance > 0) {
+			//gmail key
 			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+			//travppatset key
+			const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
 
 			const priceData = await fetch(
 				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=sol`,
@@ -212,10 +222,23 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					const price = dataArray[0].quote.USD.price;
 					const change_24h =
 						dataArray[0].quote.USD.percent_change_24h;
-					return { price, change_24h };
+					const change_30d =
+						dataArray[0].quote.USD.percent_change_30d;
+					const change_60d =
+						dataArray[0].quote.USD.percent_change_60d;
+					const change_90d =
+						dataArray[0].quote.USD.percent_change_90d;
+					return {
+						price,
+						change_24h,
+						change_30d,
+						change_60d,
+						change_90d,
+					};
 				})
 				.catch((error) => console.log(error));
-			const { price, change_24h } = priceData;
+			const { price, change_24h, change_30d, change_60d, change_90d } =
+				priceData;
 			const tokenObject = {
 				mint: 'So11111111111111111111111111111111111111112',
 				amount: realSolBalance,
@@ -232,6 +255,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				},
 				price,
 				change_24h,
+				change_30d,
+				change_60d,
+				change_90d,
 			};
 			tokens2.push(tokenObject);
 		}
@@ -261,7 +287,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const associatedTokenAddressHash =
 					associatedTokenAddress.toString('hex');
 
+				//gmail key
 				const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+				//travppatset key
+				const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
 
 				// let price = '';
 
@@ -492,6 +521,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
+			console.log('tokens', tokens);
 			const tokenList = tokens
 				.filterByClusterSlug('mainnet-beta')
 				.getList();
@@ -515,6 +545,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const totals = tokens?.map((item) => {
 			return item.amount * item.price;
 		});
+
+		console.log('totals', totals);
 
 		todayTotal = totals.reduce((prev, current) => prev + current);
 
