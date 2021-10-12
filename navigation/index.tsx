@@ -46,6 +46,11 @@ function Dashboard() {
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
+				name="Import Wallet"
+				component={ImportWalletScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
 				name="Dashboard"
 				component={DashboardScreen2}
 				options={{ headerShown: false }}
@@ -97,6 +102,7 @@ function RootNavigator2() {
 					borderTopColor: '#D8DCE0',
 					borderTopWidth: 1,
 				},
+				headerShown: false,
 				tabBarLabelStyle: {
 					...theme.fonts.Nunito_Sans.Caption_S_Regular,
 				},

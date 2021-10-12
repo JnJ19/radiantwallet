@@ -104,7 +104,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								<Text
 									style={{ fontSize: 17, color: '#1F1F1F' }}
 								>
-									{amount}
+									{amount.toFixed(2)}
 								</Text>
 								<Text
 									style={{ fontSize: 14, color: '#727D8D' }}
@@ -472,16 +472,15 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	return (
 		<Background>
-			<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
-			<Button
+			<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+			{/* <Button
 				onPress={() => {
 					console.log('run');
 					testMarkets();
 				}}
 			>
 				Test Markets
-			</Button>
-			<MyTabs />
+			</Button> */}
 			<View
 				style={{
 					borderWidth: 1,
