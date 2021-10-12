@@ -134,7 +134,7 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	return (
 		<Background>
 			<View>
-				<SubPageHeader backButton={true}>Browse Tokens</SubPageHeader>
+				<SubPageHeader backButton={false}>Browse Tokens</SubPageHeader>
 
 				<TextInput
 					label="Search"

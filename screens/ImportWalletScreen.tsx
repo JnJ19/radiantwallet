@@ -206,7 +206,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 			</View>
 			<Button
 				mode="contained"
-				onPress={() => navigation.navigate('Dashboard')}
+				onPress={() => navigation.navigate('Main')}
 			>
 				Import Wallet
 			</Button>

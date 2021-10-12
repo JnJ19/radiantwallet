@@ -1,9 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 import { Image, View, Text } from 'react-native';
+import { useState } from 'react';
 
 import { useStoreState } from '../hooks/storeHooks';
 
@@ -25,7 +25,6 @@ import {
 } from '../screens';
 import { theme } from '../core/theme';
 
-// const Tab = createMaterialBottomTabNavigator();
 const Tab = createBottomTabNavigator();
 
 console.log('tabs', Tab);
@@ -35,21 +34,6 @@ const Stack = createNativeStackNavigator();
 function Dashboard() {
 	return (
 		<Stack.Navigator>
-			<Stack.Screen
-				name="Intro"
-				component={IntroScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Onboarding"
-				component={OnboardingScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Import Wallet"
-				component={ImportWalletScreen}
-				options={{ headerShown: false }}
-			/>
 			<Stack.Screen
 				name="Dashboard"
 				component={DashboardScreen2}
@@ -93,7 +77,29 @@ function Wallets() {
 	);
 }
 
-function RootNavigator2() {
+function OnboardingFlow() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Intro"
+				component={IntroScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Onboarding"
+				component={OnboardingScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Import Wallet"
+				component={ImportWalletScreen}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
+
+function Main() {
 	return (
 		<Tab.Navigator
 			screenOptions={({ route }) => ({
@@ -193,6 +199,37 @@ function RootNavigator2() {
 			/>
 		</Tab.Navigator>
 	);
+}
+
+function RootNavigator2() {
+	const [hasWallet, setHasWallet] = useState(false);
+	if (!hasWallet) {
+		return (
+			<Stack.Navigator>
+				<Stack.Screen
+					name="Intro"
+					component={IntroScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Onboarding"
+					component={OnboardingScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Import Wallet"
+					component={ImportWalletScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Main"
+					component={Main}
+					options={{ headerShown: false }}
+				/>
+			</Stack.Navigator>
+		);
+	}
+	return <Main />;
 }
 
 function RootNavigator() {
