@@ -31,10 +31,30 @@ import {
 } from '@solana/web3.js';
 import { generateMnemonic, mnemonicToSeed, accountFromSeed } from '../utils';
 import bip39 from 'bip39';
-
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
+	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+);
+import * as bip32 from 'bip32';
+import nacl from 'tweetnacl';
+import { derivePath } from 'ed25519-hd-key';
 
-console.log('market', Market);
+async function findAssociatedTokenAddress(
+	walletAddress: PublicKey,
+	tokenMintAddress: PublicKey,
+): Promise<PublicKey> {
+	return (
+		await PublicKey.findProgramAddress(
+			[
+				walletAddress.toBuffer(),
+				TOKEN_PROGRAM_ID.toBuffer(),
+				tokenMintAddress.toBuffer(),
+			],
+			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+		)
+	)[0];
+}
 
 type Props = {
 	navigation: Navigation;
@@ -102,11 +122,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		const url = 'https://api.mainnet-beta.solana.com';
-		const connection = await new Connection(url);
-		const publicKey = await new PublicKey(
+		const connection = new Connection(url);
+		const publicKey = new PublicKey(
 			'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
 		);
-		const programId = await new PublicKey(
+		const programId = new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
 		const ownedTokens = await connection.getTokenAccountsByOwner(
@@ -173,6 +193,19 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const otherDetails = tokenMap.get(mint);
 				const { name, symbol, logoURI, extensions } = otherDetails;
 
+				const mintKey = new PublicKey(mint);
+				const walletAddress = new PublicKey(
+					'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+				);
+
+				const associatedTokenAddress = await findAssociatedTokenAddress(
+					walletAddress,
+					mintKey,
+				);
+
+				const associatedTokenAddressHash =
+					associatedTokenAddress.toString('hex');
+
 				const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 
 				// let price = '';
@@ -206,6 +239,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					extensions,
 					price,
 					change_24h,
+					associatedTokenAddress,
+					associatedTokenAddressHash,
 				};
 				tokens2.push(tokenObject);
 			}),
@@ -214,18 +249,79 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function testMarkets() {
-		// const url = 'https://api.mainnet-beta.solana.com';
-		const url = 'http://solana-api.projectserum.com';
-		const connection = new Connection(url);
-		//SOLUSDC market address
-		const marketAddress = new PublicKey(
-			'9wFFyRfZBsuAha4YcuxcXLKwMxJR43S7fPfQLusDBzvT',
+		let mnemonic =
+			'***REMOVED***';
+
+		const bip39 = await import('bip39');
+
+		const DERIVATION_PATH = {
+			deprecated: undefined,
+			bip44: 'bip44',
+			bip44Change: 'bip44Change',
+			bip44Root: 'bip44Root', // Ledger only.
+		};
+
+		function getAccountFromSeed(
+			seed,
+			walletIndex,
+			dPath = undefined,
+			accountIndex = 0,
+		) {
+			const derivedSeed = deriveSeed(
+				seed,
+				walletIndex,
+				dPath,
+				accountIndex,
+			);
+			return new Account(
+				nacl.sign.keyPair.fromSeed(derivedSeed).secretKey,
+			);
+		}
+
+		function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
+			switch (derivationPath) {
+				case DERIVATION_PATH.deprecated:
+					const path = `m/501'/${walletIndex}'/0/${accountIndex}`;
+					return bip32.fromSeed(seed).derivePath(path).privateKey;
+				case DERIVATION_PATH.bip44:
+					const path44 = `m/44'/501'/${walletIndex}'`;
+					return derivePath(path44, seed).key;
+				case DERIVATION_PATH.bip44Change:
+					const path44Change = `m/44'/501'/${walletIndex}'/0'`;
+					return derivePath(path44Change, seed).key;
+				default:
+					throw new Error(
+						`invalid derivation path: ${derivationPath}`,
+					);
+			}
+		}
+
+		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
+		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+		const newAccount = getAccountFromSeed(
+			seed,
+			2,
+			DERIVATION_PATH.bip44Change,
 		);
-		//serum v3 program address
+		console.log('new Account', newAccount.publicKey.toString('hex'));
+		const seed32 = seed.slice(0, 32);
+		const keyPair = Keypair.fromSeed(seed32);
+		console.log(keyPair.publicKey.toString('hex'));
+		//returns BNjgSdrq3ybAQ8JqY8BkjMVRFcru1ABGP1qseBz5qBuv
+		const secretKey = keyPair.secretKey;
+
+		const url = 'https://solana-api.projectserum.com';
+		const connection = new Connection(url);
+
+		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
+		const marketAddress = new PublicKey(
+			'DYfigimKWc5VhavR4moPBibx9sMcWYVSjVdWvPztBPTa',
+		);
+		//serum v3 program address pulled from Solana Explorer
 		const programAddress = new PublicKey(
 			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
 		);
-		//serum stuff
+
 		let market = await Market.load(
 			connection,
 			marketAddress,
@@ -233,69 +329,88 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			programAddress,
 		);
 
-		console.log('market', market);
-		// Fetching orderbooks
-		let bids = await market.loadBids(connection);
-		let asks = await market.loadAsks(connection);
-		console.log('bids', bids);
-		console.log('asks', asks);
+		let owner = new Account(newAccount.secretKey);
 
-		// L2 orderbook data
-		for (let [price, size] of bids.getL2(20)) {
-			console.log(price, size);
-		}
-		// Full orderbook data
-		// for (let order of asks) {
-		// 	console.log('hello');
-		// 	console.log(
-		// 		order.orderId,
-		// 		order.price,
-		// 		order.size,
-		// 		order.side, // 'buy' or 'sell'
-		// 	);
-		// }
-
-		let phrase =
-			'***REMOVED***';
-
-		const bip39 = await import('bip39');
-		const seed = await bip39.mnemonicToSeed(phrase);
-
-		//serum only cares about first 32 bytes
-		const seed32 = seed.slice(0, 32);
-
-		const keyPair = Keypair.fromSeed(seed32);
-
-		const secretKey = keyPair.secretKey;
-		console.log('secretKey: ', secretKey);
-
-		let owner = new Account(secretKey);
-		console.log('owner', owner);
-		//usdc account - not sure if this is right - maybe needs to be solana account? I don't freaking know
+		const newbalance = await connection.getBalance(owner.publicKey);
+		console.log('newbalance: ', newbalance);
+		//DXL Associated Program Token Account
 		// let payer = new PublicKey(
-		// 	'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
-		// ); // spl-token account
-		//solana account
-		console.log('connection', connection);
+		// 	'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		// );
+
+		//USDC Associated Program Token Account
 		let payer = new PublicKey(
-			'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
-		); // spl-token account
+			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
+		);
+		console.log('payer', payer);
+
 		// await market
 		// 	.placeOrder(connection, {
 		// 		owner,
 		// 		payer,
-		// 		side: 'sell', // 'buy' or 'sell'
-		// 		price: 165.45,
-		// 		size: 1.0,
-		// 		orderType: 'limit', // 'limit', 'ioc', 'postOnly'
+		// 		side: 'buy',
+		// 		price: 0.37,
+		// 		size: 10,
+		// 		orderType: 'limit',
 		// 	})
-		// 	.then((response) => console.log(response))
+		// 	.then((response) => {
+		// 		console.log('response hit');
+		// 		console.log(response);
+		// 	})
 		// 	.catch((err) => console.log(err));
+
+		// let myOrders = await market.loadOrdersForOwner(
+		// 	connection,
+		// 	owner.publicKey,
+		// );
+
+		let otherOrders = await market.findOpenOrdersAccountsForOwner(
+			connection,
+			owner.publicKey,
+		);
+
+		//settle orders:
+		const baseTokenAccount = new PublicKey(
+			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
+		);
+		const quoteTokenAccount = new PublicKey(
+			'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		);
+
+		// const openOrders = await market.findOpenOrdersAccountsForOwner(
+		// 	connection,
+		// 	owner.publicKey,
+		// );
+
+		for (let openOrders of await market.findOpenOrdersAccountsForOwner(
+			connection,
+			owner.publicKey,
+		)) {
+			console.log('hit');
+			if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
+				// spl-token accounts to which to send the proceeds from trades
+				console.log('hit 2');
+				await market.settleFunds(
+					connection,
+					owner,
+					openOrders,
+					baseTokenAccount,
+					quoteTokenAccount,
+				);
+			}
+		}
+
+		console.log('open orders', openOrders[0].baseTokenFree > 0);
+		console.log('open orders', openOrders[0].quoteTokenFree);
+
+		console.log('my orders againa', otherOrders[0].orders);
+
+		// console.log('myorders', myOrders);
 	}
 
 	useEffect(() => {
 		getOwnedTokens();
-		testMarkets();
+		// testMarkets();
 	}, [tokenMap]);
 
 	useEffect(() => {
@@ -320,6 +435,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	let todayTotal;
 	let percentChange;
 	if (tokens) {
+		console.log('tokens', tokens);
 		const totals = tokens?.map((item) => {
 			return item.amount * item.price;
 		});
@@ -357,7 +473,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	return (
 		<Background>
 			<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
-
+			<Button
+				onPress={() => {
+					console.log('run');
+					testMarkets();
+				}}
+			>
+				Test Markets
+			</Button>
 			<View
 				style={{
 					borderWidth: 1,
@@ -400,7 +523,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			</View>
 
 			<View style={{ marginTop: 24, marginBottom: 8 }}>
-				<Text style={{ marginBottom: 8 }}>Portfolio</Text>
+				<Text
+					style={{
+						marginBottom: 8,
+						...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+					}}
+				>
+					Portfolio
+				</Text>
 				{tokens ? (
 					<FlatList
 						data={tokens}
