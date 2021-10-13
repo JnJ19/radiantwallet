@@ -26,7 +26,7 @@ const TokenCard = (info: object) => {
 				}}
 				style={{
 					backgroundColor: 'white',
-					borderRadius: 8,
+					borderRadius: 18,
 					marginBottom: 8,
 					borderWidth: 1,
 					borderColor: theme.colors.border,

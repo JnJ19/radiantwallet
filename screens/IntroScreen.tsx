@@ -55,7 +55,7 @@ const IntroScreen = ({ navigation }: Props) => (
 						flexDirection: 'column',
 						borderColor: '#C9F977',
 						borderWidth: 1,
-						borderRadius: 20,
+						borderRadius: 18,
 						marginTop: 180,
 					}}
 				>

@@ -25,7 +25,7 @@ const SubPageHeader = ({ children, backButton }: Props) => {
 						justifyContent: 'center',
 						height: 40,
 						width: 40,
-						borderRadius: 16,
+						borderRadius: 18,
 						marginRight: 16,
 					}}
 				>

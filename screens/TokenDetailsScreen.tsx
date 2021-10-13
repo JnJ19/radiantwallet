@@ -86,7 +86,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						borderWidth: 1,
 						borderColor: theme.colors.border,
 						backgroundColor: 'white',
-						borderRadius: 8,
+						borderRadius: 18,
 						padding: 16,
 						marginTop: 8,
 						marginBottom: 16,
@@ -180,7 +180,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					style={{
 						borderWidth: 1,
 						borderColor: theme.colors.border,
-						borderRadius: 16,
+						borderRadius: 18,
 						marginBottom: 16,
 					}}
 				>
@@ -289,7 +289,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					style={{
 						borderWidth: 1,
 						borderColor: theme.colors.border,
-						borderRadius: 16,
+						borderRadius: 18,
 					}}
 				>
 					<View style={{ margin: 16 }}>
@@ -318,7 +318,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								style={{
 									borderWidth: 1,
 									borderColor: colors.black_six,
-									borderRadius: 20,
+									borderRadius: 18,
 									width: 56,
 									height: 56,
 									marginRight: 16,
@@ -340,7 +340,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								style={{
 									borderWidth: 1,
 									borderColor: colors.black_six,
-									borderRadius: 20,
+									borderRadius: 18,
 									width: 56,
 									height: 56,
 									marginRight: 16,
@@ -363,7 +363,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								style={{
 									borderWidth: 1,
 									borderColor: colors.black_six,
-									borderRadius: 20,
+									borderRadius: 18,
 									width: 56,
 									height: 56,
 								}}
