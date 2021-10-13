@@ -5,29 +5,33 @@ import { theme } from '../core/theme';
 
 type Props = React.ComponentProps<typeof PaperButton>;
 
-const Button = ({ mode, style, children, ...props }: Props) => (
-	<PaperButton
-		style={[
-			styles.button,
-			mode === 'outlined' && {
-				backgroundColor: '#C9F977',
-				borderColor: theme.colors.black_one,
-				borderWidth: 1,
-			},
-			style,
-		]}
-		labelStyle={[
-			styles.text,
-			mode === 'outlined' && { color: '#1E2122' },
-			style,
-		]}
-		mode={mode}
-		uppercase={false}
-		{...props}
-	>
-		{children}
-	</PaperButton>
-);
+const Button = ({ mode, style, children, icon, ...props }: Props) => {
+	console.log('style', style);
+	return (
+		<PaperButton
+			style={[
+				styles.button,
+				mode === 'outlined' && {
+					backgroundColor: '#C9F977',
+					borderColor: theme.colors.black_one,
+					borderWidth: 1,
+				},
+				style,
+			]}
+			labelStyle={[
+				styles.text,
+				mode === 'outlined' && { color: '#1E2122' },
+				style,
+			]}
+			mode={mode}
+			uppercase={false}
+			{...props}
+			icon={icon}
+		>
+			{children}
+		</PaperButton>
+	);
+};
 
 const styles = StyleSheet.create({
 	button: {

@@ -74,7 +74,10 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 
 	return (
 		<Background>
-			<ScrollView showsVerticalScrollIndicator={false}>
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				style={{ marginBottom: 64 }}
+			>
 				<SubPageHeader backButton>{token.name} Details</SubPageHeader>
 
 				<View
@@ -84,6 +87,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						backgroundColor: 'white',
 						borderRadius: 8,
 						padding: 16,
+						marginTop: 8,
 						marginBottom: 16,
 					}}
 				>
@@ -383,28 +387,57 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						</Text>
 					</View>
 				</View>
-
-				<View
-					style={{
-						flexDirection: 'row',
-						justifyContent: 'space-between',
-					}}
-				>
-					<Button
-						mode="outlined"
-						onPress={() => navigation.navigate('Set Pin')}
-					>
-						Send
-					</Button>
-					<View style={{ width: 8 }} />
-					<Button
-						mode="contained"
-						onPress={() => navigation.navigate('Import Wallet')}
-					>
-						Swap
-					</Button>
-				</View>
 			</ScrollView>
+			<View
+				style={{
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					position: 'absolute',
+					bottom: 0,
+					margin: 16,
+					width: '100%',
+					shadowColor: '#656565',
+					shadowOpacity: 0.25,
+					shadowOffset: { width: 0, height: 8 },
+					shadowRadius: 24,
+				}}
+			>
+				<Button
+					mode="outlined"
+					onPress={() => navigation.navigate('Set Pin')}
+					style={{ width: '50%' }}
+					icon={() => (
+						<Image
+							source={require('../assets/icons/Send.png')}
+							style={{
+								width: 24,
+								height: 24,
+								marginRight: -24,
+							}}
+						/>
+					)}
+				>
+					Send
+				</Button>
+				<View style={{ width: 8 }} />
+				<Button
+					mode="contained"
+					onPress={() => navigation.navigate('Import Wallet')}
+					style={{ width: '50%' }}
+					icon={() => (
+						<Image
+							source={require('../assets/icons/Trade.png')}
+							style={{
+								width: 24,
+								height: 24,
+								marginRight: -20,
+							}}
+						/>
+					)}
+				>
+					Trade
+				</Button>
+			</View>
 		</Background>
 	);
 };
