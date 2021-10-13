@@ -1,15 +1,17 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Text } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { View, FlatList, Image } from 'react-native';
 import { Card } from 'react-native-paper';
 import { theme } from '../core/theme';
 
-const TokenCard = (data: object) => {
+const TokenCard = (info: object) => {
+	console.log('data', info);
 	const { mint, price, amount, name, symbol, logoURI, change_24h } =
-		data.item;
+		info.token.item;
+	const { onPress } = info;
 
 	return (
-		<View>
+		<TouchableOpacity onPress={onPress}>
 			<Card.Title
 				title={symbol}
 				titleStyle={{
@@ -111,7 +113,7 @@ const TokenCard = (data: object) => {
 					);
 				}}
 			/>
-		</View>
+		</TouchableOpacity>
 	);
 };
 

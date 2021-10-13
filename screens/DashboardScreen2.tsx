@@ -595,7 +595,15 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					{tokens ? (
 						<FlatList
 							data={tokens}
-							renderItem={TokenCard}
+							renderItem={(token) => (
+								<TokenCard
+									token={token}
+									onPress={() =>
+										navigation.navigate('Token Details')
+									}
+								/>
+							)}
+							// renderItem={TokenCard}
 							keyExtractor={(item) => item.address}
 						/>
 					) : null}
