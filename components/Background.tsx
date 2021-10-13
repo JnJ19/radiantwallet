@@ -20,10 +20,11 @@ const Background = ({ children, position, blackBackground = false }: Props) => (
 	//   resizeMode="cover"
 	//   style={styles.background}
 	// >
-	<SafeAreaView
+	<View
 		style={[
 			{ backgroundColor: 'white', height: '100%', flex: 1 },
 			blackBackground && { backgroundColor: 'black' },
+			{ paddingTop: 24 },
 		]}
 	>
 		<KeyboardAvoidingView
@@ -32,7 +33,7 @@ const Background = ({ children, position, blackBackground = false }: Props) => (
 		>
 			{children}
 		</KeyboardAvoidingView>
-	</SafeAreaView>
+	</View>
 	// </ImageBackground>
 );
 

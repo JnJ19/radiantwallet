@@ -39,11 +39,11 @@ function Dashboard() {
 				component={DashboardScreen2}
 				options={{ headerShown: false }}
 			/>
-			<Stack.Screen
+			{/* <Stack.Screen
 				name="Token Details"
 				component={TokenDetailsScreen}
 				options={{ headerShown: false }}
-			/>
+			/> */}
 		</Stack.Navigator>
 	);
 }
@@ -279,10 +279,27 @@ function RootNavigator() {
 	);
 }
 
+function RootNavigator3() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Main"
+				component={Main}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Token Details"
+				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+		</Stack.Navigator>
+	);
+}
+
 export default function Onboarding() {
 	return (
 		<NavigationContainer>
-			<RootNavigator2 />
+			<RootNavigator3 />
 		</NavigationContainer>
 	);
 }
