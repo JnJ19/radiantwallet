@@ -34,7 +34,7 @@ const TokenCard = (info: object) => {
 				left={(props) => {
 					return (
 						<Image
-							style={{ height: 24, width: 24 }}
+							style={{ height: 32, width: 32, borderRadius: 100 }}
 							source={{ uri: logoURI }}
 						/>
 					);
