@@ -564,32 +564,35 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		if (tokens) {
+			let todayArray = [];
 			let d30Array = [];
 			let d60Array = [];
 			let d90Array = [];
-			for (const token of tokens) {
-				console.log('token', token);
+			tokens.forEach((token) => {
+				todayArray.push(token.price * token.amount);
 				d30Array.push(token.price_30d * token.amount);
 				d60Array.push(token.price_60d * token.amount);
 				d90Array.push(token.price_90d * token.amount);
+			});
+			let sumToday = 0;
+			for (let i = 0; i < todayArray.length; i++) {
+				sumToday += todayArray[i];
 			}
-			console.log('arrays', d30Array, d60Array, d90Array);
+
 			let sum30 = 0;
 			for (let i = 0; i < d30Array.length; i++) {
 				sum30 += d30Array[i];
 			}
-			let sum60;
+			let sum60 = 0;
 			for (let i = 0; i < d60Array.length; i++) {
 				sum60 += d60Array[i];
 			}
-			let sum90;
+			let sum90 = 0;
 			for (let i = 0; i < d90Array.length; i++) {
 				sum90 += d90Array[i];
 			}
 
-			console.log('sums', sum30, sum60, sum90);
-
-			setChartData([sum30, sum60, sum90]);
+			const today = setChartData([sum90, sum60, sum30, sumToday]);
 		}
 	}, [tokens]);
 
@@ -743,11 +746,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						</View>
 					)}
 				</View>
-
 				<AreaChart
 					style={{ height: 200 }}
-					// data={data2}
-					data={[1, 2, 3, 4]}
+					data={chartData}
+					// data={[1, 2, 3, 4]}
 					showGrid={false}
 					animate={true}
 					contentInset={{ top: 30, bottom: 30 }}
