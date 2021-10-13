@@ -18,6 +18,7 @@ import * as shape from 'd3-shape';
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { theme } from '../core/theme';
+import { BlurView } from 'expo-blur';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -388,6 +389,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					</View>
 				</View>
 			</ScrollView>
+			{/* <BlurView intensity={48} style={{margin: 0}} > */}
+			{/* </BlurView> */}
 			<View
 				style={{
 					flexDirection: 'row',
