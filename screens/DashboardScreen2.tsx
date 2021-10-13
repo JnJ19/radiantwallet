@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background } from '../components';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
@@ -13,9 +13,11 @@ import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
-import * as bip32 from 'bip32';
-import nacl from 'tweetnacl';
-import { findAssociatedTokenAddress } from '../utils';
+import {
+	findAssociatedTokenAddress,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+} from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 
@@ -25,7 +27,8 @@ type Props = {
 
 const DashboardScreen2 = ({ navigation }: Props) => {
 	const [chartData, setChartData] = useState('');
-	const data2 = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
+	const [account, setAccount] = useState('');
+	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 
@@ -243,54 +246,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setTokens(tokens2);
 	}
 
-	async function testMarkets() {
+	async function prepTrade() {
 		let mnemonic =
 			'***REMOVED***';
-
 		const bip39 = await import('bip39');
-
-		const DERIVATION_PATH = {
-			deprecated: undefined,
-			bip44: 'bip44',
-			bip44Change: 'bip44Change',
-			bip44Root: 'bip44Root', // Ledger only.
-		};
-
-		function getAccountFromSeed(
-			seed,
-			walletIndex,
-			dPath = undefined,
-			accountIndex = 0,
-		) {
-			const derivedSeed = deriveSeed(
-				seed,
-				walletIndex,
-				dPath,
-				accountIndex,
-			);
-			return new Account(
-				nacl.sign.keyPair.fromSeed(derivedSeed).secretKey,
-			);
-		}
-
-		function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
-			switch (derivationPath) {
-				case DERIVATION_PATH.deprecated:
-					const path = `m/501'/${walletIndex}'/0/${accountIndex}`;
-					return bip32.fromSeed(seed).derivePath(path).privateKey;
-				case DERIVATION_PATH.bip44:
-					const path44 = `m/44'/501'/${walletIndex}'`;
-					return derivePath(path44, seed).key;
-				case DERIVATION_PATH.bip44Change:
-					const path44Change = `m/44'/501'/${walletIndex}'/0'`;
-					return derivePath(path44Change, seed).key;
-				default:
-					throw new Error(
-						`invalid derivation path: ${derivationPath}`,
-					);
-			}
-		}
-
 		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
 		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 		const newAccount = getAccountFromSeed(
@@ -299,15 +258,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			DERIVATION_PATH.bip44Change,
 		);
 		console.log('new Account', newAccount.publicKey.toString('hex'));
-		const seed32 = seed.slice(0, 32);
-		const keyPair = Keypair.fromSeed(seed32);
-		console.log(keyPair.publicKey.toString('hex'));
-		//returns BNjgSdrq3ybAQ8JqY8BkjMVRFcru1ABGP1qseBz5qBuv
-		const secretKey = keyPair.secretKey;
 
 		const url = 'https://solana-api.projectserum.com';
-		const connection = new Connection(url);
+		const newConnection = new Connection(url);
+		setAccount(newAccount);
+		setConnection(newConnection);
+	}
 
+	async function testMarkets() {
 		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
 		const marketAddress = new PublicKey(
 			'DYfigimKWc5VhavR4moPBibx9sMcWYVSjVdWvPztBPTa',
@@ -324,7 +282,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			programAddress,
 		);
 
-		let owner = new Account(newAccount.secretKey);
+		let owner = new Account(account.secretKey);
 
 		const newbalance = await connection.getBalance(owner.publicKey);
 		console.log('newbalance: ', newbalance);
@@ -339,43 +297,64 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		);
 		console.log('payer', payer);
 
-		// await market
-		// 	.placeOrder(connection, {
-		// 		owner,
-		// 		payer,
-		// 		side: 'buy',
-		// 		price: 0.37,
-		// 		size: 10,
-		// 		orderType: 'limit',
-		// 	})
-		// 	.then((response) => {
-		// 		console.log('response hit');
-		// 		console.log(response);
-		// 	})
-		// 	.catch((err) => console.log(err));
+		await market
+			.placeOrder(connection, {
+				owner,
+				payer,
+				side: 'buy',
+				price: 0.37,
+				size: 10,
+				orderType: 'ioc',
+			})
+			.then((response) => {
+				console.log('response hit');
+				console.log(response);
+			})
+			.catch((err) => console.log(err));
 
 		// let myOrders = await market.loadOrdersForOwner(
 		// 	connection,
 		// 	owner.publicKey,
 		// );
 
-		let otherOrders = await market.findOpenOrdersAccountsForOwner(
-			connection,
-			owner.publicKey,
+		// let otherOrders = await market.findOpenOrdersAccountsForOwner(
+		// 	connection,
+		// 	owner.publicKey,
+		// );
+	}
+
+	async function settleFunds() {
+		let owner = new Account(account.secretKey);
+		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
+		const marketAddress = new PublicKey(
+			'DYfigimKWc5VhavR4moPBibx9sMcWYVSjVdWvPztBPTa',
+		);
+		//serum v3 program address pulled from Solana Explorer
+		const programAddress = new PublicKey(
+			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
 		);
 
-		//settle orders:
-		const baseTokenAccount = new PublicKey(
-			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-		);
-		const quoteTokenAccount = new PublicKey(
-			'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		let market = await Market.load(
+			connection,
+			marketAddress,
+			{},
+			programAddress,
 		);
 
 		// const openOrders = await market.findOpenOrdersAccountsForOwner(
 		// 	connection,
 		// 	owner.publicKey,
 		// );
+
+		//usdc associated token account
+		const quoteTokenAccount = new PublicKey(
+			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
+		);
+
+		//dxl associated token account
+		const baseTokenAccount = new PublicKey(
+			'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		);
 
 		for (let openOrders of await market.findOpenOrdersAccountsForOwner(
 			connection,
@@ -385,22 +364,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
 				// spl-token accounts to which to send the proceeds from trades
 				console.log('hit 2');
-				await market.settleFunds(
-					connection,
-					owner,
-					openOrders,
-					baseTokenAccount,
-					quoteTokenAccount,
-				);
+				await market
+					.settleFunds(
+						connection,
+						owner,
+						openOrders,
+						baseTokenAccount,
+						quoteTokenAccount,
+					)
+					.then((res) => console.log('response', res))
+					.catch((err) => console.log('error', err));
 			}
 		}
-
-		console.log('open orders', openOrders[0].baseTokenFree > 0);
-		console.log('open orders', openOrders[0].quoteTokenFree);
-
-		console.log('my orders againa', otherOrders[0].orders);
-
-		// console.log('myorders', myOrders);
 	}
 
 	useEffect(() => {
@@ -474,9 +449,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const yesterdayTotals = tokens?.map((item) => {
 			const change = item.change_24h * 0.01;
 			let multiplier = 1 - change;
-
 			const total = item.amount * item.price;
-
 			const yesterday = total * multiplier;
 
 			return yesterday;
@@ -509,6 +482,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			>
 				Test Markets
 			</Button> */}
+			{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
+			<Button onPress={() => testMarkets()}>Test Market</Button>
+			<Button onPress={() => settleFunds()}>Settle Funds</Button> */}
 			<View
 				style={{
 					borderWidth: 1,
