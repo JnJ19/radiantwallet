@@ -4,6 +4,7 @@ import { Background } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
+import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
 import { Card } from 'react-native-paper';
 import { SubPageHeader } from '../components';
@@ -14,11 +15,9 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
 import * as bip32 from 'bip32';
 import nacl from 'tweetnacl';
+import { findAssociatedTokenAddress } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
-	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
-);
+import TokenCard from '../components/TokenCard';
 
 type Props = {
 	navigation: Navigation;
@@ -57,134 +56,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			</LinearGradient>
 		</Defs>
 	);
-
-	async function findAssociatedTokenAddress(
-		walletAddress: PublicKey,
-		tokenMintAddress: PublicKey,
-	): Promise<PublicKey> {
-		return (
-			await PublicKey.findProgramAddress(
-				[
-					walletAddress.toBuffer(),
-					TOKEN_PROGRAM_ID.toBuffer(),
-					tokenMintAddress.toBuffer(),
-				],
-				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-			)
-		)[0];
-	}
-
-	const renderItem = (data: object) => {
-		const { mint, price, amount, name, symbol, logoURI, change_24h } =
-			data.item;
-
-		return (
-			<View>
-				<Card.Title
-					title={symbol}
-					titleStyle={{
-						color: '#1F1F1F',
-						...theme.fonts.Nunito_Sans.Body_M_Bold,
-						marginBottom: 0,
-					}}
-					subtitle={name}
-					subtitleStyle={{
-						...theme.fonts.Nunito_Sans.Caption_M_SemiBold,
-						color: '#727D8D',
-					}}
-					style={{
-						backgroundColor: 'white',
-						borderRadius: 8,
-						marginBottom: 8,
-						borderWidth: 1,
-						borderColor: theme.colors.border,
-					}}
-					left={(props) => {
-						return (
-							<Image
-								style={{ height: 24, width: 24 }}
-								source={{ uri: logoURI }}
-							/>
-						);
-					}}
-					right={(props) => {
-						return (
-							<View
-								style={{
-									alignItems: 'flex-end',
-									marginRight: 16,
-								}}
-							>
-								<Text
-									style={{
-										...theme.fonts.Nunito_Sans.Body_M_Bold,
-										color: '#1F1F1F',
-										marginBottom: 4,
-									}}
-								>
-									${(amount * price).toFixed(2)}
-								</Text>
-								<View style={{ flexDirection: 'row' }}>
-									{change_24h > 0 ? (
-										<Image
-											source={require('../assets/icons/Upward.jpg')}
-											style={{
-												width: 16,
-												height: 16,
-												marginVertical: 2,
-											}}
-										/>
-									) : (
-										<Image
-											source={require('../assets/icons/Downward.jpg')}
-											style={{
-												width: 16,
-												height: 16,
-												marginVertical: 2,
-											}}
-										/>
-									)}
-									<Text
-										style={[
-											theme.fonts.Nunito_Sans
-												.Caption_M_SemiBold,
-											change_24h > 0
-												? {
-														color: theme.colors
-															.success_one,
-												  }
-												: {
-														color: theme.colors
-															.error_one,
-												  },
-										]}
-									>{`${change_24h.toFixed(1)}%`}</Text>
-									<View
-										style={{
-											borderLeftColor:
-												theme.colors.black_six,
-											borderLeftWidth: 1,
-											marginHorizontal: 8,
-											marginVertical: 3,
-										}}
-									/>
-									<Text
-										style={{
-											...theme.fonts.Nunito_Sans
-												.Caption_M_SemiBold,
-											color: '#727D8D',
-										}}
-									>
-										{amount.toFixed(1)}
-									</Text>
-								</View>
-							</View>
-						);
-					}}
-				/>
-			</View>
-		);
-	};
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
@@ -745,7 +616,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				{tokens ? (
 					<FlatList
 						data={tokens}
-						renderItem={renderItem}
+						renderItem={TokenCard}
 						keyExtractor={(item) => item.address}
 					/>
 				) : null}
