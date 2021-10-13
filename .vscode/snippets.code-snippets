@@ -32,5 +32,17 @@
 		"prefix": "themes",
 		"body": ["import { theme } from '../core/theme';", "$0"],
 		"description": "add themes import statement"
+	},
+	"add image": {
+		"scope": "javascript,typescript, javascriptreact, typescriptreact",
+		"prefix": "img",
+		"body": [
+			"<Image",
+			"source={require('../assets/$1')}",
+			"style={{ width: $2, height: $3 }}",
+			"/>",
+			"$0"
+		],
+		"description": "add image"
 	}
 }

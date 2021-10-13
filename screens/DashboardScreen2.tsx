@@ -98,7 +98,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.then((response) => response.json())
 				.then((data) => {
 					const dataArray = Object.values(data.data);
-					const price = dataArray[0].quote.USD.price;
 					const change_24h =
 						dataArray[0].quote.USD.percent_change_24h;
 					const change_30d =
@@ -107,17 +106,35 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						dataArray[0].quote.USD.percent_change_60d;
 					const change_90d =
 						dataArray[0].quote.USD.percent_change_90d;
+					const {
+						price,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					} = dataArray[0].quote.USD;
 					return {
 						price,
 						change_24h,
 						change_30d,
 						change_60d,
 						change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
 					};
 				})
 				.catch((error) => console.log(error));
-			const { price, change_24h, change_30d, change_60d, change_90d } =
-				priceData;
+
+			const {
+				price,
+				change_24h,
+				change_30d,
+				change_60d,
+				change_90d,
+				volume_24h,
+				market_cap,
+				market_cap_dominance,
+			} = priceData;
 			const price_30d = price * (1 + change_30d * 0.01);
 			const price_60d = price * (1 + change_60d * 0.01);
 			const price_90d = price * (1 + change_90d * 0.01);
@@ -143,6 +160,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				change_30d,
 				change_60d,
 				change_90d,
+				volume_24h,
+				market_cap,
+				aboutData:
+					'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 506,348,680.4303728 with 299,902,995.15039116 in circulation. The last known price of Solana is 146.68289748 USD and is up 1.09 over the last 24 hours. It is currently trading on 161 active market(s) with $2,959,138,044.47 traded over the last 24 hours. More information can be found at https://solana.com.',
+				market_cap_dominance,
 			};
 			tokens2.push(tokenObject);
 		}
@@ -157,6 +179,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const amount =
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
+				console.log('otherDetails', otherDetails);
 				const { name, symbol, logoURI, extensions } = otherDetails;
 
 				const mintKey = new PublicKey(mint);
@@ -179,6 +202,24 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 				// let price = '';
 
+				const aboutData = await fetch(
+					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
+					{
+						headers: {
+							'X-CMC_PRO_API_KEY': apiKey,
+							Accept: 'application/json',
+							'Accept-Encoding': 'deflate, gzip',
+						},
+					},
+				)
+					.then((response) => response.json())
+					.then((data) => {
+						const dataArray = Object.values(data.data);
+						console.log('description', dataArray[0].description);
+						return dataArray[0].description;
+					})
+					.catch((err) => console.log('error', err));
+
 				const priceData = await fetch(
 					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
 					{
@@ -192,7 +233,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.then((response) => response.json())
 					.then((data) => {
 						const dataArray = Object.values(data.data);
-						const price = dataArray[0].quote.USD.price;
 						const change_24h =
 							dataArray[0].quote.USD.percent_change_24h;
 						const change_30d =
@@ -201,12 +241,21 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							dataArray[0].quote.USD.percent_change_60d;
 						const change_90d =
 							dataArray[0].quote.USD.percent_change_90d;
+						const {
+							price,
+							volume_24h,
+							market_cap,
+							market_cap_dominance,
+						} = dataArray[0].quote.USD;
 						return {
 							price,
 							change_24h,
 							change_30d,
 							change_60d,
 							change_90d,
+							volume_24h,
+							market_cap,
+							market_cap_dominance,
 						};
 					})
 					.catch((error) => console.log(error));
@@ -216,6 +265,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					change_30d,
 					change_60d,
 					change_90d,
+					volume_24h,
+					market_cap,
+					market_cap_dominance,
 				} = priceData;
 
 				const price_30d = price * (1 + change_30d * 0.01);
@@ -239,6 +291,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					price_90d,
 					associatedTokenAddress,
 					associatedTokenAddressHash,
+					volume_24h,
+					market_cap,
+					market_cap_dominance,
+					aboutData,
 				};
 				tokens2.push(tokenObject);
 			}),
@@ -599,7 +655,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								<TokenCard
 									token={token}
 									onPress={() =>
-										navigation.navigate('Token Details')
+										navigation.navigate(
+											'Token Details',
+											token,
+										)
 									}
 								/>
 							)}
