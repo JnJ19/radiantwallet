@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Text } from 'react-native';
+import { Text, ScrollView } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image } from 'react-native';
@@ -473,8 +473,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	return (
 		<Background>
-			<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-			{/* <Button
+			<ScrollView showsVerticalScrollIndicator={false}>
+				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+				{/* <Button
 				onPress={() => {
 					console.log('run');
 					testMarkets();
@@ -482,121 +483,124 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			>
 				Test Markets
 			</Button> */}
-			{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
+				{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
 			<Button onPress={() => testMarkets()}>Test Market</Button>
 			<Button onPress={() => settleFunds()}>Settle Funds</Button> */}
-			<View
-				style={{
-					borderWidth: 1,
-					borderColor: theme.colors.border,
-					backgroundColor: 'white',
-					borderRadius: 8,
-					padding: 16,
-				}}
-			>
-				<Text
+				<View
 					style={{
-						marginVertical: 8,
-						...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+						borderWidth: 1,
+						borderColor: theme.colors.border,
+						backgroundColor: 'white',
+						borderRadius: 8,
+						padding: 16,
 					}}
 				>
-					Price History
-				</Text>
-				<View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
 					<Text
 						style={{
-							...theme.fonts.Nunito_Sans.Header_L_Semibold,
-							marginRight: 4,
+							marginVertical: 8,
+							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 						}}
 					>
-						{`$${todayTotal.toFixed(2)}`}
+						Price History
 					</Text>
-					{percentChange > 0 ? (
-						<View
+					<View
+						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
+					>
+						<Text
 							style={{
-								flexDirection: 'row',
-								alignItems: 'center',
-								marginBottom: 2,
+								...theme.fonts.Nunito_Sans.Header_L_Semibold,
+								marginRight: 4,
 							}}
 						>
-							<Image
-								source={require('../assets/icons/Upward_Big.jpg')}
+							{`$${todayTotal.toFixed(2)}`}
+						</Text>
+						{percentChange > 0 ? (
+							<View
 								style={{
-									width: 24,
-									height: 24,
-								}}
-							/>
-							<Text
-								style={{
-									color: theme.colors.success_one,
-									...theme.fonts.Nunito_Sans
-										.Caption_M_SemiBold,
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginBottom: 2,
 								}}
 							>
-								{percentChange?.toFixed(1)}% Today
-							</Text>
-						</View>
-					) : (
-						<View
-							style={{
-								flexDirection: 'row',
-								alignItems: 'center',
-								marginBottom: 2,
-							}}
-						>
-							<Image
-								source={require('../assets/icons/Downward_Big.jpg')}
+								<Image
+									source={require('../assets/icons/Upward_Big.jpg')}
+									style={{
+										width: 24,
+										height: 24,
+									}}
+								/>
+								<Text
+									style={{
+										color: theme.colors.success_one,
+										...theme.fonts.Nunito_Sans
+											.Caption_M_SemiBold,
+									}}
+								>
+									{percentChange?.toFixed(1)}% Today
+								</Text>
+							</View>
+						) : (
+							<View
 								style={{
-									width: 24,
-									height: 24,
-								}}
-							/>
-							<Text
-								style={{
-									color: theme.colors.error_one,
-									...theme.fonts.Nunito_Sans
-										.Caption_M_SemiBold,
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginBottom: 2,
 								}}
 							>
-								{percentChange?.toFixed(1)}% Today
-							</Text>
-						</View>
-					)}
+								<Image
+									source={require('../assets/icons/Downward_Big.jpg')}
+									style={{
+										width: 24,
+										height: 24,
+									}}
+								/>
+								<Text
+									style={{
+										color: theme.colors.error_one,
+										...theme.fonts.Nunito_Sans
+											.Caption_M_SemiBold,
+									}}
+								>
+									{percentChange?.toFixed(1)}% Today
+								</Text>
+							</View>
+						)}
+					</View>
+					<AreaChart
+						style={{ height: 200 }}
+						data={chartData}
+						// data={[1, 2, 3, 4]}
+						showGrid={false}
+						animate={true}
+						contentInset={{ top: 30, bottom: 30 }}
+						curve={shape.curveNatural}
+						svg={{
+							fill: 'url(#gradient)',
+						}}
+					>
+						<Gradient />
+						<Line />
+					</AreaChart>
 				</View>
-				<AreaChart
-					style={{ height: 200 }}
-					data={chartData}
-					// data={[1, 2, 3, 4]}
-					showGrid={false}
-					animate={true}
-					contentInset={{ top: 30, bottom: 30 }}
-					curve={shape.curveNatural}
-					svg={{
-						fill: 'url(#gradient)',
-					}}
-				>
-					<Gradient />
-					<Line />
-				</AreaChart>
-			</View>
 
-			<View style={{ marginTop: 24, marginBottom: 8 }}>
-				<Text
-					style={{
-						marginBottom: 8,
-						...theme.fonts.Azeret_Mono.Body_M_SemiBold,
-					}}
-				>
-					Portfolio
-				</Text>
-				{tokens ? (
-					<FlatList
-						data={tokens}
-						renderItem={TokenCard}
-						keyExtractor={(item) => item.address}
-					/>
-				) : null}
-			</View>
+				<View style={{ marginTop: 24, marginBottom: 8 }}>
+					<Text
+						style={{
+							marginBottom: 8,
+							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+						}}
+					>
+						Portfolio
+					</Text>
+					{tokens ? (
+						<FlatList
+							data={tokens}
+							renderItem={TokenCard}
+							keyExtractor={(item) => item.address}
+						/>
+					) : null}
+				</View>
+			</ScrollView>
 		</Background>
 	);
 };

@@ -5,6 +5,7 @@ import {
 	KeyboardAvoidingView,
 	SafeAreaView,
 	View,
+	ScrollView,
 } from 'react-native';
 
 type Props = {
