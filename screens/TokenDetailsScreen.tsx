@@ -77,7 +77,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		<Background>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				style={{ marginBottom: 64 }}
+				style={{ marginBottom: 80 }}
 			>
 				<SubPageHeader backButton>{token.name} Details</SubPageHeader>
 
