@@ -12,7 +12,7 @@ import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
 import { View, FlatList, Image } from 'react-native';
 import { DashboardScreen } from '.';
-import { AreaChart, Grid } from 'react-native-svg-charts';
+import { AreaChart, Grid, Path } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
@@ -39,22 +39,13 @@ const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 import * as bip32 from 'bip32';
 import nacl from 'tweetnacl';
 import { derivePath } from 'ed25519-hd-key';
-
-async function findAssociatedTokenAddress(
-	walletAddress: PublicKey,
-	tokenMintAddress: PublicKey,
-): Promise<PublicKey> {
-	return (
-		await PublicKey.findProgramAddress(
-			[
-				walletAddress.toBuffer(),
-				TOKEN_PROGRAM_ID.toBuffer(),
-				tokenMintAddress.toBuffer(),
-			],
-			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-		)
-	)[0];
-}
+// import {
+// 	map as mapAsync,
+// 	reduce as reduceAsync,
+// 	sum as sumAsync,
+// } from 'awaity/esm';
+// import * as Async from 'awaity';
+import { ClipPath, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 type Props = {
 	navigation: Navigation;
@@ -68,6 +59,50 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const data2 = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+
+	//chart stuff
+	const Line = ({ line }) => (
+		<Path key={'line'} d={line} stroke={'black'} fill={'none'} />
+	);
+
+	const Gradient = () => (
+		<Defs key={'defs'}>
+			<LinearGradient
+				id={'gradient'}
+				x1={'0%'}
+				y={'0%'}
+				x2={'0%'}
+				y2={'100%'}
+			>
+				<Stop
+					offset={'0%'}
+					stopColor={'rgb(222, 249, 119)'}
+					stopOpacity={0.9}
+				/>
+				<Stop
+					offset={'100%'}
+					stopColor={'rgb(201, 249, 119)'}
+					stopOpacity={0}
+				/>
+			</LinearGradient>
+		</Defs>
+	);
+
+	async function findAssociatedTokenAddress(
+		walletAddress: PublicKey,
+		tokenMintAddress: PublicKey,
+	): Promise<PublicKey> {
+		return (
+			await PublicKey.findProgramAddress(
+				[
+					walletAddress.toBuffer(),
+					TOKEN_PROGRAM_ID.toBuffer(),
+					tokenMintAddress.toBuffer(),
+				],
+				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+			)
+		)[0];
+	}
 
 	const renderItem = (data: object) => {
 		const { mint, price, amount, name, symbol, logoURI, change_24h } =
@@ -239,6 +274,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.catch((error) => console.log(error));
 			const { price, change_24h, change_30d, change_60d, change_90d } =
 				priceData;
+			const price_30d = price * (1 + change_30d * 0.01);
+			const price_60d = price * (1 + change_60d * 0.01);
+			const price_90d = price * (1 + change_90d * 0.01);
 			const tokenObject = {
 				mint: 'So11111111111111111111111111111111111111112',
 				amount: realSolBalance,
@@ -254,6 +292,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					website: 'https://solana.com/',
 				},
 				price,
+				price_30d,
+				price_60d,
+				price_90d,
 				change_24h,
 				change_30d,
 				change_60d,
@@ -333,6 +374,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					change_90d,
 				} = priceData;
 
+				const price_30d = price * (1 + change_30d * 0.01);
+				const price_60d = price * (1 + change_60d * 0.01);
+				const price_90d = price * (1 + change_90d * 0.01);
+
 				const tokenObject = {
 					mint,
 					amount,
@@ -345,6 +390,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					change_30d,
 					change_60d,
 					change_90d,
+					price_30d,
+					price_60d,
+					price_90d,
 					associatedTokenAddress,
 					associatedTokenAddressHash,
 				};
@@ -515,6 +563,37 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	useEffect(() => {
+		if (tokens) {
+			let d30Array = [];
+			let d60Array = [];
+			let d90Array = [];
+			for (const token of tokens) {
+				console.log('token', token);
+				d30Array.push(token.price_30d * token.amount);
+				d60Array.push(token.price_60d * token.amount);
+				d90Array.push(token.price_90d * token.amount);
+			}
+			console.log('arrays', d30Array, d60Array, d90Array);
+			let sum30 = 0;
+			for (let i = 0; i < d30Array.length; i++) {
+				sum30 += d30Array[i];
+			}
+			let sum60;
+			for (let i = 0; i < d60Array.length; i++) {
+				sum60 += d60Array[i];
+			}
+			let sum90;
+			for (let i = 0; i < d90Array.length; i++) {
+				sum90 += d90Array[i];
+			}
+
+			console.log('sums', sum30, sum60, sum90);
+
+			setChartData([sum30, sum60, sum90]);
+		}
+	}, [tokens]);
+
+	useEffect(() => {
 		getOwnedTokens();
 		// testMarkets();
 	}, [tokenMap]);
@@ -546,8 +625,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			return item.amount * item.price;
 		});
 
-		console.log('totals', totals);
-
 		todayTotal = totals.reduce((prev, current) => prev + current);
 
 		const yesterdayTotals = tokens?.map((item) => {
@@ -564,9 +641,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const yesterdayTotal = yesterdayTotals.reduce(
 			(prev, current) => prev + current,
 		);
-
-		console.log('today total', todayTotal);
-		console.log('yeseterday total', yesterdayTotal);
 
 		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
@@ -672,16 +746,19 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 				<AreaChart
 					style={{ height: 200 }}
-					data={data2}
+					// data={data2}
+					data={[1, 2, 3, 4]}
 					showGrid={false}
 					animate={true}
 					contentInset={{ top: 30, bottom: 30 }}
 					curve={shape.curveNatural}
 					svg={{
-						fill: theme.colors.accent,
-						stroke: 'rgba(0, 0, 0, 1)',
+						fill: 'url(#gradient)',
 					}}
-				></AreaChart>
+				>
+					<Gradient />
+					<Line />
+				</AreaChart>
 			</View>
 
 			<View style={{ marginTop: 24, marginBottom: 8 }}>
