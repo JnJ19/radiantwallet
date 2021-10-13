@@ -12,8 +12,8 @@ import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { DashboardScreen } from '.';
-import { AreaChart, Grid } from 'react-native-svg-charts';
-import { LinearGradient } from 'react-native-svg';
+import { AreaChart, Path } from 'react-native-svg-charts';
+import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
@@ -33,8 +33,44 @@ type Props = {
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
+	const [chartData, setChartData] = useState('');
 	const data = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
 	const token = route.params.item;
+
+	//chart stuff
+	const Line = ({ line }) => (
+		<Path key={'line'} d={line} stroke={'black'} fill={'none'} />
+	);
+
+	const Gradient = () => (
+		<Defs key={'defs'}>
+			<LinearGradient
+				id={'gradient'}
+				x1={'0%'}
+				y={'0%'}
+				x2={'0%'}
+				y2={'100%'}
+			>
+				<Stop
+					offset={'0%'}
+					stopColor={'rgb(222, 249, 119)'}
+					stopOpacity={0.9}
+				/>
+				<Stop
+					offset={'100%'}
+					stopColor={'rgb(201, 249, 119)'}
+					stopOpacity={0}
+				/>
+			</LinearGradient>
+		</Defs>
+	);
+
+	const d90 = token.price_90d;
+	const d60 = token.price_60d;
+	const d30 = token.price_30d;
+	const todayTotal = token.price;
+	// setChartData([d90, d60, d30, todayTotal]);
+	console.log('charts data', d90, d60, d30, todayTotal);
 
 	return (
 		<Background>
@@ -63,23 +99,76 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
 						<Text style={{ fontSize: 24, marginRight: 8 }}>
-							$5,302
+							${token.price.toFixed(2)}
 						</Text>
-						<Text style={{ color: '#07CC79' }}>Up 10% Today</Text>
+						{token.change_24h > 0 ? (
+							<View
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginBottom: 2,
+								}}
+							>
+								<Image
+									source={require('../assets/icons/Upward_Big.jpg')}
+									style={{
+										width: 24,
+										height: 24,
+									}}
+								/>
+								<Text
+									style={{
+										color: theme.colors.success_one,
+										...theme.fonts.Nunito_Sans
+											.Caption_M_SemiBold,
+									}}
+								>
+									{token.change_24h?.toFixed(1)}% Today
+								</Text>
+							</View>
+						) : (
+							<View
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginBottom: 2,
+								}}
+							>
+								<Image
+									source={require('../assets/icons/Downward_Big.jpg')}
+									style={{
+										width: 24,
+										height: 24,
+									}}
+								/>
+								<Text
+									style={{
+										color: theme.colors.error_one,
+										...theme.fonts.Nunito_Sans
+											.Caption_M_SemiBold,
+									}}
+								>
+									{token.change_24h?.toFixed(1)}% Today
+								</Text>
+							</View>
+						)}
 					</View>
 
 					<AreaChart
 						style={{ height: 200 }}
-						data={data}
+						// data={chartData}
+						data={[d90, d60, d30, todayTotal]}
 						showGrid={false}
 						animate={true}
 						contentInset={{ top: 30, bottom: 30 }}
 						curve={shape.curveNatural}
 						svg={{
-							fill: theme.colors.accent,
-							stroke: 'rgba(0, 0, 0, 1)',
+							fill: 'url(#gradient)',
 						}}
-					></AreaChart>
+					>
+						<Gradient />
+						<Line />
+					</AreaChart>
 				</View>
 
 				<View
