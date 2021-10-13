@@ -1,60 +1,30 @@
 import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text } from 'react-native';
+import { Background } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, FlatList, Image } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Grid, Path } from 'react-native-svg-charts';
+import { AreaChart, Path } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import { SubPageHeader } from '../components';
 import { theme } from '../core/theme';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
-import {
-	Account,
-	clusterApiUrl,
-	Connection,
-	PublicKey,
-	sendAndConfirmTransaction,
-	SystemProgram,
-	Transaction,
-	Keypair,
-} from '@solana/web3.js';
-import { generateMnemonic, mnemonicToSeed, accountFromSeed } from '../utils';
-import bip39 from 'bip39';
+import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
-const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
-	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
-);
 import * as bip32 from 'bip32';
 import nacl from 'tweetnacl';
 import { derivePath } from 'ed25519-hd-key';
-// import {
-// 	map as mapAsync,
-// 	reduce as reduceAsync,
-// 	sum as sumAsync,
-// } from 'awaity/esm';
-// import * as Async from 'awaity';
-import { ClipPath, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { Defs, LinearGradient, Stop } from 'react-native-svg';
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
+	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+);
 
 type Props = {
 	navigation: Navigation;
 };
 
 const DashboardScreen2 = ({ navigation }: Props) => {
-	// const [name, setName] = useState('');
-	// const [secret, setSecret] = useState('');
-	// const [logos, setLogos] = useState('');
 	const [chartData, setChartData] = useState('');
 	const data2 = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
 	const [tokens, setTokens] = useState('');
