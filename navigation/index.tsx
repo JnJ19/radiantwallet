@@ -24,6 +24,7 @@ import {
 	IntroScreen,
 	TradeScreen,
 	TradePreviewScreen,
+	TradeSuccessScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 
@@ -302,6 +303,11 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Trade Preview"
 				component={TradePreviewScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Trade Success"
+				component={TradeSuccessScreen}
 				options={{ headerShown: false }}
 			/>
 		</Stack.Navigator>

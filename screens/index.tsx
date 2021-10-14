@@ -8,6 +8,7 @@ export { default as TokenDetailsScreen } from './TokenDetailsScreen';
 export { default as TestScreen } from './TestScreen';
 export { default as TradeScreen } from './TradeScreen';
 export { default as TradePreviewScreen } from './TradePreviewScreen';
+export { default as TradeSuccessScreen } from './TradeSuccessScreen';
 export { default as SearchTokensScreen } from './SearchTokensScreen';
 
 export { default as ReceiveScreen } from './ReceiveScreen';

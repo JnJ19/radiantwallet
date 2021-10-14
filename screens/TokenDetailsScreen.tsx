@@ -32,11 +32,7 @@ type Props = {
 };
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
-	const [name, setName] = useState('');
-	const [secret, setSecret] = useState('');
-	const [chartData, setChartData] = useState('');
-	const data = [50, 10, 40, 30, 10, 10, 85, 91, 35, 53, 10, 24, 50, 10, 10];
-	const token = route.params.item;
+	const token = route.params;
 
 	//chart stuff
 	const Line = ({ line }) => (

@@ -32,8 +32,7 @@ type Props = {
 };
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
-	// const token = route.params;
-	// console.log('token', token);
+	const token = route.params;
 
 	return (
 		<Background>
@@ -153,7 +152,11 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button>Submit Trade</Button>
+				<Button
+					onPress={() => navigation.navigate('Trade Success', token)}
+				>
+					Submit Trade
+				</Button>
 			</View>
 		</Background>
 	);

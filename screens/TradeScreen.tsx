@@ -252,7 +252,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button onPress={() => navigation.navigate('Trade Preview')}>
+				<Button
+					onPress={() => navigation.navigate('Trade Preview', token)}
+				>
 					Review Trade
 				</Button>
 			</View>

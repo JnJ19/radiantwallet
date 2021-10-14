@@ -657,7 +657,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 									onPress={() =>
 										navigation.navigate(
 											'Token Details',
-											token,
+											token.item,
 										)
 									}
 								/>
