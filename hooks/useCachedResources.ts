@@ -1,4 +1,3 @@
-import { FontAwesome } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -13,17 +12,6 @@ import {
 	NunitoSans_800ExtraBold,
 	NunitoSans_800ExtraBold_Italic,
 } from '@expo-google-fonts/nunito-sans';
-import {
-	Inter_100Thin,
-	Inter_200ExtraLight,
-	Inter_300Light,
-	Inter_400Regular,
-	Inter_500Medium,
-	Inter_600SemiBold,
-	Inter_700Bold,
-	Inter_800ExtraBold,
-	Inter_900Black,
-} from '@expo-google-fonts/inter';
 
 export default function useCachedResources() {
 	const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -36,16 +24,6 @@ export default function useCachedResources() {
 
 				// Load fonts
 				await Font.loadAsync({
-					...FontAwesome.font,
-					Inter_100Thin,
-					Inter_200ExtraLight,
-					Inter_300Light,
-					Inter_400Regular,
-					Inter_500Medium,
-					Inter_600SemiBold,
-					Inter_700Bold,
-					Inter_800ExtraBold,
-					Inter_900Black,
 					NunitoSans_400Regular,
 					NunitoSans_400Regular_Italic,
 					NunitoSans_600SemiBold,
