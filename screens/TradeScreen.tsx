@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
 import {
 	Background,
@@ -32,18 +32,52 @@ type Props = {
 };
 
 const TradeScreen = ({ navigation, route }: Props) => {
-	console.log('route', route);
 	const token = route.params;
+	console.log('token', token);
+	const [fromTo, setFromTo] = useState({
+		from: token,
+		to: {
+			symbol: 'USDC',
+			name: 'USD Coin',
+			logoURI:
+				'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+			amount: 110.53,
+			price: 1.0,
+		},
+	});
+	const [toToken, setToToken] = useState({
+		symbol: 'USDC',
+		name: 'USD Coin',
+		logoURI:
+			'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+	});
+	const [fromToken, setFromToken] = useState(token);
+
+	useEffect(() => {
+		if (fromTo.from.symbol && fromTo.from.symbol === 'USDC') {
+			setFromTo({
+				...fromTo,
+				to: {
+					symbol: 'SOL',
+					name: 'Solana',
+					logoURI:
+						'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+					amount: 10,
+					price: 150.53,
+				},
+			});
+		}
+	}, [token]);
 
 	return (
 		<Background>
 			<SubPageHeader
-				subText={`$${(token.amount * token.price).toFixed(
+				subText={`$${(fromTo.from.amount * fromTo.from.price).toFixed(
 					2,
 				)} available`}
 				backButton
 			>
-				Trade {token.name}{' '}
+				Trade {fromTo.from.name}{' '}
 			</SubPageHeader>
 			<View>
 				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
@@ -61,9 +95,11 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					alignItems: 'center',
 				}}
 			>
-				<View style={{ flexDirection: 'row' }}>
+				<TouchableOpacity
+					style={{ flexDirection: 'row', alignItems: 'center' }}
+				>
 					<Image
-						source={{ uri: token.logoURI }}
+						source={{ uri: fromTo.from.logoURI }}
 						style={{
 							width: 40,
 							height: 40,
@@ -73,22 +109,39 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					/>
 					<View>
 						<Text style={styles.toFrom}>From</Text>
-						<Text style={styles.swapTokens}>{token.symbol}</Text>
+						<Text style={styles.swapTokens}>
+							{fromTo.from.symbol}
+						</Text>
 					</View>
-				</View>
-				<TouchableOpacity style={styles.swapContainer}>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={styles.swapContainer}
+					onPress={() => {
+						const fromToken2 = fromTo.from;
+						const toToken2 = fromTo.to;
+						setFromTo({
+							...fromTo,
+							from: toToken2,
+							to: fromToken2,
+						});
+					}}
+				>
 					<Image
 						source={require('../assets/icons/Swap.png')}
 						style={{ width: 24, height: 24 }}
 					/>
 				</TouchableOpacity>
-				<View style={{ flexDirection: 'row' }}>
+				<TouchableOpacity
+					style={{ flexDirection: 'row', alignItems: 'center' }}
+				>
 					<View>
-						<Text style={styles.toFrom}>From</Text>
-						<Text style={styles.swapTokens}>{token.symbol}</Text>
+						<Text style={styles.toFrom}>To</Text>
+						<Text style={styles.swapTokens}>
+							{fromTo.to.symbol}
+						</Text>
 					</View>
 					<Image
-						source={{ uri: token.logoURI }}
+						source={{ uri: fromTo.to.logoURI }}
 						style={{
 							width: 40,
 							height: 40,
@@ -96,7 +149,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 							marginLeft: 16,
 						}}
 					/>
-				</View>
+				</TouchableOpacity>
 			</View>
 			<View>
 				<View style={styles.numRow}>
