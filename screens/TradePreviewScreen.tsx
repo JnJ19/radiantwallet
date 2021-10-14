@@ -10,7 +10,14 @@ import {
 } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+	View,
+	Image,
+	StyleSheet,
+	TouchableOpacity,
+	TouchableWithoutFeedback,
+	TouchableNativeFeedback,
+} from 'react-native';
 import { DashboardScreen } from '.';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
@@ -19,6 +26,7 @@ import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { theme } from '../core/theme';
 import { BlurView } from 'expo-blur';
+import Modal from 'react-native-modal';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -32,6 +40,7 @@ type Props = {
 };
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
+	const [modalVisible, setModalVisible] = useState(false);
 	const token = route.params;
 
 	return (
@@ -152,20 +161,48 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
-					onPress={() => navigation.navigate('Trade Success', token)}
-				>
+				<Button onPress={() => setModalVisible(true)}>
 					Submit Trade
 				</Button>
 			</View>
+			<Modal
+				isVisible={modalVisible}
+				backdropColor={colors.black_two}
+				backdropOpacity={0.35}
+				onBackdropPress={() => setModalVisible(false)}
+			>
+				<TouchableOpacity
+					onPress={() => {
+						setModalVisible(false);
+						navigation.navigate('Trade Success', token);
+					}}
+					style={{
+						paddingHorizontal: 32,
+						paddingBottom: 32,
+						paddingTop: 8,
+						backgroundColor: '#111111',
+						borderRadius: 32,
+						width: 194,
+						alignItems: 'center',
+						alignSelf: 'center',
+					}}
+				>
+					<Image
+						source={require('../assets/images/logo_loader.png')}
+						style={{ width: 110, height: 114, marginBottom: 2 }}
+					/>
+					<Text style={styles.loaderLabel}>Settling Trade...</Text>
+				</TouchableOpacity>
+			</Modal>
 		</Background>
 	);
 };
 
 const styles = StyleSheet.create({
-	tableLabel: {
-		fontSize: 14,
-		color: '#727D8D',
+	loaderLabel: {
+		fontFamily: 'AzeretMono_SemiBold',
+		color: 'white',
+		fontSize: 12,
 	},
 	tableData: {
 		fontSize: 17,
