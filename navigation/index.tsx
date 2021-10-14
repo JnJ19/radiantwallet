@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 import { Image, View, Text } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
@@ -25,8 +25,11 @@ import {
 	TradeScreen,
 	TradePreviewScreen,
 	TradeSuccessScreen,
+	SetPasscodeScreen,
+	PasscodeScreen,
 } from '../screens';
 import { theme } from '../core/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
@@ -286,9 +289,79 @@ function RootNavigator3() {
 	// console.log('state: ', passcode);
 	// updatePasscode('5678');
 	// console.log('state: ', passcode);
+	const [hasAccount, setHasAccount] = useState(false);
+
+	async function checkForAccount() {
+		const accountStatus = await AsyncStorage.getItem('hasAccount');
+		return accountStatus;
+	}
+
+	useEffect(() => {
+		const accountStatus = checkForAccount();
+		if (accountStatus) {
+			setHasAccount(accountStatus);
+		}
+	}, []);
+
+	if (hasAccount === 'true') {
+		return (
+			<Stack.Navigator>
+				<Stack.Screen
+					name="Passcode"
+					component={PasscodeScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Main"
+					component={Main}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Token Details"
+					component={TokenDetailsScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Trade"
+					component={TradeScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Trade Preview"
+					component={TradePreviewScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Trade Success"
+					component={TradeSuccessScreen}
+					options={{ headerShown: false }}
+				/>
+			</Stack.Navigator>
+		);
+	}
 
 	return (
 		<Stack.Navigator>
+			{/* <Stack.Screen
+				name="Intro"
+				component={IntroScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Onboarding"
+				component={OnboardingScreen}
+				options={{ headerShown: false }}
+			/> */}
+			<Stack.Screen
+				name="Set Passcode"
+				component={SetPasscodeScreen}
+				options={{ headerShown: false }}
+			/>
+			{/* <Stack.Screen
+				name="Passcode"
+				component={PasscodeScreen}
+				options={{ headerShown: false }}
+			/> */}
 			<Stack.Screen
 				name="Main"
 				component={Main}

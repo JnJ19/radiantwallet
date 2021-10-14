@@ -7,6 +7,8 @@ export { default as ImportWalletScreen } from './ImportWalletScreen';
 export { default as TokenDetailsScreen } from './TokenDetailsScreen';
 export { default as TestScreen } from './TestScreen';
 export { default as TradeScreen } from './TradeScreen';
+export { default as SetPasscodeScreen } from './SetPasscodeScreen';
+export { default as PasscodeScreen } from './PasscodeScreen';
 export { default as TradePreviewScreen } from './TradePreviewScreen';
 export { default as TradeSuccessScreen } from './TradeSuccessScreen';
 export { default as SearchTokensScreen } from './SearchTokensScreen';
