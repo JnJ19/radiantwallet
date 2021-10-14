@@ -178,6 +178,93 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 
 				<View
 					style={{
+						borderColor: theme.colors.border,
+						borderWidth: 1,
+						borderRadius: 18,
+						padding: 16,
+						marginBottom: 16,
+					}}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+						}}
+					>
+						<View style={{ flexDirection: 'row' }}>
+							<Image
+								source={{ uri: token.logoURI }}
+								style={{
+									width: 40,
+									height: 40,
+									borderRadius: 100,
+									marginRight: 16,
+								}}
+							/>
+							<View>
+								<Text
+									style={{
+										...Nunito_Sans.Body_M_Bold,
+										color: colors.black_one,
+									}}
+								>
+									{token.symbol}
+								</Text>
+								<Text
+									style={{
+										...Nunito_Sans.Caption_M_SemiBold,
+										color: colors.black_five,
+									}}
+								>
+									{token.name}
+								</Text>
+							</View>
+						</View>
+						<View style={{ alignItems: 'flex-end' }}>
+							<Text
+								style={{
+									...Nunito_Sans.Body_M_Bold,
+									color: colors.black_one,
+								}}
+							>
+								${(token.amount * token.price).toFixed(2)}
+							</Text>
+							<Text
+								style={{
+									...Nunito_Sans.Caption_M_SemiBold,
+									color: colors.black_five,
+								}}
+							>
+								{token.amount.toFixed(2)}
+							</Text>
+						</View>
+					</View>
+					<View
+						style={{
+							borderTopColor: colors.border,
+							borderTopWidth: 1,
+							marginVertical: 16,
+						}}
+					/>
+					<TouchableOpacity style={{ flexDirection: 'row' }}>
+						<Text
+							style={{
+								...Nunito_Sans.Body_M_Bold,
+								color: colors.black_four,
+								marginRight: 4,
+							}}
+						>
+							See Transaction History
+						</Text>
+						<Image
+							source={require('../assets/icons/Forward_Arrow.png')}
+							style={{ width: 24, height: 24 }}
+						/>
+					</TouchableOpacity>
+				</View>
+
+				<View
+					style={{
 						borderWidth: 1,
 						borderColor: theme.colors.border,
 						borderRadius: 18,

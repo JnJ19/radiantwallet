@@ -557,7 +557,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 						}}
 					>
-						Price History
+						Portfolio History
 					</Text>
 					<View
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
