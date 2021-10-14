@@ -23,6 +23,7 @@ import {
 	SearchTokensScreen,
 	IntroScreen,
 	TradeScreen,
+	TradePreviewScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 
@@ -296,6 +297,11 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Trade"
 				component={TradeScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Trade Preview"
+				component={TradePreviewScreen}
 				options={{ headerShown: false }}
 			/>
 		</Stack.Navigator>

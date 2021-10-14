@@ -252,7 +252,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button>Review Trade</Button>
+				<Button onPress={() => navigation.navigate('Trade Preview')}>
+					Review Trade
+				</Button>
 			</View>
 		</Background>
 	);
