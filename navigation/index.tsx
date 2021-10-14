@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Image, View, Text } from 'react-native';
 import { useState } from 'react';
 
-import { useStoreState } from '../hooks/storeHooks';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
 import {
 	OnboardingScreen,
@@ -29,8 +29,6 @@ import {
 import { theme } from '../core/theme';
 
 const Tab = createBottomTabNavigator();
-
-console.log('tabs', Tab);
 
 const Stack = createNativeStackNavigator();
 
@@ -283,6 +281,12 @@ function RootNavigator() {
 }
 
 function RootNavigator3() {
+	// const passcode = useStoreState((state) => state.passcode);
+	// const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
+	// console.log('state: ', passcode);
+	// updatePasscode('5678');
+	// console.log('state: ', passcode);
+
 	return (
 		<Stack.Navigator>
 			<Stack.Screen
