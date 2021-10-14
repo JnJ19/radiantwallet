@@ -6,6 +6,7 @@ export { default as DashboardScreen2 } from './DashboardScreen2';
 export { default as ImportWalletScreen } from './ImportWalletScreen';
 export { default as TokenDetailsScreen } from './TokenDetailsScreen';
 export { default as TestScreen } from './TestScreen';
+export { default as TradeScreen } from './TradeScreen';
 export { default as SearchTokensScreen } from './SearchTokensScreen';
 
 export { default as ReceiveScreen } from './ReceiveScreen';

@@ -512,7 +512,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 				<View style={{ width: 8 }} />
 				<Button
 					mode="contained"
-					onPress={() => navigation.navigate('Import Wallet')}
+					onPress={() => navigation.navigate('Trade', token)}
 					style={{ width: '50%' }}
 					icon={() => (
 						<Image
