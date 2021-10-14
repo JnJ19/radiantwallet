@@ -1,5 +1,11 @@
 import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
+import {
+	SafeAreaView,
+	Text,
+	ScrollView,
+	Linking,
+	AsyncStorageStatic,
+} from 'react-native';
 import {
 	Background,
 	Button,
@@ -24,6 +30,7 @@ const {
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -67,7 +74,16 @@ const TradeScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	async function storeLocal() {
+		const setStorage = await AsyncStorage.setItem('testKey', 'testValue');
+		console.log('setStorage: ', setStorage);
+		const getStorage = await AsyncStorage.getItem('testKeyyy');
+		console.log('getStorage: ', getStorage);
+	}
+
 	useEffect(() => {
+		console.log('helllo');
+		storeLocal();
 		if (fromTo.from.symbol && fromTo.from.symbol === 'USDC') {
 			setFromTo({
 				...fromTo,
@@ -148,7 +164,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				<TouchableOpacity
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
-					<View>
+					<View style={{ alignItems: 'flex-end' }}>
 						<Text style={styles.toFrom}>To</Text>
 						<Text style={styles.swapTokens}>
 							{fromTo.to.symbol}
