@@ -45,13 +45,27 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			price: 1.0,
 		},
 	});
-	const [toToken, setToToken] = useState({
-		symbol: 'USDC',
-		name: 'USD Coin',
-		logoURI:
-			'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
-	});
-	const [fromToken, setFromToken] = useState(token);
+	const [tradeAmount, setTradeAmount] = useState('0');
+
+	function addNumber(numberString: string) {
+		if (tradeAmount === '0') {
+			const replaceZero = tradeAmount.slice(0, -1);
+			const newAmount = replaceZero.concat(numberString);
+			setTradeAmount(newAmount);
+		} else {
+			const newAmount = tradeAmount.concat(numberString);
+			setTradeAmount(newAmount);
+		}
+	}
+
+	function removeNumber() {
+		if (tradeAmount.length === 1) {
+			setTradeAmount('0');
+		} else {
+			const newAmount = tradeAmount.slice(0, -1);
+			setTradeAmount(newAmount);
+		}
+	}
 
 	useEffect(() => {
 		if (fromTo.from.symbol && fromTo.from.symbol === 'USDC') {
@@ -81,7 +95,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			</SubPageHeader>
 			<View>
 				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
-					$0
+					${tradeAmount}
 				</Text>
 			</View>
 			<View
@@ -153,48 +167,88 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			</View>
 			<View>
 				<View style={styles.numRow}>
-					<View style={styles.numberContainer}>
+					<TouchableOpacity
+						onPress={() => addNumber('1')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>1</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('2')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>2</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('3')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>3</Text>
-					</View>
+					</TouchableOpacity>
 				</View>
 				<View style={styles.numRow}>
-					<View style={styles.numberContainer}>
+					<TouchableOpacity
+						onPress={() => addNumber('4')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>4</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('5')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>5</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('6')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>6</Text>
-					</View>
+					</TouchableOpacity>
 				</View>
 				<View style={styles.numRow}>
-					<View style={styles.numberContainer}>
+					<TouchableOpacity
+						onPress={() => addNumber('7')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>7</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('8')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>8</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('9')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>9</Text>
-					</View>
+					</TouchableOpacity>
 				</View>
 				<View style={{ ...styles.numRow, marginBottom: 0 }}>
-					<View style={styles.numberContainer}>
+					<TouchableOpacity
+						onPress={() => addNumber('.')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>.</Text>
-					</View>
-					<View style={styles.numberContainer}>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => addNumber('0')}
+						style={styles.numberContainer}
+					>
 						<Text style={styles.mediumNumber}>0</Text>
-					</View>
-					<View style={styles.numberContainer}>
-						<Text style={styles.mediumNumber}>3</Text>
-					</View>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => removeNumber()}
+						style={styles.numberContainer}
+					>
+						{/* <Text style={styles.mediumNumber}>3</Text> */}
+						<Image
+							source={require('../assets/icons/arrow-left-big.png')}
+							style={{ width: 40, height: 40 }}
+						/>
+					</TouchableOpacity>
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
