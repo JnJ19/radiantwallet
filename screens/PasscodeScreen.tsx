@@ -31,6 +31,8 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import * as SecureStore from 'expo-secure-store';
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -39,26 +41,79 @@ type Props = {
 };
 
 const PassCodeScreen = ({ navigation, route }: Props) => {
-	const [tradeAmount, setTradeAmount] = useState('0');
+	const [code, setCode] = useState('');
+	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
+	const passcode = useStoreState((state) => state.passcode);
+	const [error, setError] = useState(false);
+
+	console.log('code', code);
+
+	async function getPhrase(passcode: string) {
+		let result = await SecureStore.getItemAsync(passcode);
+		if (result) {
+			return result;
+		} else {
+			console.log('No values stored under that key.', result);
+		}
+	}
+
+	async function storePhraseAndContinue(passcode: string, phrase: string) {
+		await SecureStore.setItemAsync(passcode, phrase);
+		// navigation.navigate('Main');
+	}
+
+	async function checkLocalPasscode(passcodeKey: string, code: string) {
+		let result = await SecureStore.getItemAsync(passcodeKey);
+		if (result === code) {
+			updatePasscode(code);
+			navigation.navigate('Main');
+		} else {
+			setError(true);
+			setCode('');
+		}
+	}
+
+	async function storePassKey() {
+		await SecureStore.setItemAsync('6595key', '6595');
+	}
+
+	useEffect(() => {
+		if (code.length === 4) {
+			const passcodeKey = code + 'key';
+			checkLocalPasscode(passcodeKey, code);
+		}
+		if (code.length === 1) {
+			setError(false);
+		}
+	}, [code]);
 
 	function addNumber(numberString: string) {
-		if (tradeAmount === '0') {
-			const replaceZero = tradeAmount.slice(0, -1);
-			const newAmount = replaceZero.concat(numberString);
-			setTradeAmount(newAmount);
-		} else {
-			const newAmount = tradeAmount.concat(numberString);
-			setTradeAmount(newAmount);
+		if (code.length < 4) {
+			if (code === '0') {
+				const replaceZero = code.slice(0, -1);
+				const newAmount = replaceZero.concat(numberString);
+				setCode(newAmount);
+			} else {
+				const newAmount = code.concat(numberString);
+				setCode(newAmount);
+			}
 		}
 	}
 
 	function removeNumber() {
-		if (tradeAmount.length === 1) {
-			setTradeAmount('0');
+		if (code.length === 1) {
+			setCode('');
 		} else {
-			const newAmount = tradeAmount.slice(0, -1);
-			setTradeAmount(newAmount);
+			const newAmount = code.slice(0, -1);
+			setCode(newAmount);
 		}
+	}
+
+	async function storeCodeAndContinue() {
+		updatePasscode(code);
+		await AsyncStorage.setItem('hasAccount', 'true');
+		const result = await AsyncStorage.getItem('hasAccount');
+		navigation.navigate('Onboarding');
 	}
 
 	async function storeLocal() {
@@ -69,15 +124,52 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	}
 
 	return (
-		<Background>
-			{/* <SubPageHeader backButton={false}>Passcode</SubPageHeader> */}
-			<View>
-				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
-					${tradeAmount}
-				</Text>
-			</View>
+		<Background blackBackground={true}>
+			<Image
+				source={require('../assets/images/logo_passcode.png')}
+				style={{
+					width: 120,
+					height: 124,
+					alignSelf: 'center',
+					marginTop: 64,
+				}}
+			/>
 
-			<View>
+			<View
+				style={{
+					flexDirection: 'row',
+					width: 160,
+					justifyContent: 'space-between',
+					alignSelf: 'center',
+				}}
+			>
+				<View
+					style={code.length >= 1 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 2 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 3 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 4 ? styles.filled : styles.outlined}
+				/>
+			</View>
+			{error ? (
+				<Text
+					style={{
+						...Nunito_Sans.Body_M_Regular,
+						color: 'white',
+						opacity: 0.75,
+						alignSelf: 'center',
+					}}
+				>
+					Incorrect passcode, try again.
+				</Text>
+			) : null}
+
+			<View style={{ marginBottom: 40 }}>
 				<View style={styles.numRow}>
 					<TouchableOpacity
 						onPress={() => addNumber('1')}
@@ -139,12 +231,9 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 					</TouchableOpacity>
 				</View>
 				<View style={{ ...styles.numRow, marginBottom: 0 }}>
-					<TouchableOpacity
-						onPress={() => addNumber('.')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>.</Text>
-					</TouchableOpacity>
+					<View style={styles.numberContainer}>
+						<Text style={styles.mediumNumber}></Text>
+					</View>
 					<TouchableOpacity
 						onPress={() => addNumber('0')}
 						style={styles.numberContainer}
@@ -157,19 +246,29 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 					>
 						{/* <Text style={styles.mediumNumber}>3</Text> */}
 						<Image
-							source={require('../assets/icons/arrow-left-big.png')}
+							source={require('../assets/icons/arrow-left-big-green.png')}
 							style={{ width: 40, height: 40 }}
 						/>
 					</TouchableOpacity>
 				</View>
 			</View>
-			<View style={{ marginBottom: 40 }}>
+			{/* <View
+				style={{
+					borderColor: '#C9F977',
+					borderWidth: 1,
+					borderRadius: 18,
+					// marginTop: 180,
+					marginBottom: 40,
+				}}
+			>
 				<Button
-				// onPress={() => navigation.navigate('Trade Preview', token)}
+					mode="contained"
+					onPress={() => storePassKey()}
+					style={{ backgroundColor: 'black' }}
 				>
-					Set Passcode
+					Save & Continue
 				</Button>
-			</View>
+			</View> */}
 		</Background>
 	);
 };
@@ -178,6 +277,20 @@ const styles = StyleSheet.create({
 	tableLabel: {
 		fontSize: 14,
 		color: '#727D8D',
+	},
+	outlined: {
+		width: 16,
+		height: 16,
+		borderRadius: 1000,
+		borderWidth: 1,
+		borderColor: colors.accent,
+	},
+	filled: {
+		width: 16,
+		height: 16,
+		borderRadius: 1000,
+		// borderWidth: 1,
+		backgroundColor: colors.accent,
 	},
 	tableData: {
 		fontSize: 17,
@@ -193,7 +306,7 @@ const styles = StyleSheet.create({
 		fontSize: 48,
 		fontFamily: 'Nunito Sans',
 		fontWeight: '400',
-		color: colors.black_one,
+		color: colors.accent,
 	},
 	numberContainer: {
 		width: 56,

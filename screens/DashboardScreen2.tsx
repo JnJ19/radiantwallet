@@ -97,13 +97,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			DERIVATION_PATH.bip44Change,
 		);
 
-		const publicKey = newAccount.publicKey.toString('hex');
+		const { publicKey } = newAccount;
 
-		console.log('publicKey', publicKey);
-
-		// const publicKey = new PublicKey(
-		// 	'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
-		// );
 		const programId = new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
@@ -216,7 +211,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const amount =
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
-				console.log('otherDetails', otherDetails);
 				const { name, symbol, logoURI, extensions } = otherDetails;
 
 				const mintKey = new PublicKey(mint);
@@ -252,7 +246,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.then((response) => response.json())
 					.then((data) => {
 						const dataArray = Object.values(data.data);
-						console.log('description', dataArray[0].description);
 						return dataArray[0].description;
 					})
 					.catch((err) => console.log('error', err));
@@ -352,7 +345,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			2,
 			DERIVATION_PATH.bip44Change,
 		);
-		console.log('new Account', newAccount.publicKey.toString('hex'));
 
 		const url = 'https://solana-api.projectserum.com';
 		const newConnection = new Connection(url);
@@ -514,7 +506,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
-			console.log('tokens', tokens);
 			const tokenList = tokens
 				.filterByClusterSlug('mainnet-beta')
 				.getList();

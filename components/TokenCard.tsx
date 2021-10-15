@@ -5,7 +5,6 @@ import { Card } from 'react-native-paper';
 import { theme } from '../core/theme';
 
 const TokenCard = (info: object) => {
-	console.log('data', info);
 	const { mint, price, amount, name, symbol, logoURI, change_24h } =
 		info.token.item;
 	const { onPress } = info;

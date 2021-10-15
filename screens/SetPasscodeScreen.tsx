@@ -32,6 +32,8 @@ const {
 import { SubPageHeader } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import * as SecureStore from 'expo-secure-store';
+
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -70,16 +72,10 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 
 	async function storeCodeAndContinue() {
 		updatePasscode(code);
+		const passcodeKey = code + 'key';
 		await AsyncStorage.setItem('hasAccount', 'true');
-		const result = await AsyncStorage.getItem('hasAccount');
+		await SecureStore.setItemAsync(passcodeKey, code);
 		navigation.navigate('Onboarding');
-	}
-
-	async function storeLocal() {
-		const setStorage = await AsyncStorage.setItem('testKey', 'testValue');
-		console.log('setStorage: ', setStorage);
-		const getStorage = await AsyncStorage.getItem('testKeyyy');
-		console.log('getStorage: ', getStorage);
 	}
 
 	return (
@@ -171,12 +167,9 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 					</TouchableOpacity>
 				</View>
 				<View style={{ ...styles.numRow, marginBottom: 0 }}>
-					<TouchableOpacity
-						onPress={() => addNumber('.')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>.</Text>
-					</TouchableOpacity>
+					<View style={styles.numberContainer}>
+						<Text style={styles.mediumNumber}></Text>
+					</View>
 					<TouchableOpacity
 						onPress={() => addNumber('0')}
 						style={styles.numberContainer}
@@ -189,7 +182,7 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 					>
 						{/* <Text style={styles.mediumNumber}>3</Text> */}
 						<Image
-							source={require('../assets/icons/arrow-left-big.png')}
+							source={require('../assets/icons/arrow-left-big-green.png')}
 							style={{ width: 40, height: 40 }}
 						/>
 					</TouchableOpacity>
