@@ -41,7 +41,31 @@ type Props = {
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [modalVisible, setModalVisible] = useState(false);
-	const token = route.params;
+	const [price, setPrice] = useState('');
+	console.log('route.params: ', route.params);
+	const tradeAmount = route.params.tradeAmount;
+	const fromTo = route.params.fromTo;
+
+	// useEffect(() => {
+	// 	fetch('https://serum-api.bonfida.com/pairs')
+	// 		.then((res) => res.json())
+	// 		.then((resp) => console.log(resp))
+	// 		.catch((err) => console.log('error ', err));
+	// }, []);
+
+	useEffect(() => {
+		const marketName = fromTo.from.symbol + fromTo.to.symbol;
+		fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
+			.then((res) => res.json())
+			.then((resp) => {
+				console.log(resp);
+				const recentPrice = resp.data[0].price;
+				const newPrice = recentPrice * 1.005;
+				console.log('newprice', newPrice);
+				setPrice(newPrice);
+			})
+			.catch((err) => console.log('error ', err));
+	}, []);
 
 	return (
 		<Background>
@@ -54,7 +78,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 						marginVertical: 32,
 					}}
 				>
-					$25
+					${tradeAmount}
 				</Text>
 				<View
 					style={{
@@ -94,7 +118,37 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								Solana
+								{fromTo.from.name}
+							</Text>
+						</View>
+						<View
+							style={{
+								height: 1,
+								backgroundColor: theme.colors.border,
+							}}
+						/>
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								marginVertical: 16,
+							}}
+						>
+							<Text
+								style={{
+									...Nunito_Sans.Caption_M_SemiBold,
+									color: colors.black_five,
+								}}
+							>
+								Receive
+							</Text>
+							<Text
+								style={{
+									...Nunito_Sans.Body_M_SemiBold,
+									color: colors.black_one,
+								}}
+							>
+								{fromTo.to.name}
 							</Text>
 						</View>
 						<View
@@ -124,7 +178,13 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								1 SOL = 142.30 USDC
+								{price
+									? `1 ${
+											fromTo.from.symbol
+									  } = ${price.toFixed(3)} ${
+											fromTo.to.symbol
+									  }`
+									: 'loading...'}
 							</Text>
 						</View>
 						<View

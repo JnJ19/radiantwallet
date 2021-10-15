@@ -40,7 +40,7 @@ type Props = {
 
 const TradeScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
-	console.log('token', token);
+	const [tradeAmount, setTradeAmount] = useState('0');
 	const [fromTo, setFromTo] = useState({
 		from: token,
 		to: {
@@ -52,7 +52,6 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			price: 1.0,
 		},
 	});
-	const [tradeAmount, setTradeAmount] = useState('0');
 
 	function addNumber(numberString: string) {
 		if (tradeAmount === '0') {
@@ -269,7 +268,12 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			</View>
 			<View style={{ marginBottom: 40 }}>
 				<Button
-					onPress={() => navigation.navigate('Trade Preview', token)}
+					onPress={() =>
+						navigation.navigate('Trade Preview', {
+							tradeAmount,
+							fromTo,
+						})
+					}
 				>
 					Review Trade
 				</Button>
