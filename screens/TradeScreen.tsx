@@ -23,8 +23,8 @@ import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
 import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
-import { theme } from '../core/theme';
 import { BlurView } from 'expo-blur';
+import { theme } from '../core/theme';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },

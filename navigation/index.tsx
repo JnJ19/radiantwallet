@@ -342,26 +342,31 @@ function RootNavigator3() {
 
 	return (
 		<Stack.Navigator>
-			{/* <Stack.Screen
+			<Stack.Screen
 				name="Intro"
 				component={IntroScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Set Passcode"
+				component={SetPasscodeScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
 				name="Onboarding"
 				component={OnboardingScreen}
 				options={{ headerShown: false }}
-			/> */}
+			/>
 			<Stack.Screen
-				name="Set Passcode"
-				component={SetPasscodeScreen}
+				name="Import Wallet"
+				component={ImportWalletScreen}
 				options={{ headerShown: false }}
 			/>
-			{/* <Stack.Screen
+			<Stack.Screen
 				name="Passcode"
 				component={PasscodeScreen}
 				options={{ headerShown: false }}
-			/> */}
+			/>
 			<Stack.Screen
 				name="Main"
 				component={Main}

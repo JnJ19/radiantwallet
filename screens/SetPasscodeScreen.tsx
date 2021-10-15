@@ -31,6 +31,7 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -39,26 +40,48 @@ type Props = {
 };
 
 const SetPassCodeScreen = ({ navigation, route }: Props) => {
-	const [tradeAmount, setTradeAmount] = useState('0');
+	const [code, setCode] = useState('');
+	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
+	const passcode = useStoreState((state) => state.passcode);
+
+	console.log('code', code);
 
 	function addNumber(numberString: string) {
-		if (tradeAmount === '0') {
-			const replaceZero = tradeAmount.slice(0, -1);
-			const newAmount = replaceZero.concat(numberString);
-			setTradeAmount(newAmount);
-		} else {
-			const newAmount = tradeAmount.concat(numberString);
-			setTradeAmount(newAmount);
+		if (code.length < 4) {
+			if (code === '0') {
+				const replaceZero = code.slice(0, -1);
+				const newAmount = replaceZero.concat(numberString);
+				setCode(newAmount);
+			} else {
+				const newAmount = code.concat(numberString);
+				setCode(newAmount);
+			}
 		}
 	}
 
 	function removeNumber() {
-		if (tradeAmount.length === 1) {
-			setTradeAmount('0');
+		if (code.length === 1) {
+			setCode('');
 		} else {
-			const newAmount = tradeAmount.slice(0, -1);
-			setTradeAmount(newAmount);
+			const newAmount = code.slice(0, -1);
+			setCode(newAmount);
 		}
+	}
+
+	async function storeCodeAndContinue() {
+		console.log('hit');
+
+		console.log('hit 5');
+
+		updatePasscode(code);
+		console.log('hit 2');
+		await AsyncStorage.setItem('hasAccount', 'true');
+		console.log('hit 3');
+		const result = await AsyncStorage.getItem('hasAccount');
+		console.log('hit 4');
+		console.log('result: ', result);
+		console.log('passcode', passcode);
+		navigation.navigate('Onboarding');
 	}
 
 	async function storeLocal() {
@@ -69,12 +92,30 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	}
 
 	return (
-		<Background>
-			<SubPageHeader backButton={false}>Set Passcode</SubPageHeader>
-			<View>
-				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
-					${tradeAmount}
-				</Text>
+		<Background blackBackground={true}>
+			<Text style={{ ...Azeret_Mono.Header_S_SemiBold, color: 'white' }}>
+				Set Passcode
+			</Text>
+			<View
+				style={{
+					flexDirection: 'row',
+					width: 160,
+					justifyContent: 'space-between',
+					alignSelf: 'center',
+				}}
+			>
+				<View
+					style={code.length >= 1 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 2 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 3 ? styles.filled : styles.outlined}
+				/>
+				<View
+					style={code.length >= 4 ? styles.filled : styles.outlined}
+				/>
 			</View>
 
 			<View>
@@ -163,11 +204,21 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 					</TouchableOpacity>
 				</View>
 			</View>
-			<View style={{ marginBottom: 40 }}>
+			<View
+				style={{
+					borderColor: '#C9F977',
+					borderWidth: 1,
+					borderRadius: 18,
+					// marginTop: 180,
+					marginBottom: 40,
+				}}
+			>
 				<Button
-				// onPress={() => navigation.navigate('Trade Preview', token)}
+					mode="contained"
+					onPress={() => storeCodeAndContinue()}
+					style={{ backgroundColor: 'black' }}
 				>
-					Set Passcode
+					Save & Continue
 				</Button>
 			</View>
 		</Background>
@@ -178,6 +229,20 @@ const styles = StyleSheet.create({
 	tableLabel: {
 		fontSize: 14,
 		color: '#727D8D',
+	},
+	outlined: {
+		width: 16,
+		height: 16,
+		borderRadius: 1000,
+		borderWidth: 1,
+		borderColor: colors.accent,
+	},
+	filled: {
+		width: 16,
+		height: 16,
+		borderRadius: 1000,
+		// borderWidth: 1,
+		backgroundColor: colors.accent,
 	},
 	tableData: {
 		fontSize: 17,
@@ -193,7 +258,7 @@ const styles = StyleSheet.create({
 		fontSize: 48,
 		fontFamily: 'Nunito Sans',
 		fontWeight: '400',
-		color: colors.black_one,
+		color: colors.accent,
 	},
 	numberContainer: {
 		width: 56,

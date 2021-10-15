@@ -61,7 +61,8 @@ const IntroScreen = ({ navigation }: Props) => (
 				>
 					<Button
 						mode="contained"
-						onPress={() => navigation.navigate('Onboarding')}
+						onPress={() => navigation.navigate('Set Passcode')}
+						style={{ backgroundColor: 'black' }}
 					>
 						Get Started
 					</Button>
