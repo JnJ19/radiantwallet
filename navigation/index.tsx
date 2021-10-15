@@ -293,14 +293,15 @@ function RootNavigator3() {
 
 	async function checkForAccount() {
 		const accountStatus = await AsyncStorage.getItem('hasAccount');
-		return accountStatus;
-	}
-
-	useEffect(() => {
-		const accountStatus = checkForAccount();
 		if (accountStatus) {
 			setHasAccount(accountStatus);
 		}
+		console.log('first account status', accountStatus);
+		// return accountStatus;
+	}
+
+	useEffect(() => {
+		checkForAccount();
 	}, []);
 
 	if (hasAccount === 'true') {

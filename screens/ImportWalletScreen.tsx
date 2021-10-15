@@ -33,6 +33,8 @@ import {
 } from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Clipboard from 'expo-clipboard';
+import * as SecureStore from 'expo-secure-store';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
 type Props = {
 	navigation: Navigation;
@@ -49,6 +51,21 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
 	const [copiedText, setCopiedText] = React.useState('');
+	const passcode = useStoreState((state) => state.passcode);
+
+	async function storePhraseAndContinue(passcode: string, phrase: string) {
+		await SecureStore.setItemAsync(passcode, phrase);
+		navigation.navigate('Main');
+	}
+
+	// async function getPhrase(passcode: string) {
+	// 	let result = await SecureStore.getItemAsync(passcode);
+	// 	if (result) {
+	// 		return result;
+	// 	} else {
+	// 		console.log('No values stored under that key.', result);
+	// 	}
+	// }
 
 	function wordCount(str: string) {
 		return str.split(' ').length;
@@ -204,12 +221,14 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 				</TouchableOpacity>
 				{/* <View style={{ height: 250 }}></View> */}
 			</View>
-			<Button
-				mode="contained"
-				onPress={() => navigation.navigate('Main')}
-			>
-				Import Wallet
-			</Button>
+			<View style={{ marginBottom: 40 }}>
+				<Button
+					mode="contained"
+					onPress={() => storePhraseAndContinue(passcode, secret)}
+				>
+					Import Wallet
+				</Button>
+			</View>
 			<BottomSheetModalProvider>
 				<BottomSheetModal
 					ref={bottomSheetModalRef}

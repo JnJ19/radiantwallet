@@ -20,6 +20,8 @@ import {
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import * as SecureStore from 'expo-secure-store';
 
 type Props = {
 	navigation: Navigation;
@@ -31,6 +33,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+	const passcode = useStoreState((state) => state.passcode);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -60,13 +63,47 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		</Defs>
 	);
 
+	// async function getAccount() {
+	// 	let mnemonic = await SecureStore.getItemAsync(passcode);
+	// 	const bip39 = await import('bip39');
+	// 	//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
+	// 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+	// 	const newAccount = getAccountFromSeed(
+	// 		seed,
+	// 		2,
+	// 		DERIVATION_PATH.bip44Change,
+	// 	);
+
+	// 	console.log('new Account', newAccount.publicKey.toString('hex'));
+
+	// 	const url = 'https://solana-api.projectserum.com';
+	// 	const newConnection = new Connection(url);
+	// 	setAccount(newAccount);
+	// 	setConnection(newConnection);
+	// }
+
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		const url = 'https://api.mainnet-beta.solana.com';
 		const connection = new Connection(url);
-		const publicKey = new PublicKey(
-			'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const bip39 = await import('bip39');
+		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
+		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+		const newAccount = getAccountFromSeed(
+			seed,
+			2,
+			DERIVATION_PATH.bip44Change,
 		);
+
+		const publicKey = newAccount.publicKey.toString('hex');
+
+		console.log('publicKey', publicKey);
+
+		// const publicKey = new PublicKey(
+		// 	'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+		// );
 		const programId = new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
@@ -303,8 +340,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function prepTrade() {
-		let mnemonic =
-			'***REMOVED***';
+		// let mnemonic =
+		// 	'***REMOVED***';
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const bip39 = await import('bip39');
 		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
 		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array

@@ -69,18 +69,9 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	}
 
 	async function storeCodeAndContinue() {
-		console.log('hit');
-
-		console.log('hit 5');
-
 		updatePasscode(code);
-		console.log('hit 2');
 		await AsyncStorage.setItem('hasAccount', 'true');
-		console.log('hit 3');
 		const result = await AsyncStorage.getItem('hasAccount');
-		console.log('hit 4');
-		console.log('result: ', result);
-		console.log('passcode', passcode);
 		navigation.navigate('Onboarding');
 	}
 
