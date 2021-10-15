@@ -40,6 +40,14 @@ const store = createStore({
 	updateAccount: action((state, payload) => {
 		state.account = payload;
 	}),
+	ownedTokens: [],
+	allTokens: [],
+	setOwnedTokens: action((state, payload) => {
+		state.ownedTokens = payload;
+	}),
+	setAllTokens: action((state, payload) => {
+		state.allTokens = payload;
+	}),
 });
 
 // const store = createStore<WalletModel>(

@@ -63,25 +63,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		</Defs>
 	);
 
-	// async function getAccount() {
-	// 	let mnemonic = await SecureStore.getItemAsync(passcode);
-	// 	const bip39 = await import('bip39');
-	// 	//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
-	// 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
-	// 	const newAccount = getAccountFromSeed(
-	// 		seed,
-	// 		2,
-	// 		DERIVATION_PATH.bip44Change,
-	// 	);
-
-	// 	console.log('new Account', newAccount.publicKey.toString('hex'));
-
-	// 	const url = 'https://solana-api.projectserum.com';
-	// 	const newConnection = new Connection(url);
-	// 	setAccount(newAccount);
-	// 	setConnection(newConnection);
-	// }
-
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		const url = 'https://api.mainnet-beta.solana.com';
@@ -508,9 +489,104 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, [tokens]);
 
 	useEffect(() => {
-		getOwnedTokens();
+		// getOwnedTokens();
 		// testMarkets();
 	}, [tokenMap]);
+
+	// function filterString(string: string, matchString: string, isEqual: boolean) {
+	// 	if (isEqual) {
+	// 		return string.indexOf(matchString) >= 0
+	// 	}
+	// 	return string.indexOf(matchString) === -1;
+	// }
+
+	// function filterArray(string: string, matchString: string, isEqual: boolean) {
+
+	// }
+
+	useEffect(() => {
+		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
+		//then make two big calls to coinmarketcap - one for data, the other for price
+		//then combine all of those results based on symbol name 🎉
+
+		//to dedupe going to take the array and split them into individual symbols >> then dedupe that array >> then
+		fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				//remove pools and dashes
+				const removedDashes = res.data.filter(
+					(str: string) => str.indexOf('-') === -1,
+				);
+				const removedPools = removedDashes.filter(
+					(str: string) => str.indexOf('POOL') === -1,
+				);
+
+				//split the pairs into separate symbols
+				const symbolsArray = [];
+				for (let i = 0; i < removedPools.length; i++) {
+					const el = removedPools[i];
+					const splitArray = el.split('/');
+					symbolsArray.push(...splitArray);
+				}
+
+				//dedupe symbols
+				const dedupedSymbols = [...new Set(symbolsArray)];
+
+				//remove random hashes
+				const cleanArray = [];
+				for (let i = 0; i < dedupedSymbols.length; i++) {
+					const el = dedupedSymbols[i];
+					if (el.length < 15) {
+						cleanArray.push(el);
+					}
+				}
+
+				const finishedArray = [];
+				for (let i = 0; i < cleanArray.length; i++) {
+					const el = cleanArray[i];
+
+					//find matching pairs
+					const pairs = removedPools.filter(
+						(str: string) => str.indexOf(el) >= 0,
+					);
+					const pairsArray = [];
+					for (let i = 0; i < pairs.length; i++) {
+						const el2 = pairs[i];
+
+						//take away the name and slash
+						const removeSymbol = el2.replace(el, '');
+						const removeSlash = removeSymbol.replace('/', '');
+
+						//deduce whether sell or buy side
+						let side;
+						removeSlash === el2.slice(0, removeSlash.length)
+							? (side = 'buy')
+							: (side = 'sell');
+
+						//construct array object
+						const newPair = {
+							pair: el2,
+							symbol: removeSlash,
+							side: side,
+						};
+
+						pairsArray.push(newPair);
+					}
+
+					const finishedObject = {
+						symbol: el,
+						pairs: pairsArray,
+					};
+
+					finishedArray.push(finishedObject);
+				}
+				console.log('finished array', finishedArray);
+			})
+			.catch((err) => console.log(err));
+		return () => {
+			console.log('hello');
+		};
+	}, []);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
