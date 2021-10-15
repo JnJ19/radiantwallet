@@ -50,6 +50,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
 			amount: 110.53,
 			price: 1.0,
+			mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+			associatedTokenAddressHash:
+				'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
 		},
 	});
 
@@ -93,10 +96,34 @@ const TradeScreen = ({ navigation, route }: Props) => {
 						'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
 					amount: 10,
 					price: 150.53,
+					mint: 'BrEAK7zGZ6dM71zUDACDqJnekihmwF15noTddWTsknjC',
 				},
 			});
 		}
 	}, [token]);
+
+	useEffect(() => {
+		fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				const result = res.data.filter(
+					(str: string) => str.indexOf(token.symbol) >= 0,
+				);
+				const removedDashes = result.filter(
+					(str: string) => str.indexOf('-') === -1,
+				);
+				console.log('result', removedDashes);
+			})
+			.catch((err) => console.log(err));
+	}, []);
+
+	// useEffect(() => {
+	// 	const test = ['one turtle', 'two pigs', 'three turtles'];
+	// 	const filtered = test.filter((str) => {
+	// 		return str.indexOf('turtle') >= 0;
+	// 	});
+	// 	console.log('filtered: ', filtered);
+	// }, []);
 
 	return (
 		<Background>

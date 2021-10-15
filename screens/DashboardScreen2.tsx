@@ -350,6 +350,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const newConnection = new Connection(url);
 		setAccount(newAccount);
 		setConnection(newConnection);
+		console.log('done');
 	}
 
 	async function testMarkets() {
@@ -370,6 +371,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		);
 
 		let owner = new Account(account.secretKey);
+
+		console.log(
+			'wallet address dashboard',
+			owner.secretKey.toString('hex'),
+		);
 
 		const newbalance = await connection.getBalance(owner.publicKey);
 		console.log('newbalance: ', newbalance);
@@ -461,6 +467,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					)
 					.then((res) => console.log('response', res))
 					.catch((err) => console.log('error', err));
+			} else {
+				console.log('hit other');
 			}
 		}
 	}
@@ -561,17 +569,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		<Background>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-				{/* <Button
-				onPress={() => {
-					console.log('run');
-					testMarkets();
-				}}
-			>
-				Test Markets
-			</Button> */}
-				{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
-			<Button onPress={() => testMarkets()}>Test Market</Button>
-			<Button onPress={() => settleFunds()}>Settle Funds</Button> */}
+				<Button onPress={() => prepTrade()}>Prep Trade</Button>
+				<Button onPress={() => testMarkets()}>Test Market</Button>
+				<Button onPress={() => settleFunds()}>Settle Funds</Button>
 				<View
 					style={{
 						borderWidth: 1,

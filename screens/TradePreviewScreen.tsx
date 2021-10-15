@@ -32,6 +32,16 @@ const {
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import * as SecureStore from 'expo-secure-store';
+import {
+	findAssociatedTokenAddress,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+} from '../utils';
+import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { Market } from '@project-serum/serum';
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -42,9 +52,13 @@ type Props = {
 const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [price, setPrice] = useState('');
+	const [size, setSize] = useState('');
+	const [side, setSide] = useState('sell');
+	const [marketAddress, setMarketAddress] = useState('');
 	console.log('route.params: ', route.params);
 	const tradeAmount = route.params.tradeAmount;
 	const fromTo = route.params.fromTo;
+	const passcode = useStoreState((state) => state.passcode);
 
 	// useEffect(() => {
 	// 	fetch('https://serum-api.bonfida.com/pairs')
@@ -52,6 +66,70 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	// 		.then((resp) => console.log(resp))
 	// 		.catch((err) => console.log('error ', err));
 	// }, []);
+
+	async function submitTrade() {
+		//prep trade
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const bip39 = await import('bip39');
+		const seed = await bip39.mnemonicToSeed(mnemonic);
+		const newAccount = getAccountFromSeed(
+			seed,
+			2,
+			DERIVATION_PATH.bip44Change,
+		);
+
+		const url = 'https://solana-api.projectserum.com';
+		const connection = new Connection(url);
+
+		//make the trade
+		const marketAddressKey = new PublicKey(marketAddress);
+		const programAddressKey = new PublicKey(
+			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
+		);
+
+		let market = await Market.load(
+			connection,
+			marketAddressKey,
+			{},
+			programAddressKey,
+		);
+
+		let owner = new Account(newAccount.secretKey);
+
+		console.log('hello');
+
+		console.log('associated token address', fromTo);
+
+		const mintKey = new PublicKey(fromTo.to.mint);
+
+		const associatedTokenAddress = findAssociatedTokenAddress(
+			owner.publicKey,
+			mintKey,
+		);
+
+		const hash = (await associatedTokenAddress).toString('hex');
+
+		let payer = new PublicKey(hash);
+
+		const payerString = (await payer).toString('hex');
+
+		console.log('payer', payerString);
+
+		await market
+			.placeOrder(connection, {
+				owner,
+				payer,
+				side: 'buy', //sell is from left side (use dxl as payer), buy is from right (use usdc as payer)
+				price: price,
+				size: size,
+				orderType: 'ioc',
+			})
+			.then((response) => {
+				console.log('response hit');
+				console.log(response);
+			})
+			.catch((err) => console.log(err));
+	}
 
 	useEffect(() => {
 		const marketName = fromTo.from.symbol + fromTo.to.symbol;
@@ -62,7 +140,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				const recentPrice = resp.data[0].price;
 				const newPrice = recentPrice * 1.005;
 				console.log('newprice', newPrice);
+				setSize(parseFloat(tradeAmount) / newPrice);
 				setPrice(newPrice);
+				setMarketAddress(resp.data[0].marketAddress);
 			})
 			.catch((err) => console.log('error ', err));
 	}, []);
@@ -221,9 +301,10 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button onPress={() => setModalVisible(true)}>
+				{/* <Button onPress={() => setModalVisible(true)}>
 					Submit Trade
-				</Button>
+				</Button> */}
+				<Button onPress={() => submitTrade()}>Submit Trade</Button>
 			</View>
 			<Modal
 				isVisible={modalVisible}
