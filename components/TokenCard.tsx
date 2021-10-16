@@ -5,7 +5,7 @@ import { Card } from 'react-native-paper';
 import { theme } from '../core/theme';
 
 const TokenCard = (info: object) => {
-	const { mint, price, amount, name, symbol, logoURI, change_24h } =
+	const { mint, price, amount, name, symbol, logo, change_24h } =
 		info.token.item;
 	const { onPress } = info;
 
@@ -34,7 +34,7 @@ const TokenCard = (info: object) => {
 					return (
 						<Image
 							style={{ height: 32, width: 32, borderRadius: 100 }}
-							source={{ uri: logoURI }}
+							source={{ uri: logo }}
 						/>
 					);
 				}}

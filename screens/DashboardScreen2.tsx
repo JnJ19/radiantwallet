@@ -159,8 +159,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				amount: realSolBalance,
 				name: 'Solana',
 				symbol: 'SOL',
-				logoURI:
-					'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+				logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
 				chat: 'https://discord.com/invite/pquxPsq',
 				twitter: 'https://twitter.com/solana',
 				website: 'https://solana.com/',
@@ -192,6 +191,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
 				const { name, symbol, logoURI, extensions } = otherDetails;
+				const logo = logoURI;
 
 				const mintKey = new PublicKey(mint);
 				const walletAddress = new PublicKey(
@@ -228,7 +228,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						const dataArray = Object.values(data.data);
 						return {
 							description: dataArray[0].description,
-							logoURI: dataArray[0].logo,
+							logo: dataArray[0].logo,
 							name: dataArray[0].name,
 							website: dataArray[0].urls.website[0],
 							twitter: dataArray[0].urls.twitter[0],
@@ -296,7 +296,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					amount,
 					name,
 					symbol,
-					logoURI,
+					logo,
 					extensions,
 					price,
 					change_24h,
@@ -838,7 +838,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, [tokens]);
 
 	useEffect(() => {
-		// getOwnedTokens();
+		getOwnedTokens();
 		// testMarkets();
 	}, [tokenMap]);
 
