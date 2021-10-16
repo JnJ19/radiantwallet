@@ -27,6 +27,7 @@ import {
 	TradeSuccessScreen,
 	SetPasscodeScreen,
 	PasscodeScreen,
+	WalletsScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -73,8 +74,8 @@ function Wallets() {
 	return (
 		<Stack.Navigator>
 			<Stack.Screen
-				name="Test Screen"
-				component={TestScreen}
+				name="Wallets"
+				component={WalletsScreen}
 				options={{ headerShown: false }}
 			/>
 		</Stack.Navigator>
