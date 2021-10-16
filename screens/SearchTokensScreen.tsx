@@ -18,6 +18,9 @@ import { Shadow } from 'react-native-shadow-2';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { SubPageHeader } from '../components';
 import { theme } from '../core/theme';
+import TokenCard from '../components/TokenCard';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 
 type Props = {
@@ -30,6 +33,8 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	const [logos, setLogos] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
+	const allTokens = useStoreState((state) => state.allTokens);
+
 	console.log('tokenmappp', tokenMap);
 	const renderItem = (data) => {
 		console.log('hello', data.item);
@@ -157,6 +162,21 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 				renderItem={renderItem}
 				keyExtractor={(item) => item.address}
 			/>
+			{/* {tokens ? (
+				<FlatList
+					data={allTokens}
+					renderItem={(token) => (
+						<TokenCard
+							token={token}
+							onPress={() =>
+								navigation.navigate('Token Details', token.item)
+							}
+						/>
+					)}
+					// renderItem={TokenCard}
+					keyExtractor={(item) => item.address}
+				/>
+			) : null} */}
 		</Background>
 	);
 };
