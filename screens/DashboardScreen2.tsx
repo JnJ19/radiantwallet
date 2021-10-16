@@ -93,6 +93,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		if (solBalance > 0) {
+			//these are two api keys for coinmarket cap free plan to use for this demo - please don't abuse them 🙏
 			//gmail key
 			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 			//travppatset key
@@ -158,13 +159,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				symbol: 'SOL',
 				logoURI:
 					'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
-				extensions: {
-					coingeckoId: 'solana',
-					discord: 'https://discord.com/invite/pquxPsq',
-					serumV3Usdc: '7xMDbYTCqQEcK2aM9LbetGtNFJpzKdfXzLL5juaLh4GJ',
-					twitter: 'https://twitter.com/solana',
-					website: 'https://solana.com/',
-				},
+				chat: 'https://discord.com/invite/pquxPsq',
+				twitter: 'https://twitter.com/solana',
+				website: 'https://solana.com/',
 				price,
 				price_30d,
 				price_60d,
@@ -175,7 +172,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				change_90d,
 				volume_24h,
 				market_cap,
-				aboutData:
+				description:
 					'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 506,348,680.4303728 with 299,902,995.15039116 in circulation. The last known price of Solana is 146.68289748 USD and is up 1.09 over the last 24 hours. It is currently trading on 161 active market(s) with $2,959,138,044.47 traded over the last 24 hours. More information can be found at https://solana.com.',
 				market_cap_dominance,
 			};
@@ -227,7 +224,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.then((response) => response.json())
 					.then((data) => {
 						const dataArray = Object.values(data.data);
-						return dataArray[0].description;
+						return {
+							description: dataArray[0].description,
+							logoURI: dataArray[0].logo,
+							name: dataArray[0].name,
+							website: dataArray[0].urls.website[0],
+							twitter: dataArray[0].urls.twitter[0],
+							chat: dataArray[0].urls.chat[0],
+						};
 					})
 					.catch((err) => console.log('error', err));
 
@@ -305,7 +309,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					volume_24h,
 					market_cap,
 					market_cap_dominance,
-					aboutData,
+					...aboutData,
 				};
 				tokens2.push(tokenObject);
 			}),
@@ -454,70 +458,353 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		}
 	}
 
-	useEffect(() => {
-		if (tokens) {
-			let todayArray = [];
-			let d30Array = [];
-			let d60Array = [];
-			let d90Array = [];
-			tokens.forEach((token) => {
-				todayArray.push(token.price * token.amount);
-				d30Array.push(token.price_30d * token.amount);
-				d60Array.push(token.price_60d * token.amount);
-				d90Array.push(token.price_90d * token.amount);
-			});
-			let sumToday = 0;
-			for (let i = 0; i < todayArray.length; i++) {
-				sumToday += todayArray[i];
-			}
+	async function getAllTokens3() {
+		//travppatset key
+		const taniaKey = '552210eb-cb88-4807-b271-c72fb878559d';
+		const prestonKey = '36fde760-71cf-4185-8600-0e4440f2b251';
+		const travCryptoKey = '33fbb4b5-f49f-40c3-86c7-e5a49db2508a';
+		const joeKey = '96b1b571-6ff0-47a7-af9d-bce2889e3655';
+		const travKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
+		const tokens = await getTokenPairs();
+		console.log('tokens: ', tokens);
 
-			let sum30 = 0;
-			for (let i = 0; i < d30Array.length; i++) {
-				sum30 += d30Array[i];
-			}
-			let sum60 = 0;
-			for (let i = 0; i < d60Array.length; i++) {
-				sum60 += d60Array[i];
-			}
-			let sum90 = 0;
-			for (let i = 0; i < d90Array.length; i++) {
-				sum90 += d90Array[i];
-			}
+		// const first15 = await get15Tokens(taniaKey, tokens, 45, 60);
+		// console.log('first15: ', first15);
+		// const second15 = await get15Tokens(prestonKey, tokens, 15, 29);
+		// console.log('second15: ', second15);
+		// const third15 = await get15Tokens(travCryptoKey, tokens, 30, 44);
+		// console.log('third15: ', third15);
+		// const fourth15 = await get15Tokens(joeKey, tokens, 45, 60);
+		// console.log('fourth15: ', fourth15);
+		// const fifth15 = await get15Tokens(travKey2, tokens, 45, 60);
+		// console.log('fifth15: ', fifth15);
 
-			const today = setChartData([sum90, sum60, sum30, sumToday]);
+		const allTokens = [
+			...first15,
+			...second15,
+			...third15,
+			...fourth15,
+			fifth15,
+		];
+		console.log('allTokens: ', allTokens);
+	}
+
+	async function getAllTokens2() {
+		//travppatset key
+		const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
+		const tokens = await getTokenPairs();
+		const symbolsList = await getCleanTokenList();
+		const combinedSymbolList = symbolsList.join();
+		console.log('combinedSymbolList: ', combinedSymbolList);
+
+		console.log(symbolsList.length);
+
+		console.log('hit');
+
+		// const coinMarketCapIds = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': apiKey2,
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
+		// 	.then((response) => response.json())
+		// 	.then((data) => {
+		// 		console.log('result of big fetch', Object.values(data.data));
+		// 	});
+
+		// const aboutData = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': apiKey2,
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
+		// 	.then((response) => response.json())
+		// 	.then((data) => {
+		// 		console.log('result of big fetch', data);
+		// 	});
+	}
+
+	async function get15Tokens(
+		apiKey: 'string',
+		tokenPairs: object[],
+		startPosition: number,
+		endPosition: number,
+	) {
+		const tokens2 = [];
+		for (let i = startPosition; i <= endPosition; i++) {
+			const token = tokenPairs[i];
+
+			const aboutData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${token.symbol}`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
+				},
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					console.log('data', data);
+					const dataArray = Object.values(data.data);
+					console.log('dataArray: ', dataArray);
+					return {
+						description: dataArray[0].description,
+						logoURI: dataArray[0].logo,
+						name: dataArray[0].name,
+						website: dataArray[0].urls.website[0],
+						twitter: dataArray[0].urls.twitter[0],
+						chat: dataArray[0].urls.chat[0],
+					};
+				})
+				.catch((err) => console.log('error', err));
+
+			const priceData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${token.symbol}`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
+				},
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					const dataArray = Object.values(data.data);
+					const change_24h =
+						dataArray[0].quote.USD.percent_change_24h;
+					const change_30d =
+						dataArray[0].quote.USD.percent_change_30d;
+					const change_60d =
+						dataArray[0].quote.USD.percent_change_60d;
+					const change_90d =
+						dataArray[0].quote.USD.percent_change_90d;
+					const {
+						price,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					} = dataArray[0].quote.USD;
+					return {
+						price,
+						change_24h,
+						change_30d,
+						change_60d,
+						change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					};
+				})
+				.catch((error) => console.log(error));
+			const {
+				price,
+				change_24h,
+				change_30d,
+				change_60d,
+				change_90d,
+				volume_24h,
+				market_cap,
+				market_cap_dominance,
+			} = priceData;
+
+			const tokenObject = {
+				...aboutData,
+				...priceData,
+				...token,
+			};
+			tokens2.push(tokenObject);
 		}
-	}, [tokens]);
+		return tokens2;
+	}
 
-	useEffect(() => {
-		// getOwnedTokens();
-		// testMarkets();
-	}, [tokenMap]);
+	async function getAllTokens() {
+		//travppatset key
+		const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
+		const tokens = await getTokenPairs();
+		console.log('hit');
 
-	// function filterString(string: string, matchString: string, isEqual: boolean) {
-	// 	if (isEqual) {
-	// 		return string.indexOf(matchString) >= 0
-	// 	}
-	// 	return string.indexOf(matchString) === -1;
-	// }
+		const tokens2 = [];
+		for (let i = 0; i < tokens.length; i++) {
+			console.log('tokens 2', tokens2);
+			const token = tokens[i];
+			console.log('hit 2');
 
-	// function filterArray(string: string, matchString: string, isEqual: boolean) {
+			const aboutData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${token.symbol}`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey2,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
+				},
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					console.log('data', data);
+					const dataArray = Object.values(data.data);
+					console.log('dataArray: ', dataArray);
+					return {
+						description: dataArray[0].description,
+						logoURI: dataArray[0].logo,
+						name: dataArray[0].name,
+						website: dataArray[0].urls.website[0],
+						twitter: dataArray[0].urls.twitter[0],
+						chat: dataArray[0].urls.chat[0],
+					};
+				})
+				.catch((err) => console.log('error', err));
 
-	// }
+			const priceData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${token.symbol}`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey2,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
+				},
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					const dataArray = Object.values(data.data);
+					const change_24h =
+						dataArray[0].quote.USD.percent_change_24h;
+					const change_30d =
+						dataArray[0].quote.USD.percent_change_30d;
+					const change_60d =
+						dataArray[0].quote.USD.percent_change_60d;
+					const change_90d =
+						dataArray[0].quote.USD.percent_change_90d;
+					const {
+						price,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					} = dataArray[0].quote.USD;
+					return {
+						price,
+						change_24h,
+						change_30d,
+						change_60d,
+						change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					};
+				})
+				.catch((error) => console.log(error));
+			const {
+				price,
+				change_24h,
+				change_30d,
+				change_60d,
+				change_90d,
+				volume_24h,
+				market_cap,
+				market_cap_dominance,
+			} = priceData;
 
-	useEffect(() => {
-		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
-		//then make two big calls to coinmarketcap - one for data, the other for price
-		//then combine all of those results based on symbol name 🎉
+			const tokenObject = {
+				...aboutData,
+				...priceData,
+				...token,
+			};
+			tokens2.push(tokenObject);
+		}
+		console.log('tokens2', tokens2);
+	}
 
-		//to dedupe going to take the array and split them into individual symbols >> then dedupe that array >> then
-		fetch('https://serum-api.bonfida.com/pairs')
+	function getTokenPair(symbol: string) {
+		return fetch('https://serum-api.bonfida.com/pairs')
 			.then((res) => res.json())
 			.then((res) => {
 				//remove pools and dashes
 				const removedDashes = res.data.filter(
 					(str: string) => str.indexOf('-') === -1,
 				);
-				const removedPools = removedDashes.filter(
+				const removedToken = removedDashes.filter(
+					(str: string) => str.indexOf('LIQD') === -1,
+				);
+				const removedPools = removedToken.filter(
+					(str: string) => str.indexOf('POOL') === -1,
+				);
+
+				//clean this up to take the inputted token
+				const finishedArray = [];
+
+				//find matching pairs
+				const pairs = removedPools.filter(
+					(str: string) => str.indexOf(symbol) >= 0,
+				);
+				const pairsArray = [];
+				for (let i = 0; i < pairs.length; i++) {
+					const el2 = pairs[i];
+
+					//take away the name and slash
+					const removeSymbol = el2.replace(symbol, '');
+					const removeSlash = removeSymbol.replace('/', '');
+
+					//deduce whether sell or buy side
+					let side;
+					removeSlash === el2.slice(0, removeSlash.length)
+						? (side = 'buy')
+						: (side = 'sell');
+
+					//construct array object
+					const newPair = {
+						pair: el2,
+						symbol: removeSlash,
+						side: side,
+					};
+
+					pairsArray.push(newPair);
+				}
+
+				return pairsArray;
+			})
+			.catch((err) => console.log(err));
+	}
+
+	function getTokenPairs() {
+		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
+
+		//then make two big calls to coinmarketcap - one for data, the other for price
+		//then combine all of those results based on symbol name 🎉
+		return fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				//remove pools and dashes
+				const removedDashes = res.data.filter(
+					(str: string) => str.indexOf('-') === -1,
+				);
+				const removedToken = removedDashes.filter(
+					(str: string) => str.indexOf('LQID') === -1,
+				);
+				const removedToken2 = removedToken.filter(
+					(str: string) => str.indexOf('ODOP') === -1,
+				);
+				const removedToken3 = removedToken2.filter(
+					(str: string) => str.indexOf('xCOPE') === -1,
+				);
+				const removedToken4 = removedToken3.filter(
+					(str: string) => str.indexOf('CCAI') === -1,
+				);
+				const removedToken5 = removedToken4.filter(
+					(str: string) => str.indexOf('PLEB') === -1,
+				);
+				const removedPools = removedToken5.filter(
 					(str: string) => str.indexOf('POOL') === -1,
 				);
 
@@ -580,13 +867,108 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 					finishedArray.push(finishedObject);
 				}
-				console.log('finished array', finishedArray);
+				return finishedArray;
 			})
 			.catch((err) => console.log(err));
-		return () => {
-			console.log('hello');
-		};
+	}
+
+	function getCleanTokenList() {
+		return fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				//remove pools and dashes
+				const removedDashes = res.data.filter(
+					(str: string) => str.indexOf('-') === -1,
+				);
+				const removedToken = removedDashes.filter(
+					(str: string) => str.indexOf('LQID') === -1,
+				);
+				const removedToken2 = removedToken.filter(
+					(str: string) => str.indexOf('ODOP') === -1,
+				);
+				const removedToken3 = removedToken2.filter(
+					(str: string) => str.indexOf('xCOPE') === -1,
+				);
+				const removedToken4 = removedToken3.filter(
+					(str: string) => str.indexOf('CCAI') === -1,
+				);
+				const removedToken5 = removedToken4.filter(
+					(str: string) => str.indexOf('PLEB') === -1,
+				);
+				const removedToken6 = removedToken5.filter(
+					(str: string) => str.indexOf('FIDID') === -1,
+				);
+				const removedPools = removedToken6.filter(
+					(str: string) => str.indexOf('POOL') === -1,
+				);
+
+				//split the pairs into separate symbols
+				const symbolsArray = [];
+				for (let i = 0; i < removedPools.length; i++) {
+					const el = removedPools[i];
+					const splitArray = el.split('/');
+					symbolsArray.push(...splitArray);
+				}
+
+				//dedupe symbols
+				const dedupedSymbols = [...new Set(symbolsArray)];
+
+				//remove random hashes
+				const cleanArray = [];
+				for (let i = 0; i < dedupedSymbols.length; i++) {
+					const el = dedupedSymbols[i];
+					if (el.length < 15) {
+						cleanArray.push(el);
+					}
+				}
+				return cleanArray;
+			})
+			.catch((err) => console.log(err));
+	}
+
+	useEffect(() => {
+		getAllTokens2();
+		// getCleanTokenList();
 	}, []);
+
+	useEffect(() => {
+		if (tokens) {
+			let todayArray = [];
+			let d30Array = [];
+			let d60Array = [];
+			let d90Array = [];
+			tokens.forEach((token) => {
+				todayArray.push(token.price * token.amount);
+				d30Array.push(token.price_30d * token.amount);
+				d60Array.push(token.price_60d * token.amount);
+				d90Array.push(token.price_90d * token.amount);
+			});
+			let sumToday = 0;
+			for (let i = 0; i < todayArray.length; i++) {
+				sumToday += todayArray[i];
+			}
+
+			let sum30 = 0;
+			for (let i = 0; i < d30Array.length; i++) {
+				sum30 += d30Array[i];
+			}
+			let sum60 = 0;
+			for (let i = 0; i < d60Array.length; i++) {
+				sum60 += d60Array[i];
+			}
+			let sum90 = 0;
+			for (let i = 0; i < d90Array.length; i++) {
+				sum90 += d90Array[i];
+			}
+
+			const today = setChartData([sum90, sum60, sum30, sumToday]);
+		}
+	}, [tokens]);
+
+	useEffect(() => {
+		// getOwnedTokens();
+		// testMarkets();
+	}, [tokenMap]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
