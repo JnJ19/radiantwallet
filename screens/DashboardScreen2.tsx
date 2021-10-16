@@ -899,9 +899,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		<Background>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-				<Button onPress={() => prepTrade()}>Prep Trade</Button>
+				{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
 				<Button onPress={() => testMarkets()}>Test Market</Button>
-				<Button onPress={() => settleFunds()}>Settle Funds</Button>
+				<Button onPress={() => settleFunds()}>Settle Funds</Button> */}
 				<View
 					style={{
 						borderWidth: 1,

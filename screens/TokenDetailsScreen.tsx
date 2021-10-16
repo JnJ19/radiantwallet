@@ -189,7 +189,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					>
 						<View style={{ flexDirection: 'row' }}>
 							<Image
-								source={{ uri: token.logoURI }}
+								source={{ uri: token.logo }}
 								style={{
 									width: 40,
 									height: 40,
@@ -467,7 +467,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								color: colors.black_four,
 							}}
 						>
-							{token.aboutData}
+							{token.description}
 						</Text>
 					</View>
 				</View>
