@@ -36,6 +36,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
+	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -317,6 +318,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			}),
 		);
 		setTokens(tokens2);
+		setOwnedTokens(tokens2);
 	}
 
 	async function prepTrade() {

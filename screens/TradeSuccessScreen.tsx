@@ -32,8 +32,8 @@ type Props = {
 };
 
 const TradeSuccessScreen = ({ navigation, route }: Props) => {
-	const token = route.params;
-	console.log('token', token);
+	const details = route.params;
+	console.log('token', details);
 
 	return (
 		<Background>
@@ -61,17 +61,17 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 							marginBottom: 16,
 						}}
 					>
-						$25.00 of SOL was converted to 1.58 DXL
+						${details.tradeAmount} of SOL was converted to DXL
 					</Text>
-					<Text
+					{/* <Text
 						style={{
 							...Nunito_Sans.Body_M_SemiBold,
 							color: colors.black_one,
 							marginBottom: 16,
 						}}
 					>
-						Transaction Fee $1.01
-					</Text>
+						Transaction Fee $1.00
+					</Text> */}
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>

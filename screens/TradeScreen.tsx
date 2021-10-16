@@ -31,6 +31,7 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
@@ -41,15 +42,17 @@ type Props = {
 const TradeScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	const [tradeAmount, setTradeAmount] = useState('0');
+	const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const usdc = ownedTokens.find((token) => token.symbol === 'USDC');
+	const usdcTotal = usdc.price * usdc.amount;
 	const [fromTo, setFromTo] = useState({
 		from: token,
 		to: {
 			symbol: 'USDC',
 			name: 'USD Coin',
-			logoURI:
-				'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
-			amount: 110.53,
-			price: 1.0,
+			logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+			amount: usdc.amount,
+			price: usdc.price,
 			mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 			associatedTokenAddressHash:
 				'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
@@ -92,8 +95,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				to: {
 					symbol: 'SOL',
 					name: 'Solana',
-					logoURI:
-						'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+					logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
 					amount: 10,
 					price: 150.53,
 					mint: 'BrEAK7zGZ6dM71zUDACDqJnekihmwF15noTddWTsknjC',
@@ -155,7 +157,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
 					<Image
-						source={{ uri: fromTo.from.logoURI }}
+						source={{ uri: fromTo.from.logo }}
 						style={{
 							width: 40,
 							height: 40,
@@ -197,7 +199,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 						</Text>
 					</View>
 					<Image
-						source={{ uri: fromTo.to.logoURI }}
+						source={{ uri: fromTo.to.logo }}
 						style={{
 							width: 40,
 							height: 40,

@@ -1,31 +1,10 @@
 import React, { memo, useState, useEffect } from 'react';
 import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
-import {
-	View,
-	Image,
-	StyleSheet,
-	TouchableOpacity,
-	TouchableWithoutFeedback,
-	TouchableNativeFeedback,
-} from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
-import { BlurView } from 'expo-blur';
 import Modal from 'react-native-modal';
 const {
 	colors,
@@ -50,6 +29,7 @@ type Props = {
 };
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
+	console.log('route', route);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [price, setPrice] = useState('');
 	const [size, setSize] = useState('');
@@ -59,6 +39,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const tradeAmount = route.params.tradeAmount;
 	const fromTo = route.params.fromTo;
 	const passcode = useStoreState((state) => state.passcode);
+	const ownedTokens = useStoreState((state) => state.ownedTokens);
 
 	// useEffect(() => {
 	// 	fetch('https://serum-api.bonfida.com/pairs')
@@ -96,11 +77,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 
 		let owner = new Account(newAccount.secretKey);
 
-		console.log('hello');
-
 		console.log('associated token address', fromTo);
 
-		const mintKey = new PublicKey(fromTo.to.mint);
+		const mintKey = new PublicKey(fromTo.from.mint);
 
 		const associatedTokenAddress = findAssociatedTokenAddress(
 			owner.publicKey,
@@ -127,15 +106,58 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			.then((response) => {
 				console.log('response hit');
 				console.log(response);
+				setModalVisible(false);
+				navigation.navigate('Trade Success', {
+					tradeAmount,
+					price,
+					fromTo,
+				});
 			})
 			.catch((err) => console.log(err));
+
+		//usdc associated token account
+		const quoteTokenAccount = new PublicKey(
+			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
+		);
+
+		//dxl associated token account
+		const baseTokenAccount = new PublicKey(
+			'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		);
+		console.log('another hit');
+		for (let openOrders of await market.findOpenOrdersAccountsForOwner(
+			connection,
+			owner.publicKey,
+		)) {
+			console.log('hittt');
+			if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
+				// spl-token accounts to which to send the proceeds from trades
+				console.log('hit 2');
+				await market
+					.settleFunds(
+						connection,
+						owner,
+						openOrders,
+						baseTokenAccount,
+						quoteTokenAccount,
+					)
+					.then((res) => console.log('response', res))
+					.catch((err) => console.log('error', err));
+			} else {
+				console.log('hit other');
+			}
+		}
+
+		//settle the order
 	}
 
 	useEffect(() => {
-		const marketName = fromTo.from.symbol + fromTo.to.symbol;
+		const marketName = fromTo.to.symbol + fromTo.from.symbol;
 		fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
 			.then((res) => res.json())
 			.then((resp) => {
+				console.log('helloooooooo', marketName);
+
 				console.log(resp);
 				const recentPrice = resp.data[0].price;
 				const newPrice = recentPrice * 1.005;
@@ -304,7 +326,14 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				{/* <Button onPress={() => setModalVisible(true)}>
 					Submit Trade
 				</Button> */}
-				<Button onPress={() => submitTrade()}>Submit Trade</Button>
+				<Button
+					onPress={() => {
+						setModalVisible(true);
+						submitTrade();
+					}}
+				>
+					Submit Trade
+				</Button>
 			</View>
 			<Modal
 				isVisible={modalVisible}
@@ -332,7 +361,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 						source={require('../assets/images/logo_loader.png')}
 						style={{ width: 110, height: 114, marginBottom: 2 }}
 					/>
-					<Text style={styles.loaderLabel}>Settling Trade...</Text>
+					<Text style={styles.loaderLabel}>Submitting...</Text>
 				</TouchableOpacity>
 			</Modal>
 		</Background>
