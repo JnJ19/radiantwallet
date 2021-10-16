@@ -34,6 +34,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const passcode = useStoreState((state) => state.passcode);
+	const allTokens = useStoreState((state) => state.allTokens);
+	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -401,6 +403,38 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		// );
 	}
 
+	async function findAssociatedTokenAddress(
+		walletAddress: PublicKey,
+		tokenMintAddress: PublicKey,
+	): Promise<PublicKey> {
+		const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey =
+			new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+		return (
+			await PublicKey.findProgramAddress(
+				[
+					walletAddress.toBuffer(),
+					TOKEN_PROGRAM_ID.toBuffer(),
+					tokenMintAddress.toBuffer(),
+				],
+				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+			)
+		)[0];
+	}
+
+	async function getAssociatedAddress() {
+		const walletAddress = new PublicKey(
+			'HVFsGZ6J164iWb5iTaSvML2K5eXdme55f1ggA7mS7ua3',
+		);
+		const mint = new PublicKey(
+			'MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac',
+		);
+		const associatedaddress = await findAssociatedTokenAddress(
+			walletAddress,
+			mint,
+		);
+		return associatedaddress;
+	}
+
 	async function settleFunds() {
 		let owner = new Account(account.secretKey);
 		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
@@ -458,272 +492,109 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		}
 	}
 
-	async function getAllTokens3() {
-		//travppatset key
-		const taniaKey = '552210eb-cb88-4807-b271-c72fb878559d';
-		const prestonKey = '36fde760-71cf-4185-8600-0e4440f2b251';
-		const travCryptoKey = '33fbb4b5-f49f-40c3-86c7-e5a49db2508a';
-		const joeKey = '96b1b571-6ff0-47a7-af9d-bce2889e3655';
-		const travKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
-		const tokens = await getTokenPairs();
-		console.log('tokens: ', tokens);
-
-		// const first15 = await get15Tokens(taniaKey, tokens, 45, 60);
-		// console.log('first15: ', first15);
-		// const second15 = await get15Tokens(prestonKey, tokens, 15, 29);
-		// console.log('second15: ', second15);
-		// const third15 = await get15Tokens(travCryptoKey, tokens, 30, 44);
-		// console.log('third15: ', third15);
-		// const fourth15 = await get15Tokens(joeKey, tokens, 45, 60);
-		// console.log('fourth15: ', fourth15);
-		// const fifth15 = await get15Tokens(travKey2, tokens, 45, 60);
-		// console.log('fifth15: ', fifth15);
-
-		const allTokens = [
-			...first15,
-			...second15,
-			...third15,
-			...fourth15,
-			fifth15,
-		];
-		console.log('allTokens: ', allTokens);
-	}
-
-	async function getAllTokens2() {
-		//travppatset key
-		const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
-		const tokens = await getTokenPairs();
-		const symbolsList = await getCleanTokenList();
-		const combinedSymbolList = symbolsList.join();
-		console.log('combinedSymbolList: ', combinedSymbolList);
-
-		console.log(symbolsList.length);
-
-		console.log('hit');
-
-		// const coinMarketCapIds = await fetch(
-		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
-		// 	{
-		// 		headers: {
-		// 			'X-CMC_PRO_API_KEY': apiKey2,
-		// 			Accept: 'application/json',
-		// 			'Accept-Encoding': 'deflate, gzip',
-		// 		},
-		// 	},
-		// )
-		// 	.then((response) => response.json())
-		// 	.then((data) => {
-		// 		console.log('result of big fetch', Object.values(data.data));
-		// 	});
-
-		// const aboutData = await fetch(
-		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
-		// 	{
-		// 		headers: {
-		// 			'X-CMC_PRO_API_KEY': apiKey2,
-		// 			Accept: 'application/json',
-		// 			'Accept-Encoding': 'deflate, gzip',
-		// 		},
-		// 	},
-		// )
-		// 	.then((response) => response.json())
-		// 	.then((data) => {
-		// 		console.log('result of big fetch', data);
-		// 	});
-	}
-
-	async function get15Tokens(
-		apiKey: 'string',
-		tokenPairs: object[],
-		startPosition: number,
-		endPosition: number,
-	) {
-		const tokens2 = [];
-		for (let i = startPosition; i <= endPosition; i++) {
-			const token = tokenPairs[i];
-
-			const aboutData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${token.symbol}`,
-				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
-				},
-			)
-				.then((response) => response.json())
-				.then((data) => {
-					console.log('data', data);
-					const dataArray = Object.values(data.data);
-					console.log('dataArray: ', dataArray);
-					return {
-						description: dataArray[0].description,
-						logoURI: dataArray[0].logo,
-						name: dataArray[0].name,
-						website: dataArray[0].urls.website[0],
-						twitter: dataArray[0].urls.twitter[0],
-						chat: dataArray[0].urls.chat[0],
-					};
-				})
-				.catch((err) => console.log('error', err));
-
-			const priceData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${token.symbol}`,
-				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
-				},
-			)
-				.then((response) => response.json())
-				.then((data) => {
-					const dataArray = Object.values(data.data);
-					const change_24h =
-						dataArray[0].quote.USD.percent_change_24h;
-					const change_30d =
-						dataArray[0].quote.USD.percent_change_30d;
-					const change_60d =
-						dataArray[0].quote.USD.percent_change_60d;
-					const change_90d =
-						dataArray[0].quote.USD.percent_change_90d;
-					const {
-						price,
-						volume_24h,
-						market_cap,
-						market_cap_dominance,
-					} = dataArray[0].quote.USD;
-					return {
-						price,
-						change_24h,
-						change_30d,
-						change_60d,
-						change_90d,
-						volume_24h,
-						market_cap,
-						market_cap_dominance,
-					};
-				})
-				.catch((error) => console.log(error));
-			const {
-				price,
-				change_24h,
-				change_30d,
-				change_60d,
-				change_90d,
-				volume_24h,
-				market_cap,
-				market_cap_dominance,
-			} = priceData;
-
-			const tokenObject = {
-				...aboutData,
-				...priceData,
-				...token,
-			};
-			tokens2.push(tokenObject);
-		}
-		return tokens2;
-	}
-
 	async function getAllTokens() {
 		//travppatset key
 		const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
-		const tokens = await getTokenPairs();
-		console.log('hit');
+		const tokenPairs = await getTokenPairs();
+		const symbolsList = await getCleanTokenList();
+		const combinedSymbolList = symbolsList.join();
 
-		const tokens2 = [];
-		for (let i = 0; i < tokens.length; i++) {
-			console.log('tokens 2', tokens2);
-			const token = tokens[i];
-			console.log('hit 2');
-
-			const aboutData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${token.symbol}`,
-				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey2,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
+		const coinMarketCapTokens = await fetch(
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+			{
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey2,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
 				},
-			)
-				.then((response) => response.json())
-				.then((data) => {
-					console.log('data', data);
-					const dataArray = Object.values(data.data);
-					console.log('dataArray: ', dataArray);
-					return {
-						description: dataArray[0].description,
-						logoURI: dataArray[0].logo,
-						name: dataArray[0].name,
-						website: dataArray[0].urls.website[0],
-						twitter: dataArray[0].urls.twitter[0],
-						chat: dataArray[0].urls.chat[0],
-					};
-				})
-				.catch((err) => console.log('error', err));
+			},
+		)
+			.then((response) => response.json())
+			.then((data) => {
+				return Object.values(data.data);
+			});
 
-			const priceData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${token.symbol}`,
-				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey2,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
-				},
-			)
-				.then((response) => response.json())
-				.then((data) => {
-					const dataArray = Object.values(data.data);
-					const change_24h =
-						dataArray[0].quote.USD.percent_change_24h;
-					const change_30d =
-						dataArray[0].quote.USD.percent_change_30d;
-					const change_60d =
-						dataArray[0].quote.USD.percent_change_60d;
-					const change_90d =
-						dataArray[0].quote.USD.percent_change_90d;
-					const {
-						price,
-						volume_24h,
-						market_cap,
-						market_cap_dominance,
-					} = dataArray[0].quote.USD;
-					return {
-						price,
-						change_24h,
-						change_30d,
-						change_60d,
-						change_90d,
-						volume_24h,
-						market_cap,
-						market_cap_dominance,
-					};
-				})
-				.catch((error) => console.log(error));
+		//combine token pairs and coinmarketcap data
+		const combinedArray = [];
+		for (let i = 0; i < coinMarketCapTokens.length; i++) {
+			const cmToken = coinMarketCapTokens[i];
+			const pairs = tokenPairs.find(
+				(pair: object) => pair.symbol === cmToken.symbol,
+			);
+
 			const {
-				price,
-				change_24h,
-				change_30d,
-				change_60d,
-				change_90d,
-				volume_24h,
+				name,
+				logo,
+				symbol,
+				description,
+				urls: { twitter, chat, website },
+			} = cmToken;
+
+			const newObject = {
+				name,
+				logo,
+				symbol,
+				description,
+				twitter,
+				chat,
+				website,
+				pairs: pairs.pairs,
+			};
+			combinedArray.push(newObject);
+		}
+		console.log('combinedArray: ', combinedArray);
+
+		//get and combine prices now too
+		const coinMarketCapPrices = await fetch(
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${combinedSymbolList}`,
+			{
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey2,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
+				},
+			},
+		)
+			.then((response) => response.json())
+			.then((data) => {
+				return Object.values(data.data);
+			});
+
+		const combinedArrayWithPrices = [];
+		for (let i = 0; i < combinedArray.length; i++) {
+			const element = combinedArray[i];
+			const prices = coinMarketCapPrices.find(
+				(priceSet) => priceSet.symbol === element.symbol,
+			);
+
+			const {
+				percent_change_24h,
 				market_cap,
 				market_cap_dominance,
-			} = priceData;
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
+				price,
+				volume_24h,
+			} = prices.quote;
 
-			const tokenObject = {
-				...aboutData,
-				...priceData,
-				...token,
+			const newObject = {
+				...element,
+				percent_change_24h,
+				market_cap,
+				market_cap_dominance,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
+				price,
+				volume_24h,
 			};
-			tokens2.push(tokenObject);
+			combinedArrayWithPrices.push(newObject);
 		}
-		console.log('tokens2', tokens2);
+		console.log('combinedArrayWithPrices: ', combinedArrayWithPrices);
+		setAllTokens(combinedArrayWithPrices);
+
+		//now add market address
 	}
 
 	function getTokenPair(symbol: string) {
@@ -927,8 +798,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	useEffect(() => {
-		getAllTokens2();
+		getAllTokens();
 		// getCleanTokenList();
+		// getAddress();
 	}, []);
 
 	useEffect(() => {
