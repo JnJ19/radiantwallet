@@ -115,38 +115,38 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			})
 			.catch((err) => console.log(err));
 
-		//usdc associated token account
-		const quoteTokenAccount = new PublicKey(
-			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-		);
+		// //usdc associated token account
+		// const quoteTokenAccount = new PublicKey(
+		// 	'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
+		// );
 
-		//dxl associated token account
-		const baseTokenAccount = new PublicKey(
-			'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
-		);
-		console.log('another hit');
-		for (let openOrders of await market.findOpenOrdersAccountsForOwner(
-			connection,
-			owner.publicKey,
-		)) {
-			console.log('hittt');
-			if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
-				// spl-token accounts to which to send the proceeds from trades
-				console.log('hit 2');
-				await market
-					.settleFunds(
-						connection,
-						owner,
-						openOrders,
-						baseTokenAccount,
-						quoteTokenAccount,
-					)
-					.then((res) => console.log('response', res))
-					.catch((err) => console.log('error', err));
-			} else {
-				console.log('hit other');
-			}
-		}
+		// //dxl associated token account
+		// const baseTokenAccount = new PublicKey(
+		// 	'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
+		// );
+		// console.log('another hit');
+		// for (let openOrders of await market.findOpenOrdersAccountsForOwner(
+		// 	connection,
+		// 	owner.publicKey,
+		// )) {
+		// 	console.log('hittt');
+		// 	if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
+		// 		// spl-token accounts to which to send the proceeds from trades
+		// 		console.log('hit 2');
+		// 		await market
+		// 			.settleFunds(
+		// 				connection,
+		// 				owner,
+		// 				openOrders,
+		// 				baseTokenAccount,
+		// 				quoteTokenAccount,
+		// 			)
+		// 			.then((res) => console.log('response', res))
+		// 			.catch((err) => console.log('error', err));
+		// 	} else {
+		// 		console.log('hit other');
+		// 	}
+		// }
 
 		//settle the order
 	}

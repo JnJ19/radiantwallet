@@ -75,9 +75,7 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
-					onPress={() => navigation.navigate('Token Details', token)}
-				>
+				<Button onPress={() => navigation.navigate('Dashboard')}>
 					Done
 				</Button>
 			</View>
