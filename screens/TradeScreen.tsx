@@ -79,16 +79,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
-	async function storeLocal() {
-		const setStorage = await AsyncStorage.setItem('testKey', 'testValue');
-		console.log('setStorage: ', setStorage);
-		const getStorage = await AsyncStorage.getItem('testKeyyy');
-		console.log('getStorage: ', getStorage);
-	}
-
 	useEffect(() => {
-		console.log('helllo');
-		storeLocal();
 		if (fromTo.from.symbol && fromTo.from.symbol === 'USDC') {
 			setFromTo({
 				...fromTo,
@@ -114,18 +105,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				const removedDashes = result.filter(
 					(str: string) => str.indexOf('-') === -1,
 				);
-				console.log('result', removedDashes);
 			})
 			.catch((err) => console.log(err));
 	}, []);
-
-	// useEffect(() => {
-	// 	const test = ['one turtle', 'two pigs', 'three turtles'];
-	// 	const filtered = test.filter((str) => {
-	// 		return str.indexOf('turtle') >= 0;
-	// 	});
-	// 	console.log('filtered: ', filtered);
-	// }, []);
 
 	return (
 		<Background>

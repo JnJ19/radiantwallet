@@ -46,8 +46,6 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
 
-	console.log('code', code);
-
 	function addNumber(numberString: string) {
 		if (code.length < 4) {
 			if (code === '0') {

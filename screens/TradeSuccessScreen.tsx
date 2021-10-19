@@ -33,7 +33,6 @@ type Props = {
 
 const TradeSuccessScreen = ({ navigation, route }: Props) => {
 	const details = route.params;
-	console.log('token', details);
 
 	return (
 		<Background>

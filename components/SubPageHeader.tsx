@@ -15,7 +15,6 @@ type Props = {
 
 const SubPageHeader = ({ children, backButton, subText = '' }: Props) => {
 	const navigation = useNavigation();
-	console.log(subText && true);
 	return (
 		<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 			{backButton && (

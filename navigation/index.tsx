@@ -285,11 +285,6 @@ function RootNavigator() {
 }
 
 function RootNavigator3() {
-	// const passcode = useStoreState((state) => state.passcode);
-	// const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
-	// console.log('state: ', passcode);
-	// updatePasscode('5678');
-	// console.log('state: ', passcode);
 	const [hasAccount, setHasAccount] = useState(false);
 
 	async function checkForAccount() {
@@ -297,7 +292,6 @@ function RootNavigator3() {
 		if (accountStatus) {
 			setHasAccount(accountStatus);
 		}
-		console.log('first account status', accountStatus);
 		// return accountStatus;
 	}
 
@@ -336,6 +330,16 @@ function RootNavigator3() {
 				<Stack.Screen
 					name="Trade Success"
 					component={TradeSuccessScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Onboarding"
+					component={OnboardingScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Import Wallet"
+					component={ImportWalletScreen}
 					options={{ headerShown: false }}
 				/>
 			</Stack.Navigator>

@@ -40,8 +40,8 @@ const store = createStore({
 	updateAccount: action((state, payload) => {
 		state.account = payload;
 	}),
-	ownedTokens: [],
-	allTokens: [],
+	ownedTokens: '',
+	allTokens: '',
 	setOwnedTokens: action((state, payload) => {
 		state.ownedTokens = payload;
 	}),

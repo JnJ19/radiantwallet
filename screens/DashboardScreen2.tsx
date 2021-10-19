@@ -317,92 +317,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				tokens2.push(tokenObject);
 			}),
 		);
+
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
-	}
-
-	async function prepTrade() {
-		// let mnemonic =
-		// 	'***REMOVED***';
-
-		let mnemonic = await SecureStore.getItemAsync(passcode);
-		const bip39 = await import('bip39');
-		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
-		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
-		const newAccount = getAccountFromSeed(
-			seed,
-			2,
-			DERIVATION_PATH.bip44Change,
-		);
-
-		const url = 'https://solana-api.projectserum.com';
-		const newConnection = new Connection(url);
-		setAccount(newAccount);
-		setConnection(newConnection);
-		console.log('done');
-	}
-
-	async function testMarkets() {
-		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
-		const marketAddress = new PublicKey(
-			'DYfigimKWc5VhavR4moPBibx9sMcWYVSjVdWvPztBPTa',
-		);
-		//serum v3 program address pulled from Solana Explorer
-		const programAddress = new PublicKey(
-			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-		);
-
-		let market = await Market.load(
-			connection,
-			marketAddress,
-			{},
-			programAddress,
-		);
-
-		let owner = new Account(account.secretKey);
-
-		console.log(
-			'wallet address dashboard',
-			owner.secretKey.toString('hex'),
-		);
-
-		const newbalance = await connection.getBalance(owner.publicKey);
-		console.log('newbalance: ', newbalance);
-		//DXL Associated Program Token Account
-		// let payer = new PublicKey(
-		// 	'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
-		// );
-
-		//USDC Associated Program Token Account
-		let payer = new PublicKey(
-			'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-		);
-		console.log('payer', payer);
-
-		await market
-			.placeOrder(connection, {
-				owner,
-				payer,
-				side: 'buy',
-				price: 0.37,
-				size: 10,
-				orderType: 'ioc',
-			})
-			.then((response) => {
-				console.log('response hit');
-				console.log(response);
-			})
-			.catch((err) => console.log(err));
-
-		// let myOrders = await market.loadOrdersForOwner(
-		// 	connection,
-		// 	owner.publicKey,
-		// );
-
-		// let otherOrders = await market.findOpenOrdersAccountsForOwner(
-		// 	connection,
-		// 	owner.publicKey,
-		// );
 	}
 
 	async function findAssociatedTokenAddress(
@@ -474,10 +391,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			connection,
 			owner.publicKey,
 		)) {
-			console.log('hit');
 			if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
 				// spl-token accounts to which to send the proceeds from trades
-				console.log('hit 2');
 				await market
 					.settleFunds(
 						connection,
@@ -544,7 +459,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			};
 			combinedArray.push(newObject);
 		}
-		console.log('combinedArray: ', combinedArray);
 
 		//get and combine prices now too
 		const coinMarketCapPrices = await fetch(
@@ -593,7 +507,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			};
 			combinedArrayWithPrices.push(newObject);
 		}
-		console.log('combinedArrayWithPrices: ', combinedArrayWithPrices);
 		setAllTokens(combinedArrayWithPrices);
 
 		//now add market address

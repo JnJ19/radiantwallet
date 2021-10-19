@@ -46,8 +46,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const [error, setError] = useState(false);
 
-	console.log('code', code);
-
 	async function getPhrase(passcode: string) {
 		let result = await SecureStore.getItemAsync(passcode);
 		if (result) {
@@ -66,15 +64,16 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 		let result = await SecureStore.getItemAsync(passcodeKey);
 		if (result === code) {
 			updatePasscode(code);
-			navigation.navigate('Main');
+			const mnemonic = await SecureStore.getItemAsync(code);
+			if (mnemonic) {
+				navigation.navigate('Main');
+			} else {
+				navigation.navigate('Onboarding');
+			}
 		} else {
 			setError(true);
 			setCode('');
 		}
-	}
-
-	async function storePassKey() {
-		await SecureStore.setItemAsync('6595key', '6595');
 	}
 
 	useEffect(() => {
@@ -100,6 +99,10 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	useEffect(() => {
+		SecureStore.setItemAsync('test', 'test1');
+	}, []);
+
 	function removeNumber() {
 		if (code.length === 1) {
 			setCode('');
@@ -114,13 +117,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 		await AsyncStorage.setItem('hasAccount', 'true');
 		const result = await AsyncStorage.getItem('hasAccount');
 		navigation.navigate('Onboarding');
-	}
-
-	async function storeLocal() {
-		const setStorage = await AsyncStorage.setItem('testKey', 'testValue');
-		console.log('setStorage: ', setStorage);
-		const getStorage = await AsyncStorage.getItem('testKeyyy');
-		console.log('getStorage: ', getStorage);
 	}
 
 	return (
