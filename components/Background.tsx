@@ -6,6 +6,8 @@ import {
 	SafeAreaView,
 	View,
 	ScrollView,
+	TouchableWithoutFeedback,
+	Keyboard,
 } from 'react-native';
 
 type Props = {
@@ -13,6 +15,12 @@ type Props = {
 	position?: String;
 	// blackBackground: boolean;
 };
+
+const DismissKeyboard = ({ children }) => (
+	<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+		{children}
+	</TouchableWithoutFeedback>
+);
 
 const Background = ({ children, position, blackBackground = false }: Props) => (
 	// <ImageBackground
@@ -27,12 +35,14 @@ const Background = ({ children, position, blackBackground = false }: Props) => (
 			{ paddingTop: 24 },
 		]}
 	>
-		<KeyboardAvoidingView
-			style={styles.container}
-			// behavior="padding"
-		>
-			{children}
-		</KeyboardAvoidingView>
+		<DismissKeyboard>
+			<KeyboardAvoidingView
+				style={styles.container}
+				// behavior="padding"
+			>
+				{children}
+			</KeyboardAvoidingView>
+		</DismissKeyboard>
 	</View>
 	// </ImageBackground>
 );

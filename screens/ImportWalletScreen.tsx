@@ -106,211 +106,204 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 	}, []);
 
 	return (
-		<DismissKeyboard>
-			<Background position="bottom">
-				<View>
-					<SubPageHeader backButton={true}>
-						Import Wallet
-					</SubPageHeader>
-					<Text
+		<Background position="bottom">
+			<View>
+				<SubPageHeader backButton={true}>Import Wallet</SubPageHeader>
+				<Text
+					style={{
+						marginVertical: 24,
+						...theme.fonts.Nunito_Sans.Body_L_Bold,
+					}}
+				>
+					Add your secret phrase to import your wallet
+				</Text>
+				<View
+					style={{
+						borderWidth: 1,
+						borderColor: theme.colors.black_seven,
+						// padding: 8,
+						borderRadius: 18,
+						padding: 16,
+						marginBottom: 24,
+					}}
+				>
+					<TextInputRN
 						style={{
-							marginVertical: 24,
-							...theme.fonts.Nunito_Sans.Body_L_Bold,
+							borderColor: 'black',
+							borderWidth: 0,
+							...theme.fonts.Nunito_Sans.Body_M_Regular,
 						}}
-					>
-						Add your secret phrase to import your wallet
-					</Text>
+						onChangeText={(text) => setSecret(text)}
+						value={secret}
+						placeholder="Enter your secret phrase"
+						// placeholderTextColor: theme.colors.primary
+						keyboardType="default"
+						multiline={true}
+						minHeight={150}
+					/>
 					<View
 						style={{
-							borderWidth: 1,
-							borderColor: theme.colors.black_seven,
-							// padding: 8,
-							borderRadius: 18,
-							padding: 16,
-							marginBottom: 24,
+							borderBottomColor: theme.colors.black_seven,
+							borderBottomWidth: 1,
+							marginBottom: 8,
 						}}
-					>
-						<TextInputRN
+					></View>
+					<View style={{ flexDirection: 'row' }}>
+						<TouchableOpacity
 							style={{
-								borderColor: 'black',
-								borderWidth: 0,
-								...theme.fonts.Nunito_Sans.Body_M_Regular,
+								flexDirection: 'row',
+								marginRight: 8,
+								padding: 6,
+								backgroundColor: '#F1F4F9',
+								borderRadius: 6,
 							}}
-							onChangeText={(text) => setSecret(text)}
-							value={secret}
-							placeholder="Enter your secret phrase"
-							// placeholderTextColor: theme.colors.primary
-							keyboardType="default"
-							multiline={true}
-							minHeight={150}
-						/>
-						<View
+						>
+							<Image
+								source={require('../assets/icons/scan.jpg')}
+								style={{
+									width: 16,
+									height: 16,
+									alignSelf: 'center',
+									marginRight: 6,
+								}}
+							/>
+							<Text
+								style={
+									theme.fonts.Nunito_Sans.Caption_S_SemiBold
+								}
+							>
+								Scan
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => fetchCopiedText()}
 							style={{
-								borderBottomColor: theme.colors.black_seven,
-								borderBottomWidth: 1,
-								marginBottom: 8,
+								flexDirection: 'row',
+								marginRight: 8,
+								padding: 6,
+								backgroundColor: '#F1F4F9',
+								borderRadius: 6,
 							}}
-						></View>
-						<View style={{ flexDirection: 'row' }}>
-							<TouchableOpacity
+						>
+							<Image
+								source={require('../assets/icons/copy.jpg')}
 								style={{
-									flexDirection: 'row',
-									marginRight: 8,
-									padding: 6,
-									backgroundColor: '#F1F4F9',
-									borderRadius: 6,
+									width: 16,
+									height: 16,
+									alignSelf: 'center',
+									marginRight: 6,
 								}}
+							/>
+							<Text
+								style={
+									theme.fonts.Nunito_Sans.Caption_S_SemiBold
+								}
 							>
-								<Image
-									source={require('../assets/icons/scan.jpg')}
-									style={{
-										width: 16,
-										height: 16,
-										alignSelf: 'center',
-										marginRight: 6,
-									}}
-								/>
-								<Text
-									style={
-										theme.fonts.Nunito_Sans
-											.Caption_S_SemiBold
-									}
-								>
-									Scan
-								</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() => fetchCopiedText()}
-								style={{
-									flexDirection: 'row',
-									marginRight: 8,
-									padding: 6,
-									backgroundColor: '#F1F4F9',
-									borderRadius: 6,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/copy.jpg')}
-									style={{
-										width: 16,
-										height: 16,
-										alignSelf: 'center',
-										marginRight: 6,
-									}}
-								/>
-								<Text
-									style={
-										theme.fonts.Nunito_Sans
-											.Caption_S_SemiBold
-									}
-								>
-									sport seek found
-								</Text>
-							</TouchableOpacity>
-						</View>
+								sport seek found
+							</Text>
+						</TouchableOpacity>
 					</View>
-					{/* <Button
+				</View>
+				{/* <Button
 				onPress={handlePresentModalPress}
 				title="Present Modal"
 				mode="contained"
 				// color="black"
 			/> */}
-					<TouchableOpacity
-						onPress={() => bottomSheetModalRef.current?.present()}
-					>
-						<Text style={theme.fonts.Nunito_Sans.Body_M_Bold}>
-							What is a Secret Phrase?
-						</Text>
-					</TouchableOpacity>
-					{/* <View style={{ height: 250 }}></View> */}
-				</View>
-				<View style={{ marginBottom: 40 }}>
-					<Button
-						mode="contained"
-						onPress={() => storePhraseAndContinue(passcode, secret)}
-					>
-						Import Wallet
-					</Button>
-				</View>
-				<BottomSheetModalProvider>
-					<BottomSheetModal
-						ref={bottomSheetModalRef}
-						index={1}
-						snapPoints={snapPoints}
-						onChange={handleSheetChanges}
+				<TouchableOpacity
+					onPress={() => bottomSheetModalRef.current?.present()}
+				>
+					<Text style={theme.fonts.Nunito_Sans.Body_M_Bold}>
+						What is a Secret Phrase?
+					</Text>
+				</TouchableOpacity>
+				{/* <View style={{ height: 250 }}></View> */}
+			</View>
+			<View style={{ marginBottom: 40 }}>
+				<Button
+					mode="contained"
+					onPress={() => storePhraseAndContinue(passcode, secret)}
+				>
+					Import Wallet
+				</Button>
+			</View>
+			<BottomSheetModalProvider>
+				<BottomSheetModal
+					ref={bottomSheetModalRef}
+					index={1}
+					snapPoints={snapPoints}
+					onChange={handleSheetChanges}
+					style={{
+						// margin: 16,
+						shadowColor: '#000',
+						shadowOffset: {
+							width: 0,
+							height: 6,
+						},
+						shadowOpacity: 0.37,
+						shadowRadius: 7.49,
+						elevation: 12,
+					}}
+				>
+					<View
 						style={{
-							// margin: 16,
-							shadowColor: '#000',
-							shadowOffset: {
-								width: 0,
-								height: 6,
-							},
-							shadowOpacity: 0.37,
-							shadowRadius: 7.49,
-							elevation: 12,
+							justifyContent: 'space-between',
+							margin: 16,
 						}}
 					>
 						<View
 							style={{
-								justifyContent: 'space-between',
-								margin: 16,
+								marginBottom: 24,
+								marginTop: 8,
 							}}
 						>
-							<View
-								style={{
-									marginBottom: 24,
-									marginTop: 8,
-								}}
-							>
-								<Text
-									style={
-										theme.fonts.Azeret_Mono
-											.Header_M_SemiBold
-									}
-								>
-									What is a Secret Phrase?
-								</Text>
-							</View>
 							<Text
-								style={{
-									...theme.fonts.Nunito_Sans.Body_M_SemiBold,
-									marginBottom: 16,
-								}}
-							>
-								The secret phrase is like a password, but
-								generated programmatically and more secure.
-							</Text>
-							<Text
-								style={{
-									...theme.fonts.Nunito_Sans.Body_M_SemiBold,
-									marginBottom: 16,
-								}}
-							>
-								You should have received it from where you
-								generated your wallet and it should be 12-20
-								words long.
-							</Text>
-							<Text
-								style={{
-									...theme.fonts.Nunito_Sans.Body_M_SemiBold,
-									marginBottom: 16,
-								}}
-							>
-								Be sure to enter it in the exact word order you
-								received it with a space between each word.
-							</Text>
-							<Button
-								onPress={() =>
-									bottomSheetModalRef.current?.dismiss()
+								style={
+									theme.fonts.Azeret_Mono.Header_M_SemiBold
 								}
 							>
-								{' '}
-								I Understand
-							</Button>
+								What is a Secret Phrase?
+							</Text>
 						</View>
-					</BottomSheetModal>
-				</BottomSheetModalProvider>
-				{/* <BottomSheet
+						<Text
+							style={{
+								...theme.fonts.Nunito_Sans.Body_M_SemiBold,
+								marginBottom: 16,
+							}}
+						>
+							The secret phrase is like a password, but generated
+							programmatically and more secure.
+						</Text>
+						<Text
+							style={{
+								...theme.fonts.Nunito_Sans.Body_M_SemiBold,
+								marginBottom: 16,
+							}}
+						>
+							You should have received it from where you generated
+							your wallet and it should be 12-20 words long.
+						</Text>
+						<Text
+							style={{
+								...theme.fonts.Nunito_Sans.Body_M_SemiBold,
+								marginBottom: 16,
+							}}
+						>
+							Be sure to enter it in the exact word order you
+							received it with a space between each word.
+						</Text>
+						<Button
+							onPress={() =>
+								bottomSheetModalRef.current?.dismiss()
+							}
+						>
+							{' '}
+							I Understand
+						</Button>
+					</View>
+				</BottomSheetModal>
+			</BottomSheetModalProvider>
+			{/* <BottomSheet
 				ref={bottomSheetRef}
 				index={1}
 				snapPoints={snapPoints}
@@ -320,8 +313,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 					<Text>Awesome 🎉</Text>
 				</View>
 			</BottomSheet> */}
-			</Background>
-		</DismissKeyboard>
+		</Background>
 	);
 };
 
