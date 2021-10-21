@@ -1,5 +1,11 @@
 import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+	SafeAreaView,
+	Text,
+	TouchableOpacity,
+	StyleSheet,
+	DevSettings,
+} from 'react-native';
 import {
 	Background,
 	Button,
@@ -22,6 +28,8 @@ import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 type Props = {
 	navigation: Navigation;
@@ -34,6 +42,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
+	const passcode = useStoreState((state) => state.passcode);
 
 	return (
 		<Background>
@@ -147,6 +156,13 @@ const WalletsScreen = ({ navigation }: Props) => {
 					</View>
 				</TouchableOpacity>
 				<TouchableOpacity
+					onPress={async () => {
+						const passcodeKey = passcode + 'key';
+						await SecureStore.deleteItemAsync(passcodeKey);
+						await SecureStore.deleteItemAsync(passcode);
+						await AsyncStorage.removeItem('hasAccount');
+						DevSettings.reload();
+					}}
 					style={{
 						borderColor: theme.colors.border,
 						borderWidth: 1,

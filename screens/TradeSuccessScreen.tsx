@@ -60,7 +60,7 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 							marginBottom: 16,
 						}}
 					>
-						${details.tradeAmount} of SOL was converted to DXL
+						${details.tradeAmount} of USDC was converted to DXL
 					</Text>
 					{/* <Text
 						style={{

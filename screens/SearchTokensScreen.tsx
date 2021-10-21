@@ -87,21 +87,21 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 		);
 	};
 
-	useEffect(() => {
-		const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
-		fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=sol,btc,eth`,
-			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
-				},
-			},
-		)
-			.then((response) => response.json())
-			.then((data) => {});
-	}, []);
+	// useEffect(() => {
+	// 	const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+	// 	fetch(
+	// 		`https://murmuring-peak-21174.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=sol,btc,eth`,
+	// 		{
+	// 			headers: {
+	// 				'X-CMC_PRO_API_KEY': apiKey,
+	// 				Accept: 'application/json',
+	// 				'Accept-Encoding': 'deflate, gzip',
+	// 			},
+	// 		},
+	// 	)
+	// 		.then((response) => response.json())
+	// 		.then((data) => {});
+	// }, []);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
