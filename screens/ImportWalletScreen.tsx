@@ -106,7 +106,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 	}, []);
 
 	return (
-		<Background position="bottom">
+		<Background position="bottom" dismissKeyboard={true}>
 			<View>
 				<SubPageHeader backButton={true}>Import Wallet</SubPageHeader>
 				<Text

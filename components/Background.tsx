@@ -22,30 +22,51 @@ const DismissKeyboard = ({ children }) => (
 	</TouchableWithoutFeedback>
 );
 
-const Background = ({ children, position, blackBackground = false }: Props) => (
+const Background = ({
+	children,
+	position,
+	blackBackground = false,
+	dismissKeyboard = false,
+}: Props) =>
 	// <ImageBackground
 	//   source={require("../assets/images/background.jpg")}
 	//   resizeMode="cover"
 	//   style={styles.background}
 	// >
-	<View
-		style={[
-			{ backgroundColor: 'white', height: '100%', flex: 1 },
-			blackBackground && { backgroundColor: 'black' },
-			{ paddingTop: 24 },
-		]}
-	>
+	dismissKeyboard ? (
 		<DismissKeyboard>
+			<View
+				style={[
+					{ backgroundColor: 'white', height: '100%', flex: 1 },
+					blackBackground && { backgroundColor: 'black' },
+					{ paddingTop: 24 },
+				]}
+			>
+				<KeyboardAvoidingView
+					style={styles.container}
+					// behavior="padding"
+				>
+					{children}
+				</KeyboardAvoidingView>
+			</View>
+		</DismissKeyboard>
+	) : (
+		<View
+			style={[
+				{ backgroundColor: 'white', height: '100%', flex: 1 },
+				blackBackground && { backgroundColor: 'black' },
+				{ paddingTop: 24 },
+			]}
+		>
 			<KeyboardAvoidingView
 				style={styles.container}
 				// behavior="padding"
 			>
 				{children}
 			</KeyboardAvoidingView>
-		</DismissKeyboard>
-	</View>
-	// </ImageBackground>
-);
+		</View>
+	);
+// </ImageBackground>
 
 const styles = StyleSheet.create({
 	container: {
