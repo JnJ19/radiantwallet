@@ -101,19 +101,21 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 			//travppatset key
 			const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
+			console.log('helloooo');
 
 			const priceData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=sol`,
+				`https://radiant-wallet-server.travissehansen.repl.co/api`,
 				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
+					method: 'POST',
+					body: JSON.stringify({
+						url: '/quotes/latest?symbol=sol',
+					}),
+					headers: { 'Content-type': 'application/json' },
 				},
 			)
 				.then((response) => response.json())
 				.then((data) => {
+					console.log('route hit', data);
 					const dataArray = Object.values(data.data);
 					const change_24h =
 						dataArray[0].quote.USD.percent_change_24h;
@@ -140,7 +142,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 					};
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.log('hello error', error));
 
 			const {
 				price,
@@ -215,13 +217,22 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				// let price = '';
 
 				const aboutData = await fetch(
-					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
+					// `https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
+					// {
+					// 	headers: {
+					// 		'X-CMC_PRO_API_KEY': apiKey,
+					// 		Accept: 'application/json',
+					// 		'Accept-Encoding': 'deflate, gzip',
+					// 	},
+					// },
+
+					`https://radiant-wallet-server.travissehansen.repl.co/api`,
 					{
-						headers: {
-							'X-CMC_PRO_API_KEY': apiKey,
-							Accept: 'application/json',
-							'Accept-Encoding': 'deflate, gzip',
-						},
+						method: 'POST',
+						body: JSON.stringify({
+							url: `/info?symbol=${symbol}`,
+						}),
+						headers: { 'Content-type': 'application/json' },
 					},
 				)
 					.then((response) => response.json())
@@ -239,13 +250,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					.catch((err) => console.log('error', err));
 
 				const priceData = await fetch(
-					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
+					`https://radiant-wallet-server.travissehansen.repl.co/api`,
 					{
-						headers: {
-							'X-CMC_PRO_API_KEY': apiKey,
-							Accept: 'application/json',
-							'Accept-Encoding': 'deflate, gzip',
-						},
+						method: 'POST',
+						body: JSON.stringify({
+							url: `/quotes/latest?symbol=${symbol}`,
+						}),
+						headers: { 'Content-type': 'application/json' },
 					},
 				)
 					.then((response) => response.json())
@@ -417,13 +428,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const combinedSymbolList = symbolsList.join();
 
 		const coinMarketCapTokens = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+			`https://radiant-wallet-server.travissehansen.repl.co/api`,
 			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey2,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
-				},
+				method: 'POST',
+				body: JSON.stringify({
+					url: `/info?symbol=${combinedSymbolList}`,
+				}),
+				headers: { 'Content-type': 'application/json' },
 			},
 		)
 			.then((response) => response.json())
@@ -462,13 +473,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 		//get and combine prices now too
 		const coinMarketCapPrices = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${combinedSymbolList}`,
+			`https://radiant-wallet-server.travissehansen.repl.co/api`,
 			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey2,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
-				},
+				method: 'POST',
+				body: JSON.stringify({
+					url: `/quotes/latest?symbol=${combinedSymbolList}`,
+				}),
+				headers: { 'Content-type': 'application/json' },
 			},
 		)
 			.then((response) => response.json())

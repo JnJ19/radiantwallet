@@ -302,6 +302,11 @@ function RootNavigator3() {
 	if (hasAccount === 'true') {
 		return (
 			<Stack.Navigator>
+				{/* <Stack.Screen
+					name="Test Screen"
+					component={TestScreen}
+					options={{ headerShown: false }}
+				/> */}
 				<Stack.Screen
 					name="Passcode"
 					component={PasscodeScreen}
