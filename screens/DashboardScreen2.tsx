@@ -333,37 +333,23 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setOwnedTokens(tokens2);
 	}
 
-	async function findAssociatedTokenAddress(
-		walletAddress: PublicKey,
-		tokenMintAddress: PublicKey,
-	): Promise<PublicKey> {
-		const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey =
-			new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
-		return (
-			await PublicKey.findProgramAddress(
-				[
-					walletAddress.toBuffer(),
-					TOKEN_PROGRAM_ID.toBuffer(),
-					tokenMintAddress.toBuffer(),
-				],
-				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-			)
-		)[0];
-	}
-
-	async function getAssociatedAddress() {
-		const walletAddress = new PublicKey(
-			'HVFsGZ6J164iWb5iTaSvML2K5eXdme55f1ggA7mS7ua3',
-		);
-		const mint = new PublicKey(
-			'MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac',
-		);
-		const associatedaddress = await findAssociatedTokenAddress(
-			walletAddress,
-			mint,
-		);
-		return associatedaddress;
-	}
+	// async function findAssociatedTokenAddress(
+	// 	walletAddress: PublicKey,
+	// 	tokenMintAddress: PublicKey,
+	// ): Promise<PublicKey> {
+	// 	const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey =
+	// 		new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+	// 	return (
+	// 		await PublicKey.findProgramAddress(
+	// 			[
+	// 				walletAddress.toBuffer(),
+	// 				TOKEN_PROGRAM_ID.toBuffer(),
+	// 				tokenMintAddress.toBuffer(),
+	// 			],
+	// 			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+	// 		)
+	// 	)[0];
+	// }
 
 	async function settleFunds() {
 		let owner = new Account(account.secretKey);
