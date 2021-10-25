@@ -1,15 +1,6 @@
 import React, { memo, useState } from 'react';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-	SubPageHeader,
-} from '../components';
+import { Background, Button, TextInput, SubPageHeader } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
 type Props = {
@@ -41,7 +32,6 @@ const GetStartedScreen = ({ navigation }: Props) => {
 				label="Secret"
 				mode="outlined"
 				multiline
-				// numberOfLines={10}
 				minHeight={150}
 				value={secret}
 				onChangeText={(text) => setSecret(text)}

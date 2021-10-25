@@ -1,39 +1,15 @@
 import React, { memo, useState, useEffect } from 'react';
-import {
-	SafeAreaView,
-	Text,
-	ScrollView,
-	Linking,
-	AsyncStorageStatic,
-} from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text } from 'react-native';
+import { Background } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
 import { theme } from '../core/theme';
-import { BlurView } from 'expo-blur';
 const {
 	colors,
-	fonts: { Azeret_Mono, Nunito_Sans },
+	fonts: { Nunito_Sans },
 } = theme;
-import { SubPageHeader } from '../components';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
-const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -45,20 +21,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
 	const [error, setError] = useState(false);
-
-	async function getPhrase(passcode: string) {
-		let result = await SecureStore.getItemAsync(passcode);
-		if (result) {
-			return result;
-		} else {
-			console.log('No values stored under that key.', result);
-		}
-	}
-
-	async function storePhraseAndContinue(passcode: string, phrase: string) {
-		await SecureStore.setItemAsync(passcode, phrase);
-		// navigation.navigate('Main');
-	}
 
 	async function checkLocalPasscode(passcodeKey: string, code: string) {
 		let result = await SecureStore.getItemAsync(passcodeKey);
@@ -110,13 +72,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 			const newAmount = code.slice(0, -1);
 			setCode(newAmount);
 		}
-	}
-
-	async function storeCodeAndContinue() {
-		updatePasscode(code);
-		await AsyncStorage.setItem('hasAccount', 'true');
-		const result = await AsyncStorage.getItem('hasAccount');
-		navigation.navigate('Onboarding');
 	}
 
 	return (
@@ -248,23 +203,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 					</TouchableOpacity>
 				</View>
 			</View>
-			{/* <View
-				style={{
-					borderColor: '#C9F977',
-					borderWidth: 1,
-					borderRadius: 18,
-					// marginTop: 180,
-					marginBottom: 40,
-				}}
-			>
-				<Button
-					mode="contained"
-					onPress={() => storePassKey()}
-					style={{ backgroundColor: 'black' }}
-				>
-					Save & Continue
-				</Button>
-			</View> */}
 		</Background>
 	);
 };

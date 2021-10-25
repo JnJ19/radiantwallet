@@ -1,13 +1,6 @@
 import React, { memo } from 'react';
-import {
-	Background,
-	Button,
-	Paragraph,
-	Header,
-	SubPageHeader,
-} from '../components';
+import { Background, Button, SubPageHeader } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Text, Image } from 'react-native';
 import { theme } from '../core/theme';
 

@@ -1,21 +1,9 @@
 import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text, TouchableOpacity } from 'react-native';
+import { Background, TextInput } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, FlatList, Image } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Grid } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import { SubPageHeader } from '../components';
 import { theme } from '../core/theme';
 import TokenCard from '../components/TokenCard';
@@ -29,8 +17,6 @@ type Props = {
 
 const SearchTokensScreen = ({ navigation }: Props) => {
 	const [search, setSearch] = useState('');
-	const [secret, setSecret] = useState('');
-	const [logos, setLogos] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
@@ -87,22 +73,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 		);
 	};
 
-	// useEffect(() => {
-	// 	const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
-	// 	fetch(
-	// 		`https://murmuring-peak-21174.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=sol,btc,eth`,
-	// 		{
-	// 			headers: {
-	// 				'X-CMC_PRO_API_KEY': apiKey,
-	// 				Accept: 'application/json',
-	// 				'Accept-Encoding': 'deflate, gzip',
-	// 			},
-	// 		},
-	// 	)
-	// 		.then((response) => response.json())
-	// 		.then((data) => {});
-	// }, []);
-
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
 			const tokenList = tokens
@@ -127,14 +97,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 			);
 		});
 	}, [setTokenMap]);
-
-	const address = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
-	const token = tokenMap.get(address2);
-
-	console.log('tokenmap', tokenMap);
-
-	console.log('token url', token?.logoURI);
 
 	return (
 		<Background>
@@ -162,21 +124,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 				renderItem={renderItem}
 				keyExtractor={(item) => item.address}
 			/>
-			{/* {tokens ? (
-				<FlatList
-					data={allTokens}
-					renderItem={(token) => (
-						<TokenCard
-							token={token}
-							onPress={() =>
-								navigation.navigate('Token Details', token.item)
-							}
-						/>
-					)}
-					// renderItem={TokenCard}
-					keyExtractor={(item) => item.address}
-				/>
-			) : null} */}
 		</Background>
 	);
 };

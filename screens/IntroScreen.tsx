@@ -1,11 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import {
-	Background,
-	Button,
-	Paragraph,
-	Header,
-	SubPageHeader,
-} from '../components';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Text, Image } from 'react-native';

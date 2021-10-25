@@ -1,40 +1,16 @@
 import React, { memo, useState, useEffect } from 'react';
-import {
-	SafeAreaView,
-	Text,
-	ScrollView,
-	Linking,
-	AsyncStorageStatic,
-} from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text } from 'react-native';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
 import { theme } from '../core/theme';
-import { BlurView } from 'expo-blur';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
-import { SubPageHeader } from '../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
-
-const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -191,7 +167,6 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 					borderColor: '#C9F977',
 					borderWidth: 1,
 					borderRadius: 18,
-					// marginTop: 180,
 					marginBottom: 40,
 				}}
 			>
@@ -223,7 +198,6 @@ const styles = StyleSheet.create({
 		width: 16,
 		height: 16,
 		borderRadius: 1000,
-		// borderWidth: 1,
 		backgroundColor: colors.accent,
 	},
 	tableData: {

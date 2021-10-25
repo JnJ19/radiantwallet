@@ -96,13 +96,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		if (solBalance > 0) {
-			//these are two api keys for coinmarket cap free plan to use for this demo - please don't abuse them 🙏
-			//gmail key
-			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
-			//travppatset key
-			const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
-			console.log('helloooo');
-
 			const priceData = await fetch(
 				`https://radiant-wallet-server.travissehansen.repl.co/api`,
 				{
@@ -209,23 +202,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const associatedTokenAddressHash =
 					associatedTokenAddress.toString('hex');
 
-				//gmail key
-				const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
-				//travppatset key
-				const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
-
 				// let price = '';
 
 				const aboutData = await fetch(
-					// `https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
-					// {
-					// 	headers: {
-					// 		'X-CMC_PRO_API_KEY': apiKey,
-					// 		Accept: 'application/json',
-					// 		'Accept-Encoding': 'deflate, gzip',
-					// 	},
-					// },
-
 					`https://radiant-wallet-server.travissehansen.repl.co/api`,
 					{
 						method: 'POST',
@@ -389,8 +368,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function getAllTokens() {
-		//travppatset key
-		const apiKey2 = '410f0e32-f228-4060-b13a-1b215476051a';
 		const tokenPairs = await getTokenPairs();
 		const symbolsList = await getCleanTokenList();
 		const combinedSymbolList = symbolsList.join();

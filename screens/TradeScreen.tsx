@@ -1,36 +1,14 @@
 import React, { memo, useState, useEffect } from 'react';
-import {
-	SafeAreaView,
-	Text,
-	ScrollView,
-	Linking,
-	AsyncStorageStatic,
-} from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text } from 'react-native';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 import { theme } from '../core/theme';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 const addCommas = new Intl.NumberFormat('en-US');
 
@@ -44,7 +22,6 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	const [tradeAmount, setTradeAmount] = useState('0');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const usdc = ownedTokens.find((token) => token.symbol === 'USDC');
-	const usdcTotal = usdc.price * usdc.amount;
 	const [fromTo, setFromTo] = useState({
 		from: token,
 		to: {

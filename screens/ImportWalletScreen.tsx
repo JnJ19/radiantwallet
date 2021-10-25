@@ -1,7 +1,6 @@
 import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
 import { Background, Button, SubPageHeader } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { theme } from '../core/theme';
 import {
 	View,
@@ -14,7 +13,6 @@ import {
 import {
 	BottomSheetModal,
 	BottomSheetModalProvider,
-	useBottomSheetModal,
 } from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Clipboard from 'expo-clipboard';
@@ -24,13 +22,6 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 type Props = {
 	navigation: Navigation;
 };
-
-// interface InputProps extends TextInputProps {
-// 	name: string;
-// 	icon: string;
-// 	placeholder: string;
-// 	placeholderTextColor: color;
-// }
 
 const DismissKeyboard = ({ children }) => (
 	<TouchableWithoutFeedback onPress={() => console.log('hello')}>

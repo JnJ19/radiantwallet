@@ -1,24 +1,9 @@
-import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import React, { memo } from 'react';
+import { Text } from 'react-native';
+import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import { View, Image, StyleSheet } from 'react-native';
 import { theme } from '../core/theme';
-import { BlurView } from 'expo-blur';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -62,15 +47,6 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 					>
 						${details.tradeAmount} of USDC was converted to DXL
 					</Text>
-					{/* <Text
-						style={{
-							...Nunito_Sans.Body_M_SemiBold,
-							color: colors.black_one,
-							marginBottom: 16,
-						}}
-					>
-						Transaction Fee $1.00
-					</Text> */}
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>

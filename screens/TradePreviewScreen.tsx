@@ -1,8 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
+import { Text } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
 import Modal from 'react-native-modal';
@@ -41,13 +40,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 
-	// useEffect(() => {
-	// 	fetch('https://serum-api.bonfida.com/pairs')
-	// 		.then((res) => res.json())
-	// 		.then((resp) => console.log(resp))
-	// 		.catch((err) => console.log('error ', err));
-	// }, []);
-
 	async function submitTrade() {
 		//prep trade
 		let mnemonic = await SecureStore.getItemAsync(passcode);
@@ -77,8 +69,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 
 		let owner = new Account(newAccount.secretKey);
 
-		console.log('associated token address', fromTo);
-
 		const mintKey = new PublicKey(fromTo.from.mint);
 
 		const associatedTokenAddress = findAssociatedTokenAddress(
@@ -91,8 +81,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		let payer = new PublicKey(hash);
 
 		const payerString = (await payer).toString('hex');
-
-		console.log('payer', payerString);
 
 		await market
 			.placeOrder(connection, {
@@ -115,24 +103,13 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			})
 			.catch((err) => console.log(err));
 
-		// //usdc associated token account
-		// const quoteTokenAccount = new PublicKey(
-		// 	'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-		// );
-
-		// //dxl associated token account
-		// const baseTokenAccount = new PublicKey(
-		// 	'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
-		// );
-		// console.log('another hit');
+		//Settle Funds
 		// for (let openOrders of await market.findOpenOrdersAccountsForOwner(
 		// 	connection,
 		// 	owner.publicKey,
 		// )) {
-		// 	console.log('hittt');
 		// 	if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
 		// 		// spl-token accounts to which to send the proceeds from trades
-		// 		console.log('hit 2');
 		// 		await market
 		// 			.settleFunds(
 		// 				connection,
@@ -147,8 +124,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		// 		console.log('hit other');
 		// 	}
 		// }
-
-		//settle the order
 	}
 
 	useEffect(() => {
@@ -323,9 +298,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				{/* <Button onPress={() => setModalVisible(true)}>
-					Submit Trade
-				</Button> */}
 				<Button
 					onPress={() => {
 						setModalVisible(true);
