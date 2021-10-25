@@ -5,17 +5,8 @@ import * as React from 'react';
 import { Image, View, Text } from 'react-native';
 import { useState, useEffect } from 'react';
 
-import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-
 import {
 	OnboardingScreen,
-	SetPinScreen,
-	DashboardScreen,
-	ReceiveScreen,
-	SendScreen,
-	SettingsScreen,
-	BackupScreen,
-	QRScannerScreen,
 	ImportWalletScreen,
 	DashboardScreen2,
 	TokenDetailsScreen,
@@ -235,53 +226,6 @@ function RootNavigator2() {
 		);
 	}
 	return <Main />;
-}
-
-function RootNavigator() {
-	return (
-		<Stack.Navigator>
-			<Stack.Screen
-				name="Intro"
-				component={IntroScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Onboarding"
-				component={OnboardingScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Test Screen"
-				component={TestScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Set Pin"
-				component={SetPinScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Import Wallet"
-				component={ImportWalletScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Token Details"
-				component={TokenDetailsScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Search Tokens"
-				component={SearchTokensScreen}
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="Dashboard"
-				component={DashboardScreen2}
-				options={{ headerShown: false }}
-			/>
-		</Stack.Navigator>
-	);
 }
 
 function RootNavigator3() {

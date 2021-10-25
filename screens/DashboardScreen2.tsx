@@ -333,24 +333,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setOwnedTokens(tokens2);
 	}
 
-	// async function findAssociatedTokenAddress(
-	// 	walletAddress: PublicKey,
-	// 	tokenMintAddress: PublicKey,
-	// ): Promise<PublicKey> {
-	// 	const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey =
-	// 		new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
-	// 	return (
-	// 		await PublicKey.findProgramAddress(
-	// 			[
-	// 				walletAddress.toBuffer(),
-	// 				TOKEN_PROGRAM_ID.toBuffer(),
-	// 				tokenMintAddress.toBuffer(),
-	// 			],
-	// 			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-	// 		)
-	// 	)[0];
-	// }
-
 	async function settleFunds() {
 		let owner = new Account(account.secretKey);
 		//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
@@ -811,9 +793,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		<Background>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-				{/* <Button onPress={() => prepTrade()}>Prep Trade</Button>
-				<Button onPress={() => testMarkets()}>Test Market</Button>
-				<Button onPress={() => settleFunds()}>Settle Funds</Button> */}
 				<View
 					style={{
 						borderWidth: 1,

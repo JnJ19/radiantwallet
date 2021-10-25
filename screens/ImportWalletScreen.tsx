@@ -1,20 +1,5 @@
-import React, {
-	memo,
-	useState,
-	useMemo,
-	useRef,
-	useCallback,
-	useEffect,
-} from 'react';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-	SubPageHeader,
-} from '../components';
+import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
+import { Background, Button, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
 import { theme } from '../core/theme';
@@ -23,9 +8,7 @@ import {
 	Text,
 	TextInput as TextInputRN,
 	Image,
-	TextInputProps,
 	StyleSheet,
-	Keyboard,
 	TouchableWithoutFeedback,
 } from 'react-native';
 import {

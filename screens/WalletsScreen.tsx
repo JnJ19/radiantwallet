@@ -1,33 +1,12 @@
 import React, { memo, useState, useEffect } from 'react';
-import {
-	SafeAreaView,
-	Text,
-	TouchableOpacity,
-	StyleSheet,
-	DevSettings,
-} from 'react-native';
-import {
-	Background,
-	Button,
-	BackButton,
-	Paragraph,
-	TextInput,
-	Header,
-} from '../components';
+import { Text, TouchableOpacity, StyleSheet, DevSettings } from 'react-native';
+import { Background } from '../components';
 import { Navigation } from '../types';
-import { StatusBar } from 'expo-status-bar';
 import { View, FlatList, Image } from 'react-native';
-import { DashboardScreen } from '.';
-import { AreaChart, Grid } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
-import { Shadow } from 'react-native-shadow-2';
-import { Avatar, Card, IconButton } from 'react-native-paper';
 import { SubPageHeader } from '../components';
 import { theme } from '../core/theme';
-import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
-import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
@@ -36,12 +15,6 @@ type Props = {
 };
 
 const WalletsScreen = ({ navigation }: Props) => {
-	const [search, setSearch] = useState('');
-	const [secret, setSecret] = useState('');
-	const [logos, setLogos] = useState('');
-	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
-	const [tokens, setTokens] = useState('');
-	const allTokens = useStoreState((state) => state.allTokens);
 	const passcode = useStoreState((state) => state.passcode);
 
 	return (
