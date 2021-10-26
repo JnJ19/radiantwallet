@@ -32,7 +32,7 @@ const TestScreen = ({ navigation }: Props) => {
 			{
 				method: 'POST',
 				body: JSON.stringify({
-					url: 'Hubot',
+					url: '/quotes/latest?symbol=sol',
 				}),
 				headers: { 'Content-type': 'application/json' },
 			},

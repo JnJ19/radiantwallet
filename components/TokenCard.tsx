@@ -3,6 +3,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import { View, FlatList, Image } from 'react-native';
 import { Card } from 'react-native-paper';
 import { theme } from '../core/theme';
+const addCommas = new Intl.NumberFormat('en-US');
 
 const TokenCard = (info: object) => {
 	const { mint, price, amount, name, symbol, logo, change_24h } =
@@ -53,7 +54,7 @@ const TokenCard = (info: object) => {
 									marginBottom: 4,
 								}}
 							>
-								${(amount * price).toFixed(2)}
+								${addCommas.format((amount * price).toFixed(2))}
 							</Text>
 							<View style={{ flexDirection: 'row' }}>
 								{change_24h > 0 ? (
@@ -89,7 +90,9 @@ const TokenCard = (info: object) => {
 														.error_one,
 											  },
 									]}
-								>{`${change_24h.toFixed(1)}%`}</Text>
+								>{`${addCommas.format(
+									change_24h.toFixed(1),
+								)}%`}</Text>
 								<View
 									style={{
 										borderLeftColor: theme.colors.black_six,
@@ -105,7 +108,7 @@ const TokenCard = (info: object) => {
 										color: '#727D8D',
 									}}
 								>
-									{amount.toFixed(1)}
+									{addCommas.format(amount.toFixed(1))}
 								</Text>
 							</View>
 						</View>

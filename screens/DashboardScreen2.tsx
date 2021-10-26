@@ -22,6 +22,7 @@ import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 import Modal from 'react-native-modal';
+const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -78,7 +79,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 		const newAccount = getAccountFromSeed(
 			seed,
-			2,
+			0,
 			DERIVATION_PATH.bip44Change,
 		);
 
@@ -91,6 +92,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			publicKey,
 			{ programId },
 		);
+		console.log('ownedTokens', ownedTokens);
 		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		let tokens2 = [];
@@ -187,127 +189,132 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const amount =
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
-				const { name, symbol, logoURI, extensions } = otherDetails;
-				const logo = logoURI;
+				if (otherDetails) {
+					console.log('otherdetails', otherDetails);
+					const { name, symbol, logoURI, extensions } = otherDetails;
+					const logo = logoURI;
 
-				const mintKey = new PublicKey(mint);
-				const walletAddress = new PublicKey(
-					'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
-				);
+					const mintKey = new PublicKey(mint);
+					const walletAddress = new PublicKey(
+						'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
+					);
 
-				const associatedTokenAddress = await findAssociatedTokenAddress(
-					walletAddress,
-					mintKey,
-				);
+					const associatedTokenAddress =
+						await findAssociatedTokenAddress(
+							walletAddress,
+							mintKey,
+						);
 
-				const associatedTokenAddressHash =
-					associatedTokenAddress.toString('hex');
+					const associatedTokenAddressHash =
+						associatedTokenAddress.toString('hex');
 
-				// let price = '';
+					const aboutData = await fetch(
+						`https://radiant-wallet-server.travissehansen.repl.co/api`,
+						{
+							method: 'POST',
+							body: JSON.stringify({
+								url: `/info?symbol=${symbol}`,
+							}),
+							headers: { 'Content-type': 'application/json' },
+						},
+					)
+						.then((response) => response.json())
+						.then((data) => {
+							const dataArray = Object.values(data.data);
+							// console.log('data array', dataArray);
+							return {
+								description: dataArray[0].description,
+								logo: dataArray[0].logo,
+								name: dataArray[0].name,
+								website: dataArray[0].urls.website[0],
+								twitter: dataArray[0].urls.twitter[0],
+								chat: dataArray[0].urls.chat[0],
+							};
+						})
+						.catch((err) => console.log('error', err));
 
-				const aboutData = await fetch(
-					`https://radiant-wallet-server.travissehansen.repl.co/api`,
-					{
-						method: 'POST',
-						body: JSON.stringify({
-							url: `/info?symbol=${symbol}`,
-						}),
-						headers: { 'Content-type': 'application/json' },
-					},
-				)
-					.then((response) => response.json())
-					.then((data) => {
-						const dataArray = Object.values(data.data);
-						return {
-							description: dataArray[0].description,
-							logo: dataArray[0].logo,
-							name: dataArray[0].name,
-							website: dataArray[0].urls.website[0],
-							twitter: dataArray[0].urls.twitter[0],
-							chat: dataArray[0].urls.chat[0],
-						};
-					})
-					.catch((err) => console.log('error', err));
+					const priceData = await fetch(
+						`https://radiant-wallet-server.travissehansen.repl.co/api`,
+						{
+							method: 'POST',
+							body: JSON.stringify({
+								url: `/quotes/latest?symbol=${symbol}`,
+							}),
+							headers: { 'Content-type': 'application/json' },
+						},
+					)
+						.then((response) => response.json())
+						.then((data) => {
+							const dataArray = Object.values(data.data);
+							const change_24h =
+								dataArray[0].quote.USD.percent_change_24h;
+							const change_30d =
+								dataArray[0].quote.USD.percent_change_30d;
+							const change_60d =
+								dataArray[0].quote.USD.percent_change_60d;
+							const change_90d =
+								dataArray[0].quote.USD.percent_change_90d;
+							const {
+								price,
+								volume_24h,
+								market_cap,
+								market_cap_dominance,
+							} = dataArray[0].quote.USD;
+							return {
+								price,
+								change_24h,
+								change_30d,
+								change_60d,
+								change_90d,
+								volume_24h,
+								market_cap,
+								market_cap_dominance,
+							};
+						})
+						.catch((error) => console.log(error));
+					const {
+						price,
+						change_24h,
+						change_30d,
+						change_60d,
+						change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					} = priceData;
 
-				const priceData = await fetch(
-					`https://radiant-wallet-server.travissehansen.repl.co/api`,
-					{
-						method: 'POST',
-						body: JSON.stringify({
-							url: `/quotes/latest?symbol=${symbol}`,
-						}),
-						headers: { 'Content-type': 'application/json' },
-					},
-				)
-					.then((response) => response.json())
-					.then((data) => {
-						const dataArray = Object.values(data.data);
-						const change_24h =
-							dataArray[0].quote.USD.percent_change_24h;
-						const change_30d =
-							dataArray[0].quote.USD.percent_change_30d;
-						const change_60d =
-							dataArray[0].quote.USD.percent_change_60d;
-						const change_90d =
-							dataArray[0].quote.USD.percent_change_90d;
-						const {
-							price,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-						} = dataArray[0].quote.USD;
-						return {
-							price,
-							change_24h,
-							change_30d,
-							change_60d,
-							change_90d,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-						};
-					})
-					.catch((error) => console.log(error));
-				const {
-					price,
-					change_24h,
-					change_30d,
-					change_60d,
-					change_90d,
-					volume_24h,
-					market_cap,
-					market_cap_dominance,
-				} = priceData;
+					const price_30d = price * (1 + change_30d * 0.01);
+					const price_60d = price * (1 + change_60d * 0.01);
+					const price_90d = price * (1 + change_90d * 0.01);
 
-				const price_30d = price * (1 + change_30d * 0.01);
-				const price_60d = price * (1 + change_60d * 0.01);
-				const price_90d = price * (1 + change_90d * 0.01);
-
-				const tokenObject = {
-					mint,
-					amount,
-					name,
-					symbol,
-					logo,
-					extensions,
-					price,
-					change_24h,
-					change_30d,
-					change_60d,
-					change_90d,
-					price_30d,
-					price_60d,
-					price_90d,
-					associatedTokenAddress,
-					associatedTokenAddressHash,
-					volume_24h,
-					market_cap,
-					market_cap_dominance,
-					...aboutData,
-				};
-				tokens2.push(tokenObject);
+					const tokenObject = {
+						mint,
+						amount,
+						name,
+						symbol,
+						logo,
+						extensions,
+						price,
+						change_24h,
+						change_30d,
+						change_60d,
+						change_90d,
+						price_30d,
+						price_60d,
+						price_90d,
+						associatedTokenAddress,
+						associatedTokenAddressHash,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+						...aboutData,
+					};
+					tokens2.push(tokenObject);
+				}
 			}),
 		);
+
+		// console.log('tokens2', tokens2);
 
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
@@ -833,7 +840,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								marginRight: 4,
 							}}
 						>
-							{`$${todayTotal.toFixed(2)}`}
+							{`$${addCommas.format(todayTotal.toFixed(2))}`}
 						</Text>
 						{percentChange > 0 ? (
 							<View
