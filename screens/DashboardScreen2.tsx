@@ -70,7 +70,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
-		const url = 'https://api.mainnet-beta.solana.com';
+		// const url = 'https://api.mainnet-beta.solana.com';
+		const url = 'https://solana-api.projectserum.com';
 		const connection = new Connection(url);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
@@ -88,10 +89,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const programId = new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
-		const ownedTokens = await connection.getTokenAccountsByOwner(
-			publicKey,
-			{ programId },
-		);
+		const ownedTokens = await connection
+			.getTokenAccountsByOwner(publicKey, { programId })
+			.catch((err) => console.log('errorr', err));
 		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		let tokens2 = [];
@@ -315,6 +315,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		// console.log('tokens2', tokens2);
 
 		setTokens(tokens2);
+		console.log('tokens 2', tokens2);
 		setOwnedTokens(tokens2);
 	}
 
