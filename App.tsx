@@ -15,7 +15,7 @@ import store from './store';
 
 import Navigation from './navigation';
 
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();

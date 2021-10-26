@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, TextInput as RNTextInput } from 'react-native';
 import { Background, TextInput } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image } from 'react-native';
@@ -21,9 +21,11 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 
+	console.log('all tokens', allTokens);
+
 	console.log('tokenmappp', tokenMap);
 	const renderItem = (data) => {
-		console.log('hello', data.item);
+		// console.log('hello', data.item);
 		return (
 			<View>
 				<Card.Title
@@ -104,7 +106,7 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 				<SubPageHeader backButton={false}>Browse Tokens</SubPageHeader>
 
 				<TextInput
-					label="Search"
+					label="Search token name or symbol"
 					mode="outlined"
 					value={search}
 					onChangeText={(text) => setSearch(text)}
@@ -117,13 +119,31 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 						},
 					}}
 				/>
+				{/* <View>
+					<RNTextInput  />
+				</View> */}
 			</View>
 
-			<FlatList
+			{/* <FlatList
 				data={tokens}
 				renderItem={renderItem}
 				keyExtractor={(item) => item.address}
-			/>
+			/> */}
+			{allTokens ? (
+				<FlatList
+					data={allTokens}
+					renderItem={(token) => (
+						<TokenCard
+							token={token}
+							onPress={() =>
+								navigation.navigate('Token Details', token.item)
+							}
+						/>
+					)}
+					// renderItem={TokenCard}
+					keyExtractor={(item) => item.address}
+				/>
+			) : null}
 		</Background>
 	);
 };

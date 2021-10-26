@@ -6,9 +6,39 @@ import { theme } from '../core/theme';
 const addCommas = new Intl.NumberFormat('en-US');
 
 const TokenCard = (info: object) => {
-	const { mint, price, amount, name, symbol, logo, change_24h } =
-		info.token.item;
+	let mint, price, amount, name, symbol, logo, percent_change_24h;
+	// const { mint, price, amount, name, symbol, logo, percent_change_24h } =
+	// 	info.token.item;
+	if (info.token) {
+		mint = info.token.item.mint;
+		price = info.token.item.price;
+		amount = info.token.item.amount;
+		name = info.token.item.name;
+		symbol = info.token.item.symbol;
+		logo = info.token.item.logo;
+		percent_change_24h = info.token.item.percent_change_24h;
+	} else {
+		console.log('route hitttt');
+		mint = info.mint;
+		price = info.price;
+		amount = info.amount;
+		name = info.name;
+		symbol = info.symbol;
+		logo = info.logo;
+		percent_change_24h = info.percent_change_24h;
+	}
 	const { onPress } = info;
+
+	// console.log(
+	// 	'all the things',
+	// 	mint,
+	// 	price,
+	// 	amount,
+	// 	name,
+	// 	symbol,
+	// 	logo,
+	// 	percent_change_24h,
+	// );
 
 	return (
 		<TouchableOpacity onPress={onPress}>
@@ -54,10 +84,14 @@ const TokenCard = (info: object) => {
 									marginBottom: 4,
 								}}
 							>
-								${addCommas.format((amount * price).toFixed(2))}
+								{amount
+									? `${addCommas.format(
+											(amount * price).toFixed(2),
+									  )}`
+									: `${addCommas.format(price.toFixed(2))}`}
 							</Text>
 							<View style={{ flexDirection: 'row' }}>
-								{change_24h > 0 ? (
+								{percent_change_24h > 0 ? (
 									<Image
 										source={require('../assets/icons/Upward.jpg')}
 										style={{
@@ -80,7 +114,7 @@ const TokenCard = (info: object) => {
 									style={[
 										theme.fonts.Nunito_Sans
 											.Caption_M_SemiBold,
-										change_24h > 0
+										percent_change_24h > 0
 											? {
 													color: theme.colors
 														.success_one,
@@ -91,25 +125,32 @@ const TokenCard = (info: object) => {
 											  },
 									]}
 								>{`${addCommas.format(
-									change_24h.toFixed(1),
+									percent_change_24h,
 								)}%`}</Text>
-								<View
-									style={{
-										borderLeftColor: theme.colors.black_six,
-										borderLeftWidth: 1,
-										marginHorizontal: 8,
-										marginVertical: 3,
-									}}
-								/>
-								<Text
-									style={{
-										...theme.fonts.Nunito_Sans
-											.Caption_M_SemiBold,
-										color: '#727D8D',
-									}}
-								>
-									{addCommas.format(amount.toFixed(1))}
-								</Text>
+								{amount ? (
+									<>
+										<View
+											style={{
+												borderLeftColor:
+													theme.colors.black_six,
+												borderLeftWidth: 1,
+												marginHorizontal: 8,
+												marginVertical: 3,
+											}}
+										/>
+										<Text
+											style={{
+												...theme.fonts.Nunito_Sans
+													.Caption_M_SemiBold,
+												color: '#727D8D',
+											}}
+										>
+											{addCommas.format(
+												amount.toFixed(1),
+											)}
+										</Text>
+									</>
+								) : null}
 							</View>
 						</View>
 					);

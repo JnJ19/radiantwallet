@@ -52,11 +52,11 @@ function Browse() {
 				component={SearchTokensScreen}
 				options={{ headerShown: false }}
 			/>
-			<Stack.Screen
+			{/* <Stack.Screen
 				name="Token Details"
 				component={TokenDetailsScreen}
 				options={{ headerShown: false }}
-			/>
+			/> */}
 		</Stack.Navigator>
 	);
 }

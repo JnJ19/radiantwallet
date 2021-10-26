@@ -92,7 +92,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			publicKey,
 			{ programId },
 		);
-		console.log('ownedTokens', ownedTokens);
 		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		let tokens2 = [];
@@ -111,15 +110,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			)
 				.then((response) => response.json())
 				.then((data) => {
-					console.log('route hit', data);
 					const dataArray = Object.values(data.data);
-					const change_24h =
+					const percent_change_24h =
 						dataArray[0].quote.USD.percent_change_24h;
-					const change_30d =
+					const percent_change_30d =
 						dataArray[0].quote.USD.percent_change_30d;
-					const change_60d =
+					const percent_change_60d =
 						dataArray[0].quote.USD.percent_change_60d;
-					const change_90d =
+					const percent_change_90d =
 						dataArray[0].quote.USD.percent_change_90d;
 					const {
 						price,
@@ -129,10 +127,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					} = dataArray[0].quote.USD;
 					return {
 						price,
-						change_24h,
-						change_30d,
-						change_60d,
-						change_90d,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
 						volume_24h,
 						market_cap,
 						market_cap_dominance,
@@ -142,17 +140,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 			const {
 				price,
-				change_24h,
-				change_30d,
-				change_60d,
-				change_90d,
+				percent_change_24h,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
 				volume_24h,
 				market_cap,
 				market_cap_dominance,
 			} = priceData;
-			const price_30d = price * (1 + change_30d * 0.01);
-			const price_60d = price * (1 + change_60d * 0.01);
-			const price_90d = price * (1 + change_90d * 0.01);
+			const price_30d = price * (1 + percent_change_30d * 0.01);
+			const price_60d = price * (1 + percent_change_60d * 0.01);
+			const price_90d = price * (1 + percent_change_90d * 0.01);
 			const tokenObject = {
 				mint: 'So11111111111111111111111111111111111111112',
 				amount: realSolBalance,
@@ -166,10 +164,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				price_30d,
 				price_60d,
 				price_90d,
-				change_24h,
-				change_30d,
-				change_60d,
-				change_90d,
+				percent_change_24h,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
 				volume_24h,
 				market_cap,
 				description:
@@ -190,7 +188,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
 				if (otherDetails) {
-					console.log('otherdetails', otherDetails);
+					// console.log('otherdetails', otherDetails);
 					const { name, symbol, logoURI, extensions } = otherDetails;
 					const logo = logoURI;
 
@@ -246,13 +244,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						.then((response) => response.json())
 						.then((data) => {
 							const dataArray = Object.values(data.data);
-							const change_24h =
+							const percent_change_24h =
 								dataArray[0].quote.USD.percent_change_24h;
-							const change_30d =
+							const percent_change_30d =
 								dataArray[0].quote.USD.percent_change_30d;
-							const change_60d =
+							const percent_change_60d =
 								dataArray[0].quote.USD.percent_change_60d;
-							const change_90d =
+							const percent_change_90d =
 								dataArray[0].quote.USD.percent_change_90d;
 							const {
 								price,
@@ -262,10 +260,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							} = dataArray[0].quote.USD;
 							return {
 								price,
-								change_24h,
-								change_30d,
-								change_60d,
-								change_90d,
+								percent_change_24h,
+								percent_change_30d,
+								percent_change_60d,
+								percent_change_90d,
 								volume_24h,
 								market_cap,
 								market_cap_dominance,
@@ -274,18 +272,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						.catch((error) => console.log(error));
 					const {
 						price,
-						change_24h,
-						change_30d,
-						change_60d,
-						change_90d,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
 						volume_24h,
 						market_cap,
 						market_cap_dominance,
 					} = priceData;
 
-					const price_30d = price * (1 + change_30d * 0.01);
-					const price_60d = price * (1 + change_60d * 0.01);
-					const price_90d = price * (1 + change_90d * 0.01);
+					const price_30d = price * (1 + percent_change_30d * 0.01);
+					const price_60d = price * (1 + percent_change_60d * 0.01);
+					const price_90d = price * (1 + percent_change_90d * 0.01);
 
 					const tokenObject = {
 						mint,
@@ -295,10 +293,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						logo,
 						extensions,
 						price,
-						change_24h,
-						change_30d,
-						change_60d,
-						change_90d,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
 						price_30d,
 						price_60d,
 						price_90d,
@@ -394,7 +392,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			.then((data) => {
 				return Object.values(data.data);
 			});
-
 		//combine token pairs and coinmarketcap data
 		const combinedArray = [];
 		for (let i = 0; i < coinMarketCapTokens.length; i++) {
@@ -402,27 +399,32 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const pairs = tokenPairs.find(
 				(pair: object) => pair.symbol === cmToken.symbol,
 			);
+			console.log('pairs: ', pairs);
 
-			const {
-				name,
-				logo,
-				symbol,
-				description,
-				urls: { twitter, chat, website },
-			} = cmToken;
+			if (pairs) {
+				const {
+					name,
+					logo,
+					symbol,
+					description,
+					urls: { twitter, chat, website },
+				} = cmToken;
 
-			const newObject = {
-				name,
-				logo,
-				symbol,
-				description,
-				twitter,
-				chat,
-				website,
-				pairs: pairs.pairs,
-			};
-			combinedArray.push(newObject);
+				const newObject = {
+					name,
+					logo,
+					symbol,
+					description,
+					twitter,
+					chat,
+					website,
+					pairs: pairs.pairs,
+				};
+				combinedArray.push(newObject);
+			}
 		}
+
+		console.log('combeind array', combinedArray);
 
 		//get and combine prices now too
 		const coinMarketCapPrices = await fetch(
@@ -440,12 +442,16 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				return Object.values(data.data);
 			});
 
+		console.log('cmc prices', coinMarketCapPrices);
+
 		const combinedArrayWithPrices = [];
 		for (let i = 0; i < combinedArray.length; i++) {
 			const element = combinedArray[i];
 			const prices = coinMarketCapPrices.find(
 				(priceSet) => priceSet.symbol === element.symbol,
 			);
+
+			console.log('prices', prices);
 
 			const {
 				percent_change_24h,
@@ -456,7 +462,22 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				percent_change_90d,
 				price,
 				volume_24h,
-			} = prices.quote;
+			} = prices.quote.USD;
+			console.log(
+				'stuff',
+				percent_change_24h,
+				market_cap,
+				market_cap_dominance,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
+				price,
+				volume_24h,
+			);
+
+			const price_30d = price * (1 + percent_change_30d * 0.01);
+			const price_60d = price * (1 + percent_change_60d * 0.01);
+			const price_90d = price * (1 + percent_change_90d * 0.01);
 
 			const newObject = {
 				...element,
@@ -466,11 +487,16 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				percent_change_30d,
 				percent_change_60d,
 				percent_change_90d,
+				price_30d,
+				price_60d,
+				price_90d,
 				price,
 				volume_24h,
 			};
 			combinedArrayWithPrices.push(newObject);
 		}
+
+		console.log('combedin array with prices', combinedArrayWithPrices);
 		setAllTokens(combinedArrayWithPrices);
 
 		//now add market address
@@ -554,7 +580,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				const removedToken5 = removedToken4.filter(
 					(str: string) => str.indexOf('PLEB') === -1,
 				);
-				const removedPools = removedToken5.filter(
+				const removedToken6 = removedToken5.filter(
+					(str: string) => str.indexOf('BVOL') === -1,
+				);
+				const removedPools = removedToken6.filter(
 					(str: string) => str.indexOf('POOL') === -1,
 				);
 
@@ -752,7 +781,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		todayTotal = totals.reduce((prev, current) => prev + current);
 
 		const yesterdayTotals = tokens?.map((item) => {
-			const change = item.change_24h * 0.01;
+			const change = item.percent_change_24h * 0.01;
 			let multiplier = 1 - change;
 			const total = item.amount * item.price;
 			const yesterday = total * multiplier;
@@ -920,6 +949,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					>
 						Portfolio
 					</Text>
+
 					{tokens ? (
 						<FlatList
 							data={tokens}
