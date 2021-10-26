@@ -1,33 +1,35 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StoreProvider } from "easy-peasy";
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { StoreProvider } from 'easy-peasy';
 
-import "./global";
+import './global';
 
-import "react-native-url-polyfill/auto";
+import 'react-native-url-polyfill/auto';
 
-import { Provider as PaperProvider } from "react-native-paper";
-import { theme } from "./core/theme";
+import { Provider as PaperProvider } from 'react-native-paper';
+import { theme } from './core/theme';
 
-import useCachedResources from "./hooks/useCachedResources";
+import useCachedResources from './hooks/useCachedResources';
 
-import store from "./store";
+import store from './store';
 
-import Navigation from "./navigation";
+import Navigation from './navigation';
+
+console.disableYellowBox = true;
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
+	const isLoadingComplete = useCachedResources();
 
-  if (!isLoadingComplete) {
-    return null;
-  } else {
-    return (
-      <StoreProvider store={store}>
-        <PaperProvider theme={theme}>
-          <Navigation />
-          <StatusBar />
-        </PaperProvider>
-      </StoreProvider>
-    );
-  }
+	if (!isLoadingComplete) {
+		return null;
+	} else {
+		return (
+			<StoreProvider store={store}>
+				<PaperProvider theme={theme}>
+					<Navigation />
+					<StatusBar />
+				</PaperProvider>
+			</StoreProvider>
+		);
+	}
 }
