@@ -1,12 +1,11 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Text, ScrollView } from 'react-native';
+import { Text, ScrollView, StyleSheet } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
-import { Card } from 'react-native-paper';
 import { SubPageHeader } from '../components';
 import { theme } from '../core/theme';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
@@ -22,6 +21,7 @@ import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
+import Modal from 'react-native-modal';
 
 type Props = {
 	navigation: Navigation;
@@ -29,6 +29,7 @@ type Props = {
 
 const DashboardScreen2 = ({ navigation }: Props) => {
 	const [chartData, setChartData] = useState('');
+	const [modalVisible, setModalVisible] = useState(true);
 	const [account, setAccount] = useState('');
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
@@ -705,6 +706,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			}
 
 			const today = setChartData([sum90, sum60, sum30, sumToday]);
+
+			setModalVisible(false);
 		}
 	}, [tokens]);
 
@@ -761,7 +764,41 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return (
 			<Background>
 				<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
-				<Text>Loading...</Text>
+				<ScrollView>
+					<Modal
+						isVisible={modalVisible}
+						backdropColor={theme.colors.black_two}
+						backdropOpacity={0.35}
+						// onBackdropPress={() => setModalVisible(false)}
+					>
+						<View
+							// onPress={() => {
+							// 	setModalVisible(false);
+							// 	navigation.navigate('Trade Success', token);
+							// }}
+							style={{
+								paddingHorizontal: 32,
+								paddingBottom: 32,
+								paddingTop: 8,
+								backgroundColor: '#111111',
+								borderRadius: 32,
+								width: 194,
+								alignItems: 'center',
+								alignSelf: 'center',
+							}}
+						>
+							<Image
+								source={require('../assets/images/logo_loader.png')}
+								style={{
+									width: 110,
+									height: 114,
+									marginBottom: 2,
+								}}
+							/>
+							<Text style={styles.loaderLabel}>Loading...</Text>
+						</View>
+					</Modal>
+				</ScrollView>
 			</Background>
 		);
 	}
@@ -899,5 +936,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		</Background>
 	);
 };
+
+const styles = StyleSheet.create({
+	loaderLabel: {
+		fontFamily: 'AzeretMono_SemiBold',
+		color: 'white',
+		fontSize: 12,
+	},
+});
 
 export default memo(DashboardScreen2);

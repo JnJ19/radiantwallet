@@ -28,13 +28,11 @@ type Props = {
 };
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
-	console.log('route', route);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [price, setPrice] = useState('');
 	const [size, setSize] = useState('');
 	const [side, setSide] = useState('sell');
 	const [marketAddress, setMarketAddress] = useState('');
-	console.log('route.params: ', route.params);
 	const tradeAmount = route.params.tradeAmount;
 	const fromTo = route.params.fromTo;
 	const passcode = useStoreState((state) => state.passcode);
@@ -311,13 +309,13 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				isVisible={modalVisible}
 				backdropColor={colors.black_two}
 				backdropOpacity={0.35}
-				onBackdropPress={() => setModalVisible(false)}
+				// onBackdropPress={() => setModalVisible(false)}
 			>
-				<TouchableOpacity
-					onPress={() => {
-						setModalVisible(false);
-						navigation.navigate('Trade Success', token);
-					}}
+				<View
+					// onPress={() => {
+					// 	setModalVisible(false);
+					// 	navigation.navigate('Trade Success', token);
+					// }}
 					style={{
 						paddingHorizontal: 32,
 						paddingBottom: 32,
@@ -334,7 +332,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 						style={{ width: 110, height: 114, marginBottom: 2 }}
 					/>
 					<Text style={styles.loaderLabel}>Submitting...</Text>
-				</TouchableOpacity>
+				</View>
 			</Modal>
 		</Background>
 	);
