@@ -399,7 +399,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const pairs = tokenPairs.find(
 				(pair: object) => pair.symbol === cmToken.symbol,
 			);
-			console.log('pairs: ', pairs);
+			// console.log('pairs: ', pairs);
 
 			if (pairs) {
 				const {
@@ -424,7 +424,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			}
 		}
 
-		console.log('combeind array', combinedArray);
+		// console.log('combeind array', combinedArray);
 
 		//get and combine prices now too
 		const coinMarketCapPrices = await fetch(
@@ -442,7 +442,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				return Object.values(data.data);
 			});
 
-		console.log('cmc prices', coinMarketCapPrices);
+		// console.log('cmc prices', coinMarketCapPrices);
 
 		const combinedArrayWithPrices = [];
 		for (let i = 0; i < combinedArray.length; i++) {
@@ -450,8 +450,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const prices = coinMarketCapPrices.find(
 				(priceSet) => priceSet.symbol === element.symbol,
 			);
-
-			console.log('prices', prices);
 
 			const {
 				percent_change_24h,
@@ -463,17 +461,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				price,
 				volume_24h,
 			} = prices.quote.USD;
-			console.log(
-				'stuff',
-				percent_change_24h,
-				market_cap,
-				market_cap_dominance,
-				percent_change_30d,
-				percent_change_60d,
-				percent_change_90d,
-				price,
-				volume_24h,
-			);
 
 			const price_30d = price * (1 + percent_change_30d * 0.01);
 			const price_60d = price * (1 + percent_change_60d * 0.01);
@@ -496,7 +483,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			combinedArrayWithPrices.push(newObject);
 		}
 
-		console.log('combedin array with prices', combinedArrayWithPrices);
+		console.log('combined array with prices', combinedArrayWithPrices);
 		setAllTokens(combinedArrayWithPrices);
 
 		//now add market address

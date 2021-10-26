@@ -22,60 +22,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 
-	console.log('all tokens', allTokens);
-
-	console.log('tokenmappp', tokenMap);
-	const renderItem = (data) => {
-		// console.log('hello', data.item);
-		return (
-			<View>
-				<Card.Title
-					title={data.item.symbol}
-					titleStyle={{ color: '#1F1F1F', fontSize: 17 }}
-					subtitle={data.item.name}
-					subtitleStyle={{ fontSize: 14, color: '#727D8D' }}
-					style={{
-						backgroundColor: 'white',
-						borderRadius: 8,
-						marginBottom: 8,
-						borderWidth: 1,
-						borderColor: theme.colors.border,
-					}}
-					left={(props) => {
-						return (
-							<Image
-								style={{ height: 24, width: 24 }}
-								source={{ uri: data.item.logoURI }}
-							/>
-							// <Text>Test</Text>
-						);
-					}}
-					right={(props) => {
-						return (
-							<View
-								style={{
-									alignItems: 'flex-end',
-									marginRight: 16,
-								}}
-							>
-								<Text
-									style={{ fontSize: 17, color: '#1F1F1F' }}
-								>
-									10.5
-								</Text>
-								<Text
-									style={{ fontSize: 14, color: '#727D8D' }}
-								>
-									$1,280
-								</Text>
-							</View>
-						);
-					}}
-				/>
-			</View>
-		);
-	};
-
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
 			const tokenList = tokens
@@ -102,27 +48,10 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	}, [setTokenMap]);
 
 	return (
-		<Background>
+		<Background dismissKeyboard={true}>
 			<View style={{ marginBottom: 24 }}>
 				<SubPageHeader backButton={false}>Browse Tokens</SubPageHeader>
 
-				{/* <TextInput
-					label="Search token name or symbol"
-					mode="outlined"
-					value={search}
-					onChangeText={(text) => setSearch(text)}
-					theme={{
-						colors: { text: '#000' },
-						fonts: {
-							regular: {
-								fontFamily: 'Inter_500Medium',
-							},
-						},
-					}}
-				/> */}
-				{/* <View>
-					<RNTextInput  />
-				</View> */}
 				<View
 					style={{
 						height: 64,
@@ -148,19 +77,11 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 						onChangeText={(text: string) => setSearch(text)}
 						value={search}
 						placeholder="Search token name or symbol"
-						// placeholderTextColor: theme.colors.primary
 						keyboardType="default"
-						// multiline={true}
-						// minHeight={150}
 					/>
 				</View>
 			</View>
 
-			{/* <FlatList
-				data={tokens}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.address}
-			/> */}
 			{allTokens ? (
 				<FlatList
 					data={allTokens}
@@ -172,7 +93,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 							}
 						/>
 					)}
-					// renderItem={TokenCard}
 					keyExtractor={(item) => item.address}
 				/>
 			) : null}
