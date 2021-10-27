@@ -22,7 +22,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	const [tradeAmount, setTradeAmount] = useState('0');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const usdc = ownedTokens.find((token) => token.symbol === 'USDC');
-	const [fromTo, setFromTo] = useState({
+	const [pair, setPair] = useState({
 		from: token,
 		to: {
 			symbol: 'USDC',
@@ -57,9 +57,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
-		if (fromTo.from.symbol && fromTo.from.symbol === 'USDC') {
-			setFromTo({
-				...fromTo,
+		if (pair.from.symbol && pair.from.symbol === 'USDC') {
+			setPair({
+				...pair,
 				to: {
 					symbol: 'SOL',
 					name: 'Solana',
@@ -89,12 +89,12 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	return (
 		<Background>
 			<SubPageHeader
-				subText={`$${(fromTo.from.amount * fromTo.from.price).toFixed(
+				subText={`$${(pair.from.amount * pair.from.price).toFixed(
 					2,
 				)} available`}
 				backButton
 			>
-				Trade {fromTo.from.name}{' '}
+				Trade {pair.from.name}{' '}
 			</SubPageHeader>
 			<View>
 				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
@@ -113,10 +113,11 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				}}
 			>
 				<TouchableOpacity
+					onPress={() => navigation.navigate('From Token')}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
 					<Image
-						source={{ uri: fromTo.from.logo }}
+						source={{ uri: pair.from.logo }}
 						style={{
 							width: 40,
 							height: 40,
@@ -127,17 +128,17 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					<View>
 						<Text style={styles.toFrom}>From</Text>
 						<Text style={styles.swapTokens}>
-							{fromTo.from.symbol}
+							{pair.from.symbol}
 						</Text>
 					</View>
 				</TouchableOpacity>
 				<TouchableOpacity
 					style={styles.swapContainer}
 					onPress={() => {
-						const fromToken2 = fromTo.from;
-						const toToken2 = fromTo.to;
-						setFromTo({
-							...fromTo,
+						const fromToken2 = pair.from;
+						const toToken2 = pair.to;
+						setPair({
+							...pair,
 							from: toToken2,
 							to: fromToken2,
 						});
@@ -149,16 +150,15 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					/>
 				</TouchableOpacity>
 				<TouchableOpacity
+					onPress={() => navigation.navigate('To Token')}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
 					<View style={{ alignItems: 'flex-end' }}>
 						<Text style={styles.toFrom}>To</Text>
-						<Text style={styles.swapTokens}>
-							{fromTo.to.symbol}
-						</Text>
+						<Text style={styles.swapTokens}>{pair.to.symbol}</Text>
 					</View>
 					<Image
-						source={{ uri: fromTo.to.logo }}
+						source={{ uri: pair.to.logo }}
 						style={{
 							width: 40,
 							height: 40,
@@ -259,7 +259,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					onPress={() =>
 						navigation.navigate('Trade Preview', {
 							tradeAmount,
-							fromTo,
+							pair,
 						})
 					}
 				>

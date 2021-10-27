@@ -11,3 +11,5 @@ export { default as PasscodeScreen } from './PasscodeScreen';
 export { default as TradePreviewScreen } from './TradePreviewScreen';
 export { default as TradeSuccessScreen } from './TradeSuccessScreen';
 export { default as SearchTokensScreen } from './SearchTokensScreen';
+export { default as FromTokenScreen } from './FromTokenScreen';
+export { default as ToTokenScreen } from './ToTokenScreen';

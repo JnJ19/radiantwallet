@@ -19,6 +19,8 @@ import {
 	SetPasscodeScreen,
 	PasscodeScreen,
 	WalletsScreen,
+	FromTokenScreen,
+	ToTokenScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -272,6 +274,16 @@ function RootNavigator3() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="From Token"
+					component={FromTokenScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="To Token"
+					component={ToTokenScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
 					name="Trade Preview"
 					component={TradePreviewScreen}
 					options={{ headerShown: false }}
@@ -330,6 +342,16 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Token Details"
 				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="From Token"
+				component={FromTokenScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="To Token"
+				component={ToTokenScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
