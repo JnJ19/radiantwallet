@@ -28,7 +28,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 			const tokenList = tokens
 				.filterByClusterSlug('mainnet-beta')
 				.getList();
-			console.log(tokenList);
 			setTokens(tokenList);
 		});
 
@@ -36,8 +35,6 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 			const tokenList = tokens
 				.filterByClusterSlug('mainnet-beta')
 				.getList();
-
-			console.log('token list', tokenList);
 
 			setTokenMap(
 				tokenList.reduce((map, item) => {
