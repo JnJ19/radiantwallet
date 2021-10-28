@@ -30,12 +30,21 @@ const TradeScreen = ({ navigation, route }: Props) => {
 		to: route.params.to,
 	});
 
-	// useEffect(() => {
-	// 	console.log('pears', pair.from.pairs);
-	// 	if (pair.from.pairs.length === 1) {
+	useEffect(() => {
+		if (pair.from.pairs.length > 1) {
+			const arrayPairsSimple = [];
+			for (let i = 0; i < pair.from.pairs.length; i++) {
+				const symbol = pair.from.pairs[i].symbol;
+				arrayPairsSimple.push(symbol);
+			}
+			console.log('arrayPairsSimple: ', arrayPairsSimple);
 
-	// 	}
-	// }, []);
+			const filteredList = allTokens.filter((token: object) =>
+				arrayPairsSimple.includes(token.symbol),
+			);
+			setFilteredTo(filteredList);
+		}
+	}, []);
 
 	useEffect(() => {
 		console.log('hit');
@@ -164,7 +173,11 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					/>
 				</TouchableOpacity>
 				<TouchableOpacity
-					onPress={() => navigation.navigate('To Token')}
+					onPress={() =>
+						pair.from.pairs.length > 1
+							? navigation.navigate('To Token', filteredTo)
+							: null
+					}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
 					<View style={{ alignItems: 'flex-end' }}>

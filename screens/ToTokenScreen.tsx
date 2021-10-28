@@ -16,7 +16,7 @@ type Props = {
 	navigation: Navigation;
 };
 
-const SearchTokensScreen = ({ navigation }: Props) => {
+const SearchTokensScreen = ({ navigation, route }: Props) => {
 	const [search, setSearch] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
@@ -84,7 +84,7 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 
 			{allTokens ? (
 				<FlatList
-					data={allTokens}
+					data={route.params}
 					renderItem={(token) => (
 						<TokenCard
 							token={token}
