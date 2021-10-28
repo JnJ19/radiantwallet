@@ -24,32 +24,10 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
-
 	const [pair, setPair] = useState({
 		from: route.params.from,
 		to: route.params.to,
 	});
-
-	useEffect(() => {
-		if (pair.from.pairs.length > 1) {
-			const arrayPairsSimple = [];
-			for (let i = 0; i < pair.from.pairs.length; i++) {
-				const symbol = pair.from.pairs[i].symbol;
-				arrayPairsSimple.push(symbol);
-			}
-			console.log('arrayPairsSimple: ', arrayPairsSimple);
-
-			const filteredList = allTokens.filter((token: object) =>
-				arrayPairsSimple.includes(token.symbol),
-			);
-			setFilteredTo(filteredList);
-		}
-	}, []);
-
-	useEffect(() => {
-		console.log('hit');
-		setPair(route.params);
-	}, [route.params]);
 
 	function addNumber(numberString: string) {
 		if (tradeAmount === '0') {
@@ -72,6 +50,27 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
+		if (pair.from.pairs.length > 1) {
+			const arrayPairsSimple = [];
+			for (let i = 0; i < pair.from.pairs.length; i++) {
+				const symbol = pair.from.pairs[i].symbol;
+				arrayPairsSimple.push(symbol);
+			}
+			console.log('arrayPairsSimple: ', arrayPairsSimple);
+
+			const filteredList = allTokens.filter((token: object) =>
+				arrayPairsSimple.includes(token.symbol),
+			);
+			setFilteredTo(filteredList);
+		}
+	}, []);
+
+	useEffect(() => {
+		console.log('hit');
+		setPair(route.params);
+	}, [route.params]);
+
+	useEffect(() => {
 		if (pair.from.symbol && pair.from.symbol === 'USDC') {
 			setPair({
 				...pair,
@@ -86,26 +85,6 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			});
 		}
 	}, [token]);
-
-	useEffect(() => {
-		fetch('https://serum-api.bonfida.com/pairs')
-			.then((res) => res.json())
-			.then((res) => {
-				const result = res.data.filter(
-					(str: string) => str.indexOf(token.symbol) >= 0,
-				);
-				const removedDashes = result.filter(
-					(str: string) => str.indexOf('-') === -1,
-				);
-			})
-			.catch((err) => console.log(err));
-	}, []);
-
-	useEffect(() => {
-		console.log('pair', pair);
-		console.log('ownedtokens', ownedTokens);
-		console.log('alltokens', allTokens);
-	}, [pair]);
 
 	return (
 		<Background>
@@ -175,7 +154,11 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				<TouchableOpacity
 					onPress={() =>
 						pair.from.pairs.length > 1
-							? navigation.navigate('To Token', filteredTo)
+							? navigation.navigate('To Token', {
+									filteredTo,
+									pair,
+									setPair,
+							  })
 							: null
 					}
 					style={{ flexDirection: 'row', alignItems: 'center' }}

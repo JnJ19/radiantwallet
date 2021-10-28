@@ -84,13 +84,20 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 
 			{allTokens ? (
 				<FlatList
-					data={route.params}
+					data={route.params.filteredTo}
 					renderItem={(token) => (
 						<TokenCard
 							token={token}
-							onPress={() =>
-								navigation.navigate('Token Details', token.item)
-							}
+							onPress={() => {
+								route.params.setPair({
+									...route.params.pair,
+									to: token.item,
+								});
+								return navigation.navigate('Trade', {
+									from: route.params.pair.from,
+									to: token.item,
+								});
+							}}
 						/>
 					)}
 					keyExtractor={(item) => item.address}
