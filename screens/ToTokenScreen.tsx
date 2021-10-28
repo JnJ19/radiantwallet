@@ -23,6 +23,8 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	const allTokens = useStoreState((state) => state.allTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 
+	console.log('all tokens', allTokens);
+
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
 			const tokenList = tokens

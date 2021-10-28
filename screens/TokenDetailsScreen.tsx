@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
@@ -24,6 +24,14 @@ type Props = {
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	console.log('route params', route.params);
+
+	async function getDefaultPairToken() {
+		console.log('token pairs', token.pairs);
+	}
+
+	useEffect(() => {
+		getDefaultPairToken();
+	}, [token]);
 
 	//chart stuff
 	const Line = ({ line }) => (

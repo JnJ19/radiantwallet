@@ -95,6 +95,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		let tokens2 = [];
+		const tokenPairs = await getTokenPairs();
+		const solPairs = tokenPairs.find(
+			(pair: object) => (pair.symbol = 'SOL'),
+		);
+		console.log('solpairs', solPairs);
+
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		if (solBalance > 0) {
@@ -164,6 +170,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				price_30d,
 				price_60d,
 				price_90d,
+				pairs: solPairs.pairs,
 				percent_change_24h,
 				percent_change_30d,
 				percent_change_60d,
@@ -176,6 +183,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			};
 			tokens2.push(tokenObject);
 		}
+
+		console.log('owned otkens', ownedTokens);
 
 		await Promise.all(
 			ownedTokens.value.map(async (item) => {
@@ -191,6 +200,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					// console.log('otherdetails', otherDetails);
 					const { name, symbol, logoURI, extensions } = otherDetails;
 					const logo = logoURI;
+
+					const pairs = tokenPairs.find(
+						(pair: object) => pair.symbol === symbol,
+					);
 
 					const mintKey = new PublicKey(mint);
 					const walletAddress = new PublicKey(
@@ -293,6 +306,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						logo,
 						extensions,
 						price,
+						pairs: pairs.pairs,
 						percent_change_24h,
 						percent_change_30d,
 						percent_change_60d,
@@ -307,6 +321,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 						...aboutData,
 					};
+					console.log('token object', tokenObject);
+
 					tokens2.push(tokenObject);
 				}
 			}),
@@ -378,6 +394,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const tokenPairs = await getTokenPairs();
 		const symbolsList = await getCleanTokenList();
 		const combinedSymbolList = symbolsList.join();
+
+		// console.log('tokenPairs: ', tokenPairs);
 
 		const coinMarketCapTokens = await fetch(
 			`https://radiant-wallet-server.travissehansen.repl.co/api`,

@@ -21,6 +21,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	const [tradeAmount, setTradeAmount] = useState('0');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const allTokens = useStoreState((state) => state.allTokens);
 	const usdc = ownedTokens.find((token) => token.symbol === 'USDC');
 	const [pair, setPair] = useState({
 		from: token,
@@ -85,6 +86,12 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			})
 			.catch((err) => console.log(err));
 	}, []);
+
+	useEffect(() => {
+		console.log('pair', pair);
+		console.log('ownedtokens', ownedTokens);
+		console.log('alltokens', allTokens);
+	}, [pair]);
 
 	return (
 		<Background>
