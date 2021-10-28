@@ -45,7 +45,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		const seed = await bip39.mnemonicToSeed(mnemonic);
 		const newAccount = getAccountFromSeed(
 			seed,
-			2,
+			0,
 			DERIVATION_PATH.bip44Change,
 		);
 
@@ -77,8 +77,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		const hash = (await associatedTokenAddress).toString('hex');
 
 		let payer = new PublicKey(hash);
-
-		const payerString = (await payer).toString('hex');
 
 		await market
 			.placeOrder(connection, {

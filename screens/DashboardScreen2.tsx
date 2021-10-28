@@ -35,6 +35,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+	const [tokenMapSymbols, setTokenMapSymbols] = useState<
+		Map<string, TokenInfo>
+	>(new Map());
 	const passcode = useStoreState((state) => state.passcode);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
@@ -99,7 +102,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solPairs = tokenPairs.find(
 			(pair: object) => (pair.symbol = 'SOL'),
 		);
-		console.log('solpairs', solPairs);
 
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
@@ -184,8 +186,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			tokens2.push(tokenObject);
 		}
 
-		console.log('owned otkens', ownedTokens);
-
 		await Promise.all(
 			ownedTokens.value.map(async (item) => {
 				const result = await connection.getParsedAccountInfo(
@@ -201,8 +201,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					const { name, symbol, logoURI, extensions } = otherDetails;
 					const logo = logoURI;
 
-					console.log('name', name);
-
 					let pairs = tokenPairs.find(
 						(pair: object) => pair.symbol === symbol,
 					);
@@ -211,18 +209,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						pairs = { pairs: false };
 					}
 
-					console.log('pairs', pairs);
-
 					const mintKey = new PublicKey(mint);
-					const walletAddress = new PublicKey(
-						'FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU',
-					);
 
 					const associatedTokenAddress =
-						await findAssociatedTokenAddress(
-							walletAddress,
-							mintKey,
-						);
+						await findAssociatedTokenAddress(publicKey, mintKey);
 
 					const associatedTokenAddressHash =
 						associatedTokenAddress.toString('hex');
@@ -437,8 +427,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					urls: { twitter, chat, website },
 				} = cmToken;
 
+				const mintObject = tokenMapSymbols.get(symbol);
+
 				const newObject = {
 					name,
+					mint: mintObject?.address,
 					logo,
 					symbol,
 					description,
@@ -447,6 +440,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					website,
 					pairs: pairs.pairs,
 				};
+
+				console.log('newObject: ', newObject);
 				combinedArray.push(newObject);
 			}
 		}
@@ -780,6 +775,21 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 		});
 	}, [setTokenMap]);
+
+	useEffect(() => {
+		new TokenListProvider().resolve().then((tokens) => {
+			const tokenList = tokens
+				.filterByClusterSlug('mainnet-beta')
+				.getList();
+
+			setTokenMapSymbols(
+				tokenList.reduce((map, item) => {
+					map.set(item.symbol, item);
+					return map;
+				}, new Map()),
+			);
+		});
+	}, [setTokenMapSymbols]);
 
 	const address = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
