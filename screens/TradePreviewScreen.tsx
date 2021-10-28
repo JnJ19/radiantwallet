@@ -34,7 +34,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [side, setSide] = useState('sell');
 	const [marketAddress, setMarketAddress] = useState('');
 	const tradeAmount = route.params.tradeAmount;
-	const fromTo = route.params.fromTo;
+	const fromTo = route.params.pair;
 	const passcode = useStoreState((state) => state.passcode);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 
@@ -64,19 +64,28 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			{},
 			programAddressKey,
 		);
+		console.log('market: ', market);
 
 		let owner = new Account(newAccount.secretKey);
+		console.log('owner: ', owner);
+
+		console.log('minttt', fromTo.from);
 
 		const mintKey = new PublicKey(fromTo.from.mint);
+		console.log('mintKey: ', mintKey);
 
 		const associatedTokenAddress = findAssociatedTokenAddress(
 			owner.publicKey,
 			mintKey,
-		);
+		).catch((err) => console.log('errrrrror', err));
+
+		console.log('associatedTokenAddress: ', associatedTokenAddress);
 
 		const hash = (await associatedTokenAddress).toString('hex');
+		console.log('hash: ', hash);
 
 		let payer = new PublicKey(hash);
+		console.log('payer: ', payer);
 
 		await market
 			.placeOrder(connection, {
@@ -309,11 +318,10 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				backdropOpacity={0.35}
 				// onBackdropPress={() => setModalVisible(false)}
 			>
-				<View
-					// onPress={() => {
-					// 	setModalVisible(false);
-					// 	navigation.navigate('Trade Success', token);
-					// }}
+				<TouchableOpacity
+					onPress={() => {
+						setModalVisible(false);
+					}}
 					style={{
 						paddingHorizontal: 32,
 						paddingBottom: 32,
@@ -330,7 +338,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 						style={{ width: 110, height: 114, marginBottom: 2 }}
 					/>
 					<Text style={styles.loaderLabel}>Submitting...</Text>
-				</View>
+				</TouchableOpacity>
 			</Modal>
 		</Background>
 	);

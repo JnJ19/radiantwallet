@@ -427,11 +427,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					urls: { twitter, chat, website },
 				} = cmToken;
 
-				const mintObject = tokenMapSymbols.get(symbol);
+				let mint;
+				if (symbol === 'USDC') {
+					mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+				} else {
+					const mintObject = tokenMapSymbols.get(symbol);
+					mint = mintObject?.address;
+				}
 
 				const newObject = {
 					name,
-					mint: mintObject?.address,
+					mint,
 					logo,
 					symbol,
 					description,
