@@ -7,6 +7,7 @@ import { Shadow } from 'react-native-shadow-2';
 import { BlurView } from 'expo-blur';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
+import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
 const {
@@ -23,14 +24,34 @@ type Props = {
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
-	console.log('route params', route.params);
+	const [defaultPair, setDefaultPair] = useState();
+	const allTokens = useStoreState((state) => state.allTokens);
 
 	async function getDefaultPairToken() {
 		console.log('token pairs', token.pairs);
+		const hasUSDC = token.pairs.find(
+			(pair: object) => pair.symbol === 'USDC',
+		);
+		if (hasUSDC) {
+			const usdcToken = allTokens.find(
+				(token: object) => token.symbol === 'USDC',
+			);
+			console.log('usdcToken: ', usdcToken);
+			setDefaultPair(usdcToken);
+		} else {
+			const defaultToken = allTokens.find(
+				(token: object) => token.symbol === token.pairs.symbol,
+			);
+			console.log('defaultToken: ', defaultToken);
+
+			setDefaultPair(defaultToken);
+		}
 	}
 
 	useEffect(() => {
-		getDefaultPairToken();
+		if (token.pairs) {
+			getDefaultPairToken();
+		}
 	}, [token]);
 
 	//chart stuff
@@ -488,41 +509,72 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					shadowRadius: 24,
 				}}
 			>
-				<Button
-					mode="outlined"
-					onPress={() => navigation.navigate('Set Pin')}
-					style={{ width: '50%' }}
-					icon={() => (
-						<Image
-							source={require('../assets/icons/Send.png')}
+				{token.pairs ? (
+					<>
+						<Button
+							mode="outlined"
+							onPress={() => navigation.navigate('Set Pin')}
+							style={{ width: '50%' }}
+							icon={() => (
+								<Image
+									source={require('../assets/icons/Send.png')}
+									style={{
+										width: 24,
+										height: 24,
+										marginRight: -24,
+									}}
+								/>
+							)}
+						>
+							Send
+						</Button>
+						<View style={{ width: 8 }} />
+						<Button
+							mode="contained"
+							onPress={() =>
+								navigation.navigate('Trade', {
+									from: token,
+									to: defaultPair,
+								})
+							}
 							style={{
-								width: 24,
-								height: 24,
-								marginRight: -24,
+								width: '50%',
 							}}
-						/>
-					)}
-				>
-					Send
-				</Button>
-				<View style={{ width: 8 }} />
-				<Button
-					mode="contained"
-					onPress={() => navigation.navigate('Trade', token)}
-					style={{ width: '50%' }}
-					icon={() => (
-						<Image
-							source={require('../assets/icons/Trade.png')}
-							style={{
-								width: 24,
-								height: 24,
-								marginRight: -20,
-							}}
-						/>
-					)}
-				>
-					Trade
-				</Button>
+							icon={() => (
+								<Image
+									source={require('../assets/icons/Trade.png')}
+									style={{
+										width: 24,
+										height: 24,
+										marginRight: -20,
+									}}
+								/>
+							)}
+						>
+							Trade
+						</Button>
+					</>
+				) : (
+					<>
+						<Button
+							mode="contained"
+							onPress={() => navigation.navigate('Set Pin')}
+							style={{ width: '100%' }}
+							// icon={() => (
+							// 	<Image
+							// 		source={require('../assets/icons/Send.png')}
+							// 		style={{
+							// 			width: 24,
+							// 			height: 24,
+							// 			marginRight: -24,
+							// 		}}
+							// 	/>
+							// )}
+						>
+							Send
+						</Button>
+					</>
+				)}
 			</View>
 		</Background>
 	);

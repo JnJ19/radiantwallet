@@ -18,24 +18,29 @@ type Props = {
 };
 
 const TradeScreen = ({ navigation, route }: Props) => {
+	console.log('route . params', route.params);
 	const token = route.params;
 	const [tradeAmount, setTradeAmount] = useState('0');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
-	const usdc = ownedTokens.find((token) => token.symbol === 'USDC');
+	const [filteredTo, setFilteredTo] = useState('');
+
 	const [pair, setPair] = useState({
-		from: token,
-		to: {
-			symbol: 'USDC',
-			name: 'USD Coin',
-			logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
-			amount: usdc.amount,
-			price: usdc.price,
-			mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-			associatedTokenAddressHash:
-				'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-		},
+		from: route.params.from,
+		to: route.params.to,
 	});
+
+	// useEffect(() => {
+	// 	console.log('pears', pair.from.pairs);
+	// 	if (pair.from.pairs.length === 1) {
+
+	// 	}
+	// }, []);
+
+	useEffect(() => {
+		console.log('hit');
+		setPair(route.params);
+	}, [route.params]);
 
 	function addNumber(numberString: string) {
 		if (tradeAmount === '0') {
@@ -120,7 +125,9 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				}}
 			>
 				<TouchableOpacity
-					onPress={() => navigation.navigate('From Token')}
+					onPress={() =>
+						navigation.navigate('From Token', { pair, setPair })
+					}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
 					<Image

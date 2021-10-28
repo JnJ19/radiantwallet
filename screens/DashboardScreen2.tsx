@@ -201,9 +201,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					const { name, symbol, logoURI, extensions } = otherDetails;
 					const logo = logoURI;
 
-					const pairs = tokenPairs.find(
+					console.log('name', name);
+
+					let pairs = tokenPairs.find(
 						(pair: object) => pair.symbol === symbol,
 					);
+
+					if (!pairs) {
+						pairs = { pairs: false };
+					}
+
+					console.log('pairs', pairs);
 
 					const mintKey = new PublicKey(mint);
 					const walletAddress = new PublicKey(

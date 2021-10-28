@@ -14,9 +14,11 @@ import Colors from '../constants/Colors';
 
 type Props = {
 	navigation: Navigation;
+	route: Object;
 };
 
-const SearchTokensScreen = ({ navigation }: Props) => {
+const SearchTokensScreen = ({ navigation, route }: Props) => {
+	console.log('route.params', route.params);
 	const [search, setSearch] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
@@ -88,9 +90,15 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 					renderItem={(token) => (
 						<TokenCard
 							token={token}
-							onPress={() =>
-								navigation.navigate('Token Details', token.item)
-							}
+							onPress={() => {
+								route.params.setPair({
+									...route.params.pair,
+								});
+								return navigation.navigate('Trade', {
+									from: token.item,
+									to: route.params.pair.to,
+								});
+							}}
 						/>
 					)}
 					keyExtractor={(item) => item.address}
