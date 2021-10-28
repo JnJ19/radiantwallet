@@ -28,7 +28,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const allTokens = useStoreState((state) => state.allTokens);
 
 	async function getDefaultPairToken() {
-		console.log('token pairs', token.pairs);
 		const hasUSDC = token.pairs.find(
 			(pair: object) => pair.symbol === 'USDC',
 		);
@@ -36,15 +35,21 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 			const usdcToken = allTokens.find(
 				(token: object) => token.symbol === 'USDC',
 			);
-			console.log('usdcToken: ', usdcToken);
 			setDefaultPair(usdcToken);
 		} else {
-			const defaultToken = allTokens.find(
-				(token: object) => token.symbol === token.pairs.symbol,
+			const symbol1 = token.pairs[0].symbol;
+			const symbol2 = token.pairs[1].symbol;
+			const otherToken = allTokens.find(
+				(token: object) => token.symbol === symbol1,
 			);
-			console.log('defaultToken: ', defaultToken);
-
-			setDefaultPair(defaultToken);
+			const otherToken2 = allTokens.find(
+				(token: object) => token.symbol === symbol2,
+			);
+			if (otherToken) {
+				setDefaultPair(otherToken);
+			} else {
+				setDefaultPair(otherToken2);
+			}
 		}
 	}
 
@@ -531,12 +536,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View style={{ width: 8 }} />
 						<Button
 							mode="contained"
-							onPress={() =>
+							onPress={() => {
+								console.log('stuffff', token, defaultPair);
 								navigation.navigate('Trade', {
 									from: token,
 									to: defaultPair,
-								})
-							}
+								});
+							}}
 							style={{
 								width: '50%',
 							}}
@@ -560,16 +566,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							mode="contained"
 							onPress={() => navigation.navigate('Set Pin')}
 							style={{ width: '100%' }}
-							// icon={() => (
-							// 	<Image
-							// 		source={require('../assets/icons/Send.png')}
-							// 		style={{
-							// 			width: 24,
-							// 			height: 24,
-							// 			marginRight: -24,
-							// 		}}
-							// 	/>
-							// )}
 						>
 							Send
 						</Button>
