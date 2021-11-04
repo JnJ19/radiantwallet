@@ -878,7 +878,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						borderWidth: 1,
 						borderColor: theme.colors.border,
 						backgroundColor: 'white',
-						borderRadius: 8,
+						borderRadius: 18,
 						padding: 16,
 					}}
 				>
