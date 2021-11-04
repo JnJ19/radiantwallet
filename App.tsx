@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { LogBox } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import './global';
 
@@ -28,10 +29,12 @@ export default function App() {
 	} else {
 		return (
 			<StoreProvider store={store}>
-				<PaperProvider theme={theme}>
-					<Navigation />
-					<StatusBar />
-				</PaperProvider>
+				<BottomSheetModalProvider>
+					<PaperProvider theme={theme}>
+						<Navigation />
+						<StatusBar />
+					</PaperProvider>
+				</BottomSheetModalProvider>
 			</StoreProvider>
 		);
 	}

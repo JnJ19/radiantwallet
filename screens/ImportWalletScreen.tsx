@@ -277,16 +277,6 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 					</View>
 				</BottomSheetModal>
 			</BottomSheetModalProvider>
-			{/* <BottomSheet
-				ref={bottomSheetRef}
-				index={1}
-				snapPoints={snapPoints}
-				onChange={handleSheetChanges}
-			>
-				<View>
-					<Text>Awesome 🎉</Text>
-				</View>
-			</BottomSheet> */}
 		</Background>
 	);
 };
