@@ -9,7 +9,6 @@ const {
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
-// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -18,6 +17,7 @@ type Props = {
 
 const TradeSuccessScreen = ({ navigation, route }: Props) => {
 	const details = route.params;
+	console.log('details: ', details);
 
 	return (
 		<Background>
@@ -45,7 +45,8 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 							marginBottom: 16,
 						}}
 					>
-						${details.tradeAmount} of USDC was converted to DXL
+						${details.tradeAmount} of {details.fromTo.from.name} was
+						converted to {details.fromTo.to.name}
 					</Text>
 				</View>
 			</View>

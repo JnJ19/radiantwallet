@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
+import { LogBox } from 'react-native';
 
 import './global';
 
@@ -15,7 +16,9 @@ import store from './store';
 
 import Navigation from './navigation';
 
-console.disableYellowBox = true;
+// console.disableYellowBox = true;
+
+LogBox.ignoreAllLogs(true);
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();

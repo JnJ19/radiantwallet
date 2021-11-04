@@ -44,6 +44,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 
+	console.log('hello');
+
 	//chart stuff
 	const Line = ({ line }) => (
 		<Path key={'line'} d={line} stroke={'black'} fill={'none'} />
