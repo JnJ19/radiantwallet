@@ -15,7 +15,7 @@ const {
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
-const addCommas = new Intl.NumberFormat('en-US');
+// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -323,7 +323,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								${addCommas.format(token.market_cap.toFixed(0))}
+								${token.market_cap.toFixed(0)}
 							</Text>
 						</View>
 						<View
@@ -384,11 +384,9 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								}}
 							>
 								$
-								{addCommas.format(
-									token.volume_24h
-										.toFixed(0)
-										.toLocaleString('en-US'),
-								)}
+								{token.volume_24h
+									.toFixed(0)
+									.toLocaleString('en-US')}
 							</Text>
 						</View>
 					</View>

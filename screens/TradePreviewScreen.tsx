@@ -20,7 +20,7 @@ import {
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
-const addCommas = new Intl.NumberFormat('en-US');
+// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;

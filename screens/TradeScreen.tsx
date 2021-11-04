@@ -10,7 +10,7 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-const addCommas = new Intl.NumberFormat('en-US');
+// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;

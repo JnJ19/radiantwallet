@@ -30,6 +30,13 @@ async function findAssociatedTokenAddress(
 	)[0];
 }
 
+function normalizeNumber(number: number) {
+	return number
+		?.toFixed(2)
+		.toString()
+		.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 const DERIVATION_PATH = {
 	deprecated: undefined,
 	bip44: 'bip44',
@@ -100,16 +107,6 @@ const maskedAddress = (address: string) => {
 	return `${address.slice(0, 8)}...${address.slice(address.length - 8)}`;
 };
 
-// const deriveSeed = (
-// 	seed: string,
-// 	walletIndex: number,
-// 	derivationPath: string,
-// 	accountIndex: number,
-// ): Buffer | undefined => {
-// 	const path44Change = `m/44'/501'/${walletIndex}'/0'`;
-// 	return ed25519.derivePath(path44Change, Buffer.from(seed, 'hex')).key;
-// };
-
 export {
 	generateMnemonic,
 	mnemonicToSeed,
@@ -119,4 +116,5 @@ export {
 	findAssociatedTokenAddress,
 	getAccountFromSeed,
 	DERIVATION_PATH,
+	normalizeNumber,
 };

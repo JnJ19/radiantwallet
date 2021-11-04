@@ -16,13 +16,14 @@ import {
 	findAssociatedTokenAddress,
 	getAccountFromSeed,
 	DERIVATION_PATH,
+	normalizeNumber,
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 import Modal from 'react-native-modal';
-const addCommas = new Intl.NumberFormat('en-US');
+// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
@@ -899,7 +900,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								marginRight: 4,
 							}}
 						>
-							{`$${addCommas.format(todayTotal.toFixed(2))}`}
+							{`$${normalizeNumber(todayTotal)}`}
 						</Text>
 						{percentChange > 0 ? (
 							<View
@@ -948,7 +949,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 											.Caption_M_SemiBold,
 									}}
 								>
-									{percentChange?.toFixed(1)}% Today
+									{normalizeNumber(percentChange)}% Today
 								</Text>
 							</View>
 						)}
