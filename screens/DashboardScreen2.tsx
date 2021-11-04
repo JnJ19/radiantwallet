@@ -43,6 +43,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
+	const selectedWallet = useStoreState((state) => state.selectedWallet);
 
 	console.log('hello');
 
@@ -76,17 +77,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
+		console.log('selectedwallet', selectedWallet);
 		// const url = 'https://api.mainnet-beta.solana.com';
 		const url = 'https://solana-api.projectserum.com';
 		const connection = new Connection(url);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const bip39 = await import('bip39');
-		//wallet I'm pulling mnemonic from: FEVcXsrw9gVSSQ5GtNAr9Q1wz9hGrUJoDFA7q9CVuWhU
 		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 		const newAccount = getAccountFromSeed(
 			seed,
-			0,
+			selectedWallet,
 			DERIVATION_PATH.bip44Change,
 		);
 
@@ -322,7 +323,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 						...aboutData,
 					};
-					console.log('token object', tokenObject);
 
 					tokens2.push(tokenObject);
 				}
@@ -332,7 +332,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		// console.log('tokens2', tokens2);
 
 		setTokens(tokens2);
-		console.log('tokens 2', tokens2);
 		setOwnedTokens(tokens2);
 	}
 
@@ -450,7 +449,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					pairs: pairs.pairs,
 				};
 
-				console.log('newObject: ', newObject);
 				combinedArray.push(newObject);
 			}
 		}
@@ -514,7 +512,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			combinedArrayWithPrices.push(newObject);
 		}
 
-		console.log('combined array with prices', combinedArrayWithPrices);
 		setAllTokens(combinedArrayWithPrices);
 
 		//now add market address
@@ -768,7 +765,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	useEffect(() => {
 		getOwnedTokens();
 		// testMarkets();
-	}, [tokenMap]);
+	}, [tokenMap, selectedWallet]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {

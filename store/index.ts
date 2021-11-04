@@ -48,6 +48,14 @@ const store = createStore({
 	setAllTokens: action((state, payload) => {
 		state.allTokens = payload;
 	}),
+	selectedWallet: 0,
+	setSelectedWallet: action((state, payload) => {
+		state.selectedWallet = payload;
+	}),
+	test: 'hello',
+	setTest: action((state, payload) => {
+		state.test = payload;
+	}),
 });
 
 // const store = createStore<WalletModel>(
