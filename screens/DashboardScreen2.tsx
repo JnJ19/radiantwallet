@@ -582,30 +582,25 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return fetch('https://serum-api.bonfida.com/pairs')
 			.then((res) => res.json())
 			.then((res) => {
-				//remove pools and dashes
-				const removedDashes = res.data.filter(
-					(str: string) => str.indexOf('-') === -1,
-				);
-				const removedToken = removedDashes.filter(
-					(str: string) => str.indexOf('LQID') === -1,
-				);
-				const removedToken2 = removedToken.filter(
-					(str: string) => str.indexOf('ODOP') === -1,
-				);
-				const removedToken3 = removedToken2.filter(
-					(str: string) => str.indexOf('xCOPE') === -1,
-				);
-				const removedToken4 = removedToken3.filter(
-					(str: string) => str.indexOf('CCAI') === -1,
-				);
-				const removedToken5 = removedToken4.filter(
-					(str: string) => str.indexOf('PLEB') === -1,
-				);
-				const removedToken6 = removedToken5.filter(
-					(str: string) => str.indexOf('BVOL') === -1,
-				);
-				const removedPools = removedToken6.filter(
-					(str: string) => str.indexOf('POOL') === -1,
+				const removedPools = res.data.filter(
+					(value) =>
+						![
+							'-',
+							'LQID',
+							'ODOP',
+							'xCOPE',
+							'CCAI',
+							'PLEB',
+							'BVOL',
+							'POOL',
+							'BTC/SRM',
+							'FTT/SRM',
+							'YFI/SRM',
+							'SUSHI/SRM',
+							'ETH/SRM',
+							'RAY/SRM',
+							'RAY/ETH',
+						].some((el) => value.includes(el)),
 				);
 
 				//split the pairs into separate symbols
