@@ -92,7 +92,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			.placeOrder(connection, {
 				owner,
 				payer,
-				side: 'buy', //sell is from left side (use dxl as payer), buy is from right (use usdc as payer)
+				side: side, //sell is from left side (use dxl as payer), buy is from right (use usdc as payer)
 				price: price,
 				size: size,
 				orderType: 'ioc',
@@ -153,7 +153,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
 			.then((res) => res.json())
 			.then((resp) => {
-				console.log('helloooooooo', marketName);
+				console.log('marketname', marketName);
 
 				console.log(resp);
 				const recentPrice = resp.data[0].price;
