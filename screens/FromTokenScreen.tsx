@@ -19,11 +19,39 @@ type Props = {
 
 const SearchTokensScreen = ({ navigation, route }: Props) => {
 	console.log('route.params', route.params);
+	const pair = route.params.pair;
+	const setPair = route.params.setPair;
 	const [search, setSearch] = useState('');
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
+
+	async function getDefaultPairToken() {
+		const hasUSDC = pair.to.pairs.find(
+			(pair: object) => pair.symbol === 'USDC',
+		);
+		if (hasUSDC) {
+			const usdcToken = allTokens.find(
+				(token: object) => token.symbol === 'USDC',
+			);
+			return usdcToken;
+		} else {
+			const symbol1 = pair.to.pairs[0].symbol;
+			const symbol2 = pair.to.pairs[1].symbol;
+			const otherToken = allTokens.find(
+				(token: object) => token.symbol === symbol1,
+			);
+			const otherToken2 = allTokens.find(
+				(token: object) => token.symbol === symbol2,
+			);
+			if (otherToken) {
+				return otherToken;
+			} else {
+				return otherToken2;
+			}
+		}
+	}
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -91,13 +119,30 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 						<TokenCard
 							token={token}
 							onPress={() => {
-								route.params.setPair({
-									...route.params.pair,
-								});
-								return navigation.navigate('Trade', {
-									from: token.item,
-									to: route.params.pair.to,
-								});
+								if (
+									pair.to.pairs.find(
+										(el) => el.symbol === token.item.symbol,
+									)
+								) {
+									setPair({
+										...pair,
+										from: token.item,
+									});
+									return navigation.navigate('Trade', {
+										from: token.item,
+										to: pair.to,
+									});
+								} else {
+									setPair({
+										...pair,
+										from: token.item,
+										to: getDefaultPairToken(),
+									});
+									return navigation.navigate('Trade', {
+										from: token.item,
+										to: pair.to,
+									});
+								}
 							}}
 						/>
 					)}
