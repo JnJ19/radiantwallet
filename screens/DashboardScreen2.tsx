@@ -245,9 +245,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								description: dataArray[0].description,
 								logo: dataArray[0].logo,
 								name: dataArray[0].name,
-								website: dataArray[0].urls.website[0],
-								twitter: dataArray[0].urls.twitter[0],
-								chat: dataArray[0].urls.chat[0],
+								extensions: {
+									website: dataArray[0].urls.website[0],
+									twitter: dataArray[0].urls.twitter[0],
+									discord: dataArray[0].urls.discord[0],
+								},
 							};
 						})
 						.catch((err) => console.log('error', err));
@@ -432,7 +434,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					logo,
 					symbol,
 					description,
-					urls: { twitter, chat, website },
+					urls: { twitter, discord, website },
 				} = cmToken;
 
 				let mint;
@@ -449,9 +451,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					logo,
 					symbol,
 					description,
-					twitter,
-					chat,
-					website,
+					extensions: {
+						twitter,
+						discord,
+						website,
+					},
 					pairs: pairs.pairs,
 				};
 
