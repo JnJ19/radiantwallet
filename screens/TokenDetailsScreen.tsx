@@ -152,7 +152,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 											.Caption_M_SemiBold,
 									}}
 								>
-									{token.change_24h}% Today
+									{normalizeNumber(token.percent_change_24h)}%
+									Today
 								</Text>
 							</View>
 						) : (
@@ -177,7 +178,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 											.Caption_M_SemiBold,
 									}}
 								>
-									{token.change_24h}% Today
+									{normalizeNumber(token.percent_change_24h)}%
+									Today
 								</Text>
 							</View>
 						)}
