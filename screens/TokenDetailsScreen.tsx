@@ -10,6 +10,8 @@ import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
+import { normalizeNumber } from '../utils';
+
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -126,7 +128,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
 						<Text style={{ fontSize: 24, marginRight: 8 }}>
-							${token.price.toFixed(2)}
+							${normalizeNumber(token.price)}
 						</Text>
 						{token.change_24h > 0 ? (
 							<View
@@ -249,7 +251,10 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										color: colors.black_one,
 									}}
 								>
-									${(token.amount * token.price).toFixed(2)}
+									$
+									{normalizeNumber(
+										token.amount * token.price,
+									)}
 								</Text>
 								<Text
 									style={{
@@ -257,7 +262,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										color: colors.black_five,
 									}}
 								>
-									{token.amount.toFixed(2)}
+									{normalizeNumber(token.amount)}
 								</Text>
 							</View>
 						</View>
@@ -324,7 +329,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								${token.market_cap.toFixed(0)}
+								${normalizeNumber(token.market_cap)}
 							</Text>
 						</View>
 						<View
@@ -354,7 +359,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								% {token.market_cap_dominance.toFixed(2)}
+								% {normalizeNumber(token.market_cap_dominance)}
 							</Text>
 						</View>
 						<View
@@ -384,10 +389,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								$
-								{token.volume_24h
-									.toFixed(0)
-									.toLocaleString('en-US')}
+								${normalizeNumber(token.volume_24h)}
 							</Text>
 						</View>
 					</View>
