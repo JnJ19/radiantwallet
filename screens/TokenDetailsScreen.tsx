@@ -419,7 +419,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View
 							style={{ flexDirection: 'row', marginVertical: 24 }}
 						>
-							{token.extensions.twitter ? (
+							{token.extensions.twitter && (
 								<TouchableOpacity
 									onPress={() =>
 										Linking.openURL(
@@ -444,8 +444,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										}}
 									/>
 								</TouchableOpacity>
-							) : null}
-							{token.extensions.discord ? (
+							)}
+							{token.extensions.discord && (
 								<TouchableOpacity
 									onPress={() =>
 										Linking.openURL(
@@ -471,8 +471,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										}}
 									/>
 								</TouchableOpacity>
-							) : null}
-							{token.extensions.website ? (
+							)}
+							{token.extensions.website && (
 								<TouchableOpacity
 									onPress={() =>
 										Linking.openURL(
@@ -496,7 +496,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										}}
 									/>
 								</TouchableOpacity>
-							) : null}
+							)}
 						</View>
 						<Text
 							style={{
