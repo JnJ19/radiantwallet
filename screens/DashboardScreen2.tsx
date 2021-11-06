@@ -600,6 +600,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							'ETH/SRM',
 							'RAY/SRM',
 							'RAY/ETH',
+							'MSRM',
 						].some((el) => value.includes(el)),
 				);
 

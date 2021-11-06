@@ -20,7 +20,7 @@ import {
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
-// const addCommas = new Intl.NumberFormat('en-US');
+import { normalizeNumber } from '../utils';
 
 type Props = {
 	navigation: Navigation;
@@ -30,6 +30,7 @@ type Props = {
 const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [price, setPrice] = useState('');
+	const [displayPrice, setDisplayPrice] = useState('');
 	const [size, setSize] = useState('');
 	const [side, setSide] = useState('sell');
 	const [marketAddress, setMarketAddress] = useState('');
@@ -132,7 +133,23 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
-		const marketName = fromTo.to.symbol + fromTo.from.symbol;
+		const originalPair = fromTo.to.pairs.filter((pair) =>
+			pair.pair.includes(fromTo.from.symbol),
+		)[0].pair;
+
+		const pairIsNotOriginal =
+			fromTo.from.symbol + '/' + fromTo.to.symbol !== originalPair;
+
+		let marketName;
+		if (pairIsNotOriginal) {
+			marketName = fromTo.to.symbol + fromTo.from.symbol;
+			setSide('buy');
+		} else {
+			marketName = fromTo.from.symbol + fromTo.to.symbol;
+		}
+
+		console.log('marketName: ', marketName);
+
 		fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
 			.then((res) => res.json())
 			.then((resp) => {
@@ -142,6 +159,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				const recentPrice = resp.data[0].price;
 				const newPrice = recentPrice * 1.005;
 				console.log('newprice', newPrice);
+				pairIsNotOriginal
+					? setDisplayPrice(1 / newPrice)
+					: setDisplayPrice(newPrice);
 				setSize(parseFloat(tradeAmount) / newPrice);
 				setPrice(newPrice);
 				setMarketAddress(resp.data[0].marketAddress);
@@ -263,7 +283,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 								{price
 									? `1 ${
 											fromTo.from.symbol
-									  } = ${price.toFixed(3)} ${
+									  } = ${normalizeNumber(displayPrice)} ${
 											fromTo.to.symbol
 									  }`
 									: 'loading...'}

@@ -56,7 +56,6 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				const symbol = pair.from.pairs[i].symbol;
 				arrayPairsSimple.push(symbol);
 			}
-			console.log('arrayPairsSimple: ', arrayPairsSimple);
 
 			const filteredList = allTokens.filter((token: object) =>
 				arrayPairsSimple.includes(token.symbol),
