@@ -24,6 +24,7 @@ type Props = {
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
+	console.log('token: ', token);
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
 
@@ -418,72 +419,84 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View
 							style={{ flexDirection: 'row', marginVertical: 24 }}
 						>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.twitter)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-									marginRight: 16,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Twitter_Logo.png')}
+							{token.extensions.twitter ? (
+								<TouchableOpacity
+									onPress={() =>
+										Linking.openURL(
+											token.extensions.twitter,
+										)
+									}
 									style={{
-										width: 24,
-										height: 20,
-										margin: 16,
-									}}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.website)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-									marginRight: 16,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Discord_Logo.png')}
-									style={{
-										width: 24,
-										height: 19,
-										margin: 16,
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
 										marginRight: 16,
 									}}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.website)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/globe.png')}
+								>
+									<Image
+										source={require('../assets/icons/Twitter_Logo.png')}
+										style={{
+											width: 24,
+											height: 20,
+											margin: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							) : null}
+							{token.extensions.discord ? (
+								<TouchableOpacity
+									onPress={() =>
+										Linking.openURL(
+											token.extensions.discord,
+										)
+									}
 									style={{
-										width: 24,
-										height: 24,
-										margin: 16,
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
+										marginRight: 16,
 									}}
-								/>
-							</TouchableOpacity>
+								>
+									<Image
+										source={require('../assets/icons/Discord_Logo.png')}
+										style={{
+											width: 24,
+											height: 19,
+											margin: 16,
+											marginRight: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							) : null}
+							{token.extensions.website ? (
+								<TouchableOpacity
+									onPress={() =>
+										Linking.openURL(
+											token.extensions.website,
+										)
+									}
+									style={{
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
+									}}
+								>
+									<Image
+										source={require('../assets/icons/globe.png')}
+										style={{
+											width: 24,
+											height: 24,
+											margin: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							) : null}
 						</View>
 						<Text
 							style={{

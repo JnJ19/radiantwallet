@@ -43,8 +43,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
-	const selectedWallet = useStoreState((state) => state.selectedWallet);
+	const selectedWallet = useStoreState(
+		(state) => state.selectedWallet,
+		(prev, next) => prev.selectedWalle === next.selectedWallet,
+	);
 
+	console.log('selectedWallet: ', selectedWallet);
 	console.log('hello');
 
 	//chart stuff
@@ -766,6 +770,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		getOwnedTokens();
 		// testMarkets();
 	}, [tokenMap, selectedWallet]);
+
+	useEffect(() => {
+		console.log('hello selected wallet', selectedWallet);
+		getOwnedTokens();
+	}, [selectedWallet]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
