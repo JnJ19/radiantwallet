@@ -533,7 +533,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					<>
 						<Button
 							mode="outlined"
-							onPress={() => navigation.navigate('Set Pin')}
+							onPress={() => navigation.navigate('Send', token)}
 							style={{ width: '50%' }}
 							icon={() => (
 								<Image
@@ -579,7 +579,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					<>
 						<Button
 							mode="contained"
-							onPress={() => navigation.navigate('Set Pin')}
+							onPress={() => navigation.navigate('Send', token)}
 							style={{ width: '100%' }}
 						>
 							Send

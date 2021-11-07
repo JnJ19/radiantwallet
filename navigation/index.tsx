@@ -21,6 +21,7 @@ import {
 	WalletsScreen,
 	FromTokenScreen,
 	ToTokenScreen,
+	SendScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -274,6 +275,11 @@ function RootNavigator3() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="Send"
+					component={SendScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
 					name="From Token"
 					component={FromTokenScreen}
 					options={{ headerShown: false }}
@@ -357,6 +363,11 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Trade"
 				component={TradeScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Send"
+				component={SendScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen

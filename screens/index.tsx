@@ -13,3 +13,4 @@ export { default as TradeSuccessScreen } from './TradeSuccessScreen';
 export { default as SearchTokensScreen } from './SearchTokensScreen';
 export { default as FromTokenScreen } from './FromTokenScreen';
 export { default as ToTokenScreen } from './ToTokenScreen';
+export { default as SendScreen } from './SendScreen';
