@@ -16,7 +16,19 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-// const addCommas = new Intl.NumberFormat('en-US');
+import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { web3, Wallet } from '@project-serum/anchor';
+import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
+import {
+	findAssociatedTokenAddress,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+	normalizeNumber,
+	deriveSeed2,
+} from '../utils';
+import * as SecureStore from 'expo-secure-store';
+import * as ed25519 from 'ed25519-hd-key';
+import nacl from 'tweetnacl';
 
 type Props = {
 	navigation: Navigation;
@@ -31,6 +43,146 @@ const SendScreen = ({ navigation, route }: Props) => {
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
+	const passcode = useStoreState((state) => state.passcode);
+	const selectedWallet = useStoreState(
+		(state) => state.selectedWallet,
+		(prev, next) => prev.selectedWalle === next.selectedWallet,
+	);
+
+	async function initiateTransfer() {
+		const url = 'https://solana-api.projectserum.com';
+		const connection = new Connection(url);
+
+		// let mnemonic = await SecureStore.getItemAsync(passcode);
+		// Generate a random mnemonic (12 words) (uses crypto.randomBytes under the hood)
+
+		const bip39 = await import('bip39');
+		var mnemonic = bip39.generateMnemonic();
+
+		// Convert 12 word mnemonic to 32 byte seed
+
+		// bip39.mnemonicToSeed(mnemonic);
+		console.log('mnemonic: ', mnemonic);
+
+		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed.slice(0, 32));
+		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed);
+		console.log('seed: ', seed);
+		// const newKeyPair = Keypair.fromSeed(seed);
+		// const newKeyPair = ed25519.generateKeyPair(seed);
+		const newAccount = getAccountFromSeed(
+			seed,
+			selectedWallet,
+			DERIVATION_PATH.bip44Change,
+		);
+		console.log('newAccount: ', newAccount);
+
+		console.log('wallet', Wallet);
+		console.log('web3', web3);
+
+		// const wallet = new Wallet(newKeyPair);
+		const publickey = newAccount.publicKey;
+		console.log('publickey: ', publickey);
+
+		transfer(
+			token.mint,
+			newAccount,
+			recipientAddress,
+			connection,
+			parseFloat(tradeAmount),
+		);
+	}
+
+	async function transfer(
+		tokenMintAddress: string,
+		wallet,
+		to: string,
+		connection: web3.Connection,
+		amount: number,
+	) {
+		const mintPublicKey = new web3.PublicKey(tokenMintAddress);
+		console.log('mintPublicKey: ', mintPublicKey);
+		const mintToken = new Token(
+			connection,
+			mintPublicKey,
+			TOKEN_PROGRAM_ID,
+			wallet.secretKey, // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
+		);
+		console.log('mintToken: ', mintToken);
+
+		const fromTokenAccount =
+			await mintToken.getOrCreateAssociatedAccountInfo(wallet.publicKey);
+		console.log('fromTokenAccount: ', fromTokenAccount);
+
+		const destPublicKey = new web3.PublicKey(to);
+		console.log('destPublicKey: ', destPublicKey);
+
+		// Get the derived address of the destination wallet which will hold the custom token
+		const associatedDestinationTokenAddr =
+			await Token.getAssociatedTokenAddress(
+				mintToken.associatedProgramId,
+				mintToken.programId,
+				mintPublicKey,
+				destPublicKey,
+			);
+
+		console.log(
+			'associatedDestinationTokenAddr: ',
+			associatedDestinationTokenAddr,
+		);
+		const receiverAccount = await connection.getAccountInfo(
+			associatedDestinationTokenAddr,
+		);
+		console.log('receiverAccount: ', receiverAccount);
+
+		const instructions: web3.TransactionInstruction[] = [];
+		console.log('instructions: ', instructions);
+
+		if (receiverAccount === null) {
+			instructions.push(
+				Token.createAssociatedTokenAccountInstruction(
+					mintToken.associatedProgramId,
+					mintToken.programId,
+					mintPublicKey,
+					associatedDestinationTokenAddr,
+					destPublicKey,
+					wallet.publicKey,
+				),
+			);
+		}
+
+		instructions.push(
+			Token.createTransferInstruction(
+				TOKEN_PROGRAM_ID,
+				fromTokenAccount.address,
+				associatedDestinationTokenAddr,
+				wallet.publicKey,
+				[],
+				amount,
+			),
+		);
+
+		const transaction = new web3.Transaction().add(...instructions);
+		console.log('transaction: ', transaction);
+		transaction.feePayer = wallet.publicKey;
+		transaction.recentBlockhash = (
+			await connection.getRecentBlockhash()
+		).blockhash;
+
+		const transactionSignature = await connection.sendRawTransaction(
+			transaction.serialize(),
+			{ skipPreflight: true },
+		);
+		console.log('transactionSignature: ', transactionSignature);
+
+		await connection.confirmTransaction(transactionSignature);
+
+		navigation.navigate('Send Success', {
+			tradeAmount,
+			token,
+			recipientAddress,
+		});
+	}
 
 	function addNumber(numberString: string) {
 		if (tradeAmount === '0') {
@@ -55,8 +207,8 @@ const SendScreen = ({ navigation, route }: Props) => {
 	return (
 		<Background dismissKeyboard={true}>
 			<SubPageHeader
-				subText={`$${(token.amount * token.price).toFixed(
-					2,
+				subText={`$${normalizeNumber(
+					token.amount * token.price,
 				)} available`}
 				backButton
 			>
@@ -185,11 +337,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 				<Button
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
-							navigation.navigate('Send Success', {
-								tradeAmount,
-								token,
-								recipientAddress,
-							});
+							initiateTransfer();
 						}
 					}}
 				>
