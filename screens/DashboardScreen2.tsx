@@ -83,7 +83,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	async function getOwnedTokens() {
 		console.log('selectedwallet', selectedWallet);
 		// const url = 'https://api.mainnet-beta.solana.com';
-		const url = 'https://solana-api.projectserum.com';
+		// const url = 'https://solana-api.projectserum.com';
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 		const connection = new Connection(url);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);

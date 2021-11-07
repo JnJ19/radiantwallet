@@ -38,6 +38,7 @@ type Props = {
 const SendScreen = ({ navigation, route }: Props) => {
 	console.log('route . params', route.params);
 	const token = route.params;
+	console.log('token: ', token);
 	const [tradeAmount, setTradeAmount] = useState('0');
 	const [recipientAddress, setRecipientAddress] = useState('');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
@@ -48,6 +49,22 @@ const SendScreen = ({ navigation, route }: Props) => {
 		(state) => state.selectedWallet,
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
+
+	async function findAssociatedTokenAddress(
+		walletAddress: PublicKey,
+		tokenMintAddress: PublicKey,
+	): Promise<PublicKey> {
+		return (
+			await PublicKey.findProgramAddress(
+				[
+					walletAddress.toBuffer(),
+					TOKEN_PROGRAM_ID.toBuffer(),
+					tokenMintAddress.toBuffer(),
+				],
+				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+			)
+		)[0];
+	}
 
 	async function initiateTransfer() {
 		const url = 'https://solana-api.projectserum.com';
@@ -101,18 +118,17 @@ const SendScreen = ({ navigation, route }: Props) => {
 		amount: number,
 	) {
 		const mintPublicKey = new web3.PublicKey(tokenMintAddress);
-		console.log('mintPublicKey: ', mintPublicKey);
 		const mintToken = new Token(
 			connection,
 			mintPublicKey,
 			TOKEN_PROGRAM_ID,
 			wallet.secretKey, // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
 		);
-		console.log('mintToken: ', mintToken);
 
-		const fromTokenAccount =
-			await mintToken.getOrCreateAssociatedAccountInfo(wallet.publicKey);
-		console.log('fromTokenAccount: ', fromTokenAccount);
+		// const fromTokenAccount = await mintToken
+		// 	.getOrCreateAssociatedAccountInfo(wallet.publicKey)
+		// 	.catch((err) => console.log('errorrr', err));
+		// console.log('fromTokenAccount: ', fromTokenAccount);
 
 		const destPublicKey = new web3.PublicKey(to);
 		console.log('destPublicKey: ', destPublicKey);
@@ -130,13 +146,12 @@ const SendScreen = ({ navigation, route }: Props) => {
 			'associatedDestinationTokenAddr: ',
 			associatedDestinationTokenAddr,
 		);
-		const receiverAccount = await connection.getAccountInfo(
-			associatedDestinationTokenAddr,
+		const receiverAccount = await connection.getParsedAccountInfo(
+			destPublicKey,
 		);
 		console.log('receiverAccount: ', receiverAccount);
 
 		const instructions: web3.TransactionInstruction[] = [];
-		console.log('instructions: ', instructions);
 
 		if (receiverAccount === null) {
 			instructions.push(
@@ -154,13 +169,14 @@ const SendScreen = ({ navigation, route }: Props) => {
 		instructions.push(
 			Token.createTransferInstruction(
 				TOKEN_PROGRAM_ID,
-				fromTokenAccount.address,
+				token.associatedTokenAddress,
 				associatedDestinationTokenAddr,
 				wallet.publicKey,
 				[],
 				amount,
 			),
 		);
+		console.log('instructions: ', instructions);
 
 		const transaction = new web3.Transaction().add(...instructions);
 		console.log('transaction: ', transaction);
@@ -169,13 +185,20 @@ const SendScreen = ({ navigation, route }: Props) => {
 			await connection.getRecentBlockhash()
 		).blockhash;
 
-		const transactionSignature = await connection.sendRawTransaction(
-			transaction.serialize(),
-			{ skipPreflight: true },
+		var signature = await web3.sendAndConfirmTransaction(
+			connection,
+			transaction,
+			[wallet],
 		);
-		console.log('transactionSignature: ', transactionSignature);
 
-		await connection.confirmTransaction(transactionSignature);
+		// const transactionSignature = await connection
+		// 	.sendRawTransaction(transaction.serialize(), {
+		// 		skipPreflight: true,
+		// 	})
+		// 	.catch((err) => console.log('erororor', err));
+		// console.log('transactionSignature: ', transactionSignature);
+
+		await connection.confirmTransaction(signature);
 
 		navigation.navigate('Send Success', {
 			tradeAmount,
