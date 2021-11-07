@@ -22,6 +22,7 @@ import {
 	FromTokenScreen,
 	ToTokenScreen,
 	SendScreen,
+	SendSuccessScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -280,6 +281,11 @@ function RootNavigator3() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="Send Success"
+					component={SendSuccessScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
 					name="From Token"
 					component={FromTokenScreen}
 					options={{ headerShown: false }}
@@ -368,6 +374,11 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Send"
 				component={SendScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Send Success"
+				component={SendSuccessScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen

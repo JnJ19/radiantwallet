@@ -27,7 +27,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 	console.log('route . params', route.params);
 	const token = route.params;
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipienetAddress, setRecipienetAddress] = useState('');
+	const [recipientAddress, setRecipientAddress] = useState('');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
@@ -89,8 +89,8 @@ const SendScreen = ({ navigation, route }: Props) => {
 						borderWidth: 0,
 						...theme.fonts.Nunito_Sans.Body_M_Regular,
 					}}
-					onChangeText={(text: string) => setRecipienetAddress(text)}
-					value={recipienetAddress}
+					onChangeText={(text: string) => setRecipientAddress(text)}
+					value={recipientAddress}
 					placeholder="Recipient's Wallet Address"
 					keyboardType="default"
 				/>
@@ -183,13 +183,15 @@ const SendScreen = ({ navigation, route }: Props) => {
 			</View>
 			<View style={{ marginBottom: 40 }}>
 				<Button
-					onPress={() =>
-						navigation.navigate('Send Success', {
-							tradeAmount,
-							token,
-							recipientAddress,
-						})
-					}
+					onPress={() => {
+						if (tradeAmount !== '0' && recipientAddress !== '') {
+							navigation.navigate('Send Success', {
+								tradeAmount,
+								token,
+								recipientAddress,
+							});
+						}
+					}}
 				>
 					Send ${tradeAmount}
 				</Button>
