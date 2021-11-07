@@ -22,10 +22,19 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	const pair = route.params.pair;
 	const setPair = route.params.setPair;
 	const [search, setSearch] = useState('');
-	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
-	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
+
+	const [filteredTokens, setFilteredTokens] = useState(ownedTokens);
+
+	const searchFilter = (ownedTokens: Array<object>) => {
+		return ownedTokens.filter((token) => {
+			return (
+				token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+				token.name.toLowerCase().includes(search.toLowerCase())
+			);
+		});
+	};
 
 	async function getDefaultPairToken() {
 		const hasUSDC = pair.to.pairs.find(
@@ -54,26 +63,8 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
-		new TokenListProvider().resolve().then((tokens) => {
-			const tokenList = tokens
-				.filterByClusterSlug('mainnet-beta')
-				.getList();
-			setTokens(tokenList);
-		});
-
-		new TokenListProvider().resolve().then((tokens) => {
-			const tokenList = tokens
-				.filterByClusterSlug('mainnet-beta')
-				.getList();
-
-			setTokenMap(
-				tokenList.reduce((map, item) => {
-					map.set(item.address, item);
-					return map;
-				}, new Map()),
-			);
-		});
-	}, [setTokenMap]);
+		setFilteredTokens(searchFilter(ownedTokens));
+	}, [search]);
 
 	return (
 		<Background dismissKeyboard={true}>
@@ -112,9 +103,9 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 
-			{allTokens ? (
+			{filteredTokens ? (
 				<FlatList
-					data={ownedTokens}
+					data={filteredTokens}
 					renderItem={(token) => (
 						<TokenCard
 							token={token}
