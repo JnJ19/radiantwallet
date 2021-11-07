@@ -18,34 +18,21 @@ type Props = {
 
 const SearchTokensScreen = ({ navigation }: Props) => {
 	const [search, setSearch] = useState('');
-	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
-	const [tokens, setTokens] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
+	const [filteredTokens, setFilteredTokens] = useState(allTokens);
 
-	useEffect(() => {
-		new TokenListProvider().resolve().then((tokens) => {
-			const tokenList = tokens
-				.filterByClusterSlug('mainnet-beta')
-				.getList();
-			console.log(tokenList);
-			setTokens(tokenList);
-		});
-
-		new TokenListProvider().resolve().then((tokens) => {
-			const tokenList = tokens
-				.filterByClusterSlug('mainnet-beta')
-				.getList();
-
-			console.log('token list', tokenList);
-
-			setTokenMap(
-				tokenList.reduce((map, item) => {
-					map.set(item.address, item);
-					return map;
-				}, new Map()),
+	const searchFilter = (allTokens) => {
+		return allTokens.filter((token) => {
+			return (
+				token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+				token.name.toLowerCase().includes(search.toLowerCase())
 			);
 		});
-	}, [setTokenMap]);
+	};
+
+	useEffect(() => {
+		setFilteredTokens(searchFilter(allTokens));
+	}, [search]);
 
 	return (
 		<Background dismissKeyboard={true}>
@@ -82,9 +69,9 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 				</View>
 			</View>
 
-			{allTokens ? (
+			{filteredTokens ? (
 				<FlatList
-					data={allTokens}
+					data={filteredTokens}
 					renderItem={(token) => (
 						<TokenCard
 							token={token}
