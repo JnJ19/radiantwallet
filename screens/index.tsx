@@ -15,3 +15,4 @@ export { default as FromTokenScreen } from './FromTokenScreen';
 export { default as ToTokenScreen } from './ToTokenScreen';
 export { default as SendScreen } from './SendScreen';
 export { default as SendSuccessScreen } from './SendSuccessScreen';
+export { default as CreateWalletScreen } from './CreateWalletScreen';
