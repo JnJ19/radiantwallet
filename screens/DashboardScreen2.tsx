@@ -935,9 +935,20 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 											color: theme.colors.black_six,
 										}}
 									>
+										Start by copying your Wallet Address
+									</Text>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: theme.colors.black_six,
+										}}
+									>
+										(
 										{shortenPublicKey(
 											account.publicKey.toString('hex'),
 										)}
+										)
 									</Text>
 								</View>
 							</View>
