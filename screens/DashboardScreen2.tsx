@@ -36,6 +36,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [account, setAccount] = useState('');
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
+	const [loading, setLoading] = useState(true);
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
@@ -392,6 +393,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
+		setLoading(false);
 	}
 
 	async function settleFunds() {
@@ -883,7 +885,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
 
-	if (tokens.length === 0 && account) {
+	if (!loading && tokens.length === 0 && account) {
 		return (
 			<Background>
 				<ScrollView showsVerticalScrollIndicator={false}>
@@ -983,6 +985,48 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						</Text>
 					</View>
 				</ScrollView>
+			</Background>
+		);
+	}
+
+	if (loading) {
+		return (
+			<Background>
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+				</ScrollView>
+				<Modal
+					isVisible={true}
+					backdropColor={theme.colors.black_two}
+					backdropOpacity={0.35}
+					// onBackdropPress={() => setModalVisible(false)}
+				>
+					<TouchableOpacity
+						onPress={() => {
+							setModalVisible(false);
+						}}
+						style={{
+							paddingHorizontal: 32,
+							paddingBottom: 32,
+							paddingTop: 8,
+							backgroundColor: '#111111',
+							borderRadius: 32,
+							width: 194,
+							alignItems: 'center',
+							alignSelf: 'center',
+						}}
+					>
+						<Image
+							source={require('../assets/images/logo_loader.png')}
+							style={{
+								width: 110,
+								height: 114,
+								marginBottom: 2,
+							}}
+						/>
+						<Text style={styles.loaderLabel}>loading...</Text>
+					</TouchableOpacity>
+				</Modal>
 			</Background>
 		);
 	}
