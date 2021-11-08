@@ -33,17 +33,13 @@ type Props = {
 
 const WalletsScreen = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
-	const [subWallets, setSubWallets] = useState([]);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
-	const test = useStoreState((state) => state.test);
-	const setTest = useStoreActions((actions) => actions.setTest);
+	const subWallets = useStoreState((state) => state.subWallets);
 	const setSelectedWallet = useStoreActions(
 		(actions) => actions.setSelectedWallet,
 	);
 	const [localSelectedWallet, setLocalSelectedWallet] =
 		useState(selectedWallet);
-	console.log('test: ', test);
-	setTest('something else');
 	console.log('subWallets: ', subWallets);
 	console.log('selectedWallet: ', selectedWallet);
 
@@ -104,10 +100,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 	// const handleSheetChanges = useCallback((index: number) => {
 	// 	console.log('handleSheetChanges', index);
 	// }, []);
-
-	useEffect(() => {
-		getSubWallets();
-	}, []);
 
 	if (subWallets.length === 0) {
 		return <Text>Loading...</Text>;

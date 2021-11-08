@@ -48,9 +48,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		(state) => state.selectedWallet,
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
-
-	console.log('selectedWallet: ', selectedWallet);
-	console.log('hello');
+	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -82,6 +80,50 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	function shortenPublicKey(publicKey: string) {
 		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
+	}
+
+	async function getSubWallets() {
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+		const connection = new Connection(url);
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const bip39 = await import('bip39');
+
+		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+
+		let count;
+		const subWallets1 = [];
+		for (let i = 0; i < 100; i++) {
+			const newAccount = getAccountFromSeed(
+				seed,
+				i,
+				DERIVATION_PATH.bip44Change,
+			);
+
+			const { publicKey } = newAccount;
+			console.log('publicKey: ', publicKey.toString('hex'));
+
+			const programId = new PublicKey(
+				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+			);
+			const ownedTokens = await connection
+				.getTokenAccountsByOwner(publicKey, { programId })
+				.catch((err) => console.log('errorr', err));
+			const result2 = await connection.getParsedAccountInfo(publicKey);
+			console.log('ownedTokens: ', ownedTokens);
+			console.log('result2: ', result2);
+
+			if (!result2.value) {
+				count = i + 1;
+				i = 100;
+			} else {
+				subWallets1.push({
+					publicKey: publicKey.toString('hex'),
+				});
+			}
+		}
+
+		setSubWallets(subWallets1);
 	}
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
@@ -737,8 +779,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		getAllTokens();
-		// getCleanTokenList();
-		// getAddress();
+		getSubWallets();
 	}, []);
 
 	useEffect(() => {
