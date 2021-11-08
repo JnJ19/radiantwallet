@@ -11,6 +11,7 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
 import { normalizeNumber } from '../utils';
+import * as WebBrowser from 'expo-web-browser';
 
 const {
 	colors,
@@ -426,7 +427,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							{token.extensions.twitter && (
 								<TouchableOpacity
 									onPress={() =>
-										Linking.openURL(
+										WebBrowser.openBrowserAsync(
 											token.extensions.twitter,
 										)
 									}
@@ -452,7 +453,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							{token.extensions.discord && (
 								<TouchableOpacity
 									onPress={() =>
-										Linking.openURL(
+										WebBrowser.openBrowserAsync(
 											token.extensions.discord,
 										)
 									}
@@ -479,7 +480,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							{token.extensions.website && (
 								<TouchableOpacity
 									onPress={() =>
-										Linking.openURL(
+										WebBrowser.openBrowserAsync(
 											token.extensions.website,
 										)
 									}
