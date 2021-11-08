@@ -51,11 +51,6 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 		return str.split(' ').length;
 	}
 
-	const fetchCopiedText = async () => {
-		const text = await Clipboard.getStringAsync();
-		setCopiedText(text);
-	};
-
 	async function generatePhrase() {
 		const bip39 = await import('bip39');
 		const mnemonic = bip39.generateMnemonic();

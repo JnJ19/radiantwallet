@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { View, FlatList, Image } from 'react-native';
+import { View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
@@ -22,6 +22,7 @@ import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
+import * as Clipboard from 'expo-clipboard';
 import Modal from 'react-native-modal';
 // const addCommas = new Intl.NumberFormat('en-US');
 
@@ -79,6 +80,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		</Defs>
 	);
 
+	function shortenPublicKey(publicKey: string) {
+		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
+	}
+
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		console.log('selectedwallet', selectedWallet);
@@ -96,6 +101,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			selectedWallet,
 			DERIVATION_PATH.bip44Change,
 		);
+
+		setAccount(newAccount);
 
 		const { publicKey } = newAccount;
 
@@ -787,7 +794,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.getList();
 
 			setTokenMap(
-				tokenList.reduce((map, item) => {
+				tokenList?.reduce((map, item) => {
 					map.set(item.address, item);
 					return map;
 				}, new Map()),
@@ -802,7 +809,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.getList();
 
 			setTokenMapSymbols(
-				tokenList.reduce((map, item) => {
+				tokenList?.reduce((map, item) => {
 					map.set(item.symbol, item);
 					return map;
 				}, new Map()),
@@ -810,18 +817,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		});
 	}, [setTokenMapSymbols]);
 
-	const address = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
-	const token = tokenMap.get(address2);
-
 	let todayTotal;
 	let percentChange;
-	if (tokens) {
+	if (tokens && tokens.length > 0) {
 		const totals = tokens?.map((item) => {
 			return item.amount * item.price;
 		});
 
-		todayTotal = totals.reduce((prev, current) => prev + current);
+		todayTotal = totals?.reduce((prev, current) => prev + current);
 
 		const yesterdayTotals = tokens?.map((item) => {
 			const change = item.percent_change_24h * 0.01;
@@ -832,51 +835,112 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			return yesterday;
 		});
 
-		const yesterdayTotal = yesterdayTotals.reduce(
+		const yesterdayTotal = yesterdayTotals?.reduce(
 			(prev, current) => prev + current,
 		);
 
 		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
 
-	if (!tokens) {
+	if (tokens.length === 0 && account) {
 		return (
 			<Background>
-				<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
-				<ScrollView>
-					<Modal
-						isVisible={modalVisible}
-						backdropColor={theme.colors.black_two}
-						backdropOpacity={0.35}
-						// onBackdropPress={() => setModalVisible(false)}
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+					<View
+						style={{
+							// borderColor: theme.colors.border,
+							borderWidth: 1,
+							borderRadius: 18,
+							padding: 16,
+							marginBottom: 16,
+							backgroundColor: theme.colors.black_one,
+						}}
 					>
 						<View
-							// onPress={() => {
-							// 	setModalVisible(false);
-							// 	navigation.navigate('Trade Success', token);
-							// }}
 							style={{
-								paddingHorizontal: 32,
-								paddingBottom: 32,
-								paddingTop: 8,
-								backgroundColor: '#111111',
-								borderRadius: 32,
-								width: 194,
-								alignItems: 'center',
-								alignSelf: 'center',
+								flexDirection: 'row',
+								justifyContent: 'space-between',
 							}}
 						>
-							<Image
-								source={require('../assets/images/logo_loader.png')}
-								style={{
-									width: 110,
-									height: 114,
-									marginBottom: 2,
-								}}
-							/>
-							<Text style={styles.loaderLabel}>Loading...</Text>
+							<View style={{ flexDirection: 'row' }}>
+								<Image
+									source={require('../assets/icons/wallet_green.png')}
+									style={{
+										width: 40,
+										height: 40,
+										borderRadius: 100,
+										marginRight: 16,
+									}}
+								/>
+								<View>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Body_M_Bold,
+											color: 'white',
+											paddingRight: 16,
+										}}
+									>
+										Send tokens to your wallet to get
+										started
+									</Text>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: theme.colors.black_six,
+										}}
+									>
+										{shortenPublicKey(
+											account.publicKey.toString('hex'),
+										)}
+									</Text>
+								</View>
+							</View>
 						</View>
-					</Modal>
+						<View
+							style={{
+								borderTopColor: theme.colors.black_six,
+								borderTopWidth: 1,
+								marginVertical: 16,
+							}}
+						/>
+						<TouchableOpacity
+							style={{ flexDirection: 'row' }}
+							onPress={() =>
+								Clipboard.setString(
+									account.publicKey.toString('hex'),
+								)
+							}
+						>
+							<Text
+								style={{
+									...theme.fonts.Nunito_Sans.Body_M_Bold,
+									color: '#C9F977',
+									marginRight: 4,
+								}}
+							>
+								Copy Wallet Address
+							</Text>
+						</TouchableOpacity>
+					</View>
+					<View
+						style={{
+							borderTopColor: theme.colors.black_six,
+							borderTopWidth: 1,
+							marginVertical: 16,
+						}}
+					/>
+					<View style={{ alignItems: 'center', padding: 24 }}>
+						<Image
+							source={require('../assets/icons/chart_logo_small.png')}
+							style={{ width: 40, height: 40, marginBottom: 16 }}
+						/>
+						<Text style={{ color: theme.colors.black_four }}>
+							No tokens belong to this address.
+						</Text>
+					</View>
 				</ScrollView>
 			</Background>
 		);

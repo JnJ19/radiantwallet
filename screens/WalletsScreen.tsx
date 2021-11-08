@@ -48,7 +48,8 @@ const WalletsScreen = ({ navigation }: Props) => {
 	console.log('selectedWallet: ', selectedWallet);
 
 	async function getSubWallets() {
-		const url = 'https://solana-api.projectserum.com';
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 		const connection = new Connection(url);
 		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const bip39 = await import('bip39');

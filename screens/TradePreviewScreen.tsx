@@ -50,7 +50,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			DERIVATION_PATH.bip44Change,
 		);
 
-		const url = 'https://solana-api.projectserum.com';
+		// const url = 'https://solana-api.projectserum.com';
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 		const connection = new Connection(url);
 
 		//make the trade
