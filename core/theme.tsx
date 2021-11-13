@@ -26,6 +26,7 @@ export const theme = {
 		success_two: '#8BECB8',
 		success_three: '#C5F6DB',
 		success_four: '#DDFAEA',
+		selection_border: '#C9F977'
 	},
 	fonts: {
 		Nunito_Sans: {
@@ -48,6 +49,10 @@ export const theme = {
 			Body_M_Regular: {
 				fontFamily: 'NunitoSans_400Regular',
 				fontSize: 17,
+			},
+			Body_L_SemiBold: {
+				fontFamily: 'NunitoSans_600SemiBold',
+				fontSize: 48,
 			},
 			Body_M_SemiBold: {
 				fontFamily: 'NunitoSans_600SemiBold',

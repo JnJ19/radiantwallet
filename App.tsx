@@ -7,14 +7,10 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import './global';
 
 import 'react-native-url-polyfill/auto';
-
 import { Provider as PaperProvider } from 'react-native-paper';
 import { theme } from './core/theme';
-
 import useCachedResources from './hooks/useCachedResources';
-
 import store from './store';
-
 import Navigation from './navigation';
 
 LogBox.ignoreAllLogs(true);
@@ -27,12 +23,12 @@ export default function App() {
 	} else {
 		return (
 			<StoreProvider store={store}>
-				<BottomSheetModalProvider>
-					<PaperProvider theme={theme}>
+				<PaperProvider theme={theme}>
+					<BottomSheetModalProvider>
 						<Navigation />
 						<StatusBar />
-					</PaperProvider>
-				</BottomSheetModalProvider>
+					</BottomSheetModalProvider>
+				</PaperProvider>
 			</StoreProvider>
 		);
 	}

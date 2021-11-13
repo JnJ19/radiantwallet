@@ -126,6 +126,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
+
 		// const url = 'https://api.mainnet-beta.solana.com';
 		// const url = 'https://solana-api.projectserum.com';
 		const url =
@@ -1071,7 +1072,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio History
-					</Text>
+						</Text>
 					<View
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
@@ -1106,34 +1107,34 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 									}}
 								>
 									{percentChange?.toFixed(1)}% Today
-								</Text>
+									</Text>
 							</View>
 						) : (
-							<View
-								style={{
-									flexDirection: 'row',
-									alignItems: 'center',
-									marginBottom: 2,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Downward_Big.jpg')}
+								<View
 									style={{
-										width: 24,
-										height: 24,
-									}}
-								/>
-								<Text
-									style={{
-										color: theme.colors.error_one,
-										...theme.fonts.Nunito_Sans
-											.Caption_M_SemiBold,
+										flexDirection: 'row',
+										alignItems: 'center',
+										marginBottom: 2,
 									}}
 								>
-									{normalizeNumber(percentChange)}% Today
-								</Text>
-							</View>
-						)}
+									<Image
+										source={require('../assets/icons/Downward_Big.jpg')}
+										style={{
+											width: 24,
+											height: 24,
+										}}
+									/>
+									<Text
+										style={{
+											color: theme.colors.error_one,
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+										}}
+									>
+										{normalizeNumber(percentChange)}% Today
+									</Text>
+								</View>
+							)}
 					</View>
 					<AreaChart
 						style={{ height: 200 }}
@@ -1160,7 +1161,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio
-					</Text>
+						</Text>
 
 					{tokens ? (
 						<FlatList

@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 import { Image, View, Text } from 'react-native';
 import { useState, useEffect } from 'react';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import {
 	OnboardingScreen,
@@ -21,6 +22,8 @@ import {
 	WalletsScreen,
 	FromTokenScreen,
 	ToTokenScreen,
+	WalletDetailsScreen,
+	EditWalletNameScreen,
 	SendScreen,
 	SendSuccessScreen,
 	CreateWalletScreen,
@@ -41,10 +44,10 @@ function Dashboard() {
 				options={{ headerShown: false }}
 			/>
 			{/* <Stack.Screen
-				name="Token Details"
-				component={TokenDetailsScreen}
-				options={{ headerShown: false }}
-			/> */}
+					name="Token Details"
+					component={TokenDetailsScreen}
+					options={{ headerShown: false }}
+				/> */}
 		</Stack.Navigator>
 	);
 }
@@ -58,10 +61,10 @@ function Browse() {
 				options={{ headerShown: false }}
 			/>
 			{/* <Stack.Screen
-				name="Token Details"
-				component={TokenDetailsScreen}
-				options={{ headerShown: false }}
-			/> */}
+					name="Token Details"
+					component={TokenDetailsScreen}
+					options={{ headerShown: false }}
+				/> */}
 		</Stack.Navigator>
 	);
 }
@@ -160,11 +163,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-							<Image
-								source={require('../assets/icons/Dashboard.jpg')}
-								style={{ width: 24, height: 24 }}
-							/>
-						),
+								<Image
+									source={require('../assets/icons/Dashboard.jpg')}
+									style={{ width: 24, height: 24 }}
+								/>
+							),
 				}}
 			/>
 			<Tab.Screen
@@ -178,11 +181,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-							<Image
-								source={require('../assets/icons/Search.jpg')}
-								style={{ width: 24, height: 24 }}
-							/>
-						),
+								<Image
+									source={require('../assets/icons/Search.jpg')}
+									style={{ width: 24, height: 24 }}
+								/>
+							),
 				}}
 			/>
 			<Tab.Screen
@@ -196,11 +199,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-							<Image
-								source={require('../assets/icons/wallet.jpg')}
-								style={{ width: 24, height: 24 }}
-							/>
-						),
+								<Image
+									source={require('../assets/icons/wallet.jpg')}
+									style={{ width: 24, height: 24 }}
+								/>
+							),
 				}}
 			/>
 		</Tab.Navigator>
@@ -258,14 +261,14 @@ function RootNavigator3() {
 		checkForAccount();
 	}, []);
 
-	if (hasAccount === 'true') {
+	if (hasAccount === false) { //this was written as "...=== 'true'" which always returns 'false' -JJ
 		return (
 			<Stack.Navigator>
 				{/* <Stack.Screen
-					name="Test Screen"
-					component={TestScreen}
-					options={{ headerShown: false }}
-				/> */}
+						name="Test Screen"
+						component={TestScreen}
+						options={{ headerShown: false }}
+					/> */}
 				<Stack.Screen
 					name="Passcode"
 					component={PasscodeScreen}
@@ -279,6 +282,16 @@ function RootNavigator3() {
 				<Stack.Screen
 					name="Token Details"
 					component={TokenDetailsScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Wallet Details"
+					component={WalletDetailsScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Edit Wallet Name"
+					component={EditWalletNameScreen}
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
@@ -375,6 +388,16 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Token Details"
 				component={TokenDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Wallet Details"
+				component={WalletDetailsScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Edit Wallet Name"
+				component={EditWalletNameScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen

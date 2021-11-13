@@ -12,9 +12,9 @@ import {
 
 export default function Onboarding() {
   return (
-    <NavigationContainer>
-      <RootNavigator />
-    </NavigationContainer>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
   );
 }
 
