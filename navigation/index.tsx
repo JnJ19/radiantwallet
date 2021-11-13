@@ -23,7 +23,10 @@ import {
 	FromTokenScreen,
 	ToTokenScreen,
 	WalletDetailsScreen,
-	EditWalletNameScreen
+	EditWalletNameScreen,
+	SendScreen,
+	SendSuccessScreen,
+	CreateWalletScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -94,6 +97,11 @@ function OnboardingFlow() {
 			<Stack.Screen
 				name="Import Wallet"
 				component={ImportWalletScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Create Wallet"
+				component={CreateWalletScreen}
 				options={{ headerShown: false }}
 			/>
 		</Stack.Navigator>
@@ -223,6 +231,11 @@ function RootNavigator2() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="Create Wallet"
+					component={CreateWalletScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
 					name="Main"
 					component={Main}
 					options={{ headerShown: false }}
@@ -287,6 +300,16 @@ function RootNavigator3() {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name="Send"
+					component={SendScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Send Success"
+					component={SendSuccessScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
 					name="From Token"
 					component={FromTokenScreen}
 					options={{ headerShown: false }}
@@ -316,7 +339,11 @@ function RootNavigator3() {
 					component={ImportWalletScreen}
 					options={{ headerShown: false }}
 				/>
-
+				<Stack.Screen
+					name="Create Wallet"
+					component={CreateWalletScreen}
+					options={{ headerShown: false }}
+				/>
 			</Stack.Navigator>
 		);
 	}
@@ -341,6 +368,11 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Import Wallet"
 				component={ImportWalletScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Create Wallet"
+				component={CreateWalletScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
@@ -381,6 +413,16 @@ function RootNavigator3() {
 			<Stack.Screen
 				name="Trade"
 				component={TradeScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Send"
+				component={SendScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="Send Success"
+				component={SendSuccessScreen}
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen

@@ -34,7 +34,7 @@ const OnboardingScreen = ({ navigation }: Props) => (
 				<View style={{ marginBottom: 16 }}>
 					<Button
 						mode="outlined"
-						onPress={() => navigation.navigate('Set Pin')}
+						onPress={() => navigation.navigate('Create Wallet')}
 					>
 						Create Wallet
 					</Button>

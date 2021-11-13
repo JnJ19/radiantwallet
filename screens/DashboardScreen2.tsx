@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { View, FlatList, Image } from 'react-native';
+import { View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import * as shape from 'd3-shape';
@@ -22,6 +22,7 @@ import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
+import * as Clipboard from 'expo-clipboard';
 import Modal from 'react-native-modal';
 // const addCommas = new Intl.NumberFormat('en-US');
 
@@ -35,6 +36,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [account, setAccount] = useState('');
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
+	const [loading, setLoading] = useState(true);
 	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
@@ -43,11 +45,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
-	const selectedWallet = useStoreState((state) => state.selectedWallet);
-
-	console.log('tokens: ', tokens)
-
-	//console.log('hello');
+	const selectedWallet = useStoreState(
+		(state) => state.selectedWallet,
+		(prev, next) => prev.selectedWalle === next.selectedWallet,
+	);
+	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -77,11 +79,58 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		</Defs>
 	);
 
+	function shortenPublicKey(publicKey: string) {
+		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
+	}
+
+	async function getSubWallets() {
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+		const connection = new Connection(url);
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const bip39 = await import('bip39');
+
+		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+
+		let count;
+		const subWallets1 = [];
+		for (let i = 0; i < 100; i++) {
+			const newAccount = getAccountFromSeed(
+				seed,
+				i,
+				DERIVATION_PATH.bip44Change,
+			);
+
+			const { publicKey } = newAccount;
+
+			const programId = new PublicKey(
+				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+			);
+			const ownedTokens = await connection
+				.getTokenAccountsByOwner(publicKey, { programId })
+				.catch((err) => console.log('errorr', err));
+			const result2 = await connection.getParsedAccountInfo(publicKey);
+
+			if (!result2.value) {
+				count = i + 1;
+				i = 100;
+			} else {
+				subWallets1.push({
+					publicKey: publicKey.toString('hex'),
+				});
+			}
+		}
+
+		setSubWallets(subWallets1);
+	}
+
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
-		//console.log('selectedwallet', selectedWallet);
+
 		// const url = 'https://api.mainnet-beta.solana.com';
-		const url = 'https://solana-api.projectserum.com';
+		// const url = 'https://solana-api.projectserum.com';
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 		const connection = new Connection(url);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
@@ -92,6 +141,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			selectedWallet,
 			DERIVATION_PATH.bip44Change,
 		);
+
+		setAccount(newAccount);
 
 		const { publicKey } = newAccount;
 
@@ -171,9 +222,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				name: 'Solana',
 				symbol: 'SOL',
 				logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
-				chat: 'https://discord.com/invite/pquxPsq',
-				twitter: 'https://twitter.com/solana',
-				website: 'https://solana.com/',
+				extensions: {
+					discord: 'https://discord.com/invite/pquxPsq',
+					twitter: 'https://twitter.com/solana',
+					website: 'https://solana.com/',
+				},
 				price,
 				price_30d,
 				price_60d,
@@ -241,9 +294,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								description: dataArray[0].description,
 								logo: dataArray[0].logo,
 								name: dataArray[0].name,
-								website: dataArray[0].urls.website[0],
-								twitter: dataArray[0].urls.twitter[0],
-								chat: dataArray[0].urls.chat[0],
+								extensions: {
+									website: dataArray[0].urls.website[0],
+									twitter: dataArray[0].urls.twitter[0],
+									discord: dataArray[0].urls.discord[0],
+								},
 							};
 						})
 						.catch((err) => console.log('error', err));
@@ -298,6 +353,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 					} = priceData;
 
+					console.log(
+						'stuff',
+						price,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					);
+
 					const price_30d = price * (1 + percent_change_30d * 0.01);
 					const price_60d = price * (1 + percent_change_60d * 0.01);
 					const price_90d = price * (1 + percent_change_90d * 0.01);
@@ -326,15 +393,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						...aboutData,
 					};
 
+					console.log(tokenObject.name);
+
 					tokens2.push(tokenObject);
 				}
 			}),
 		);
 
-		// console.log('tokens2', tokens2);
+		console.log('tokens2', tokens2);
 
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
+		setLoading(false);
 	}
 
 	async function settleFunds() {
@@ -428,7 +498,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					logo,
 					symbol,
 					description,
-					urls: { twitter, chat, website },
+					urls: { twitter, discord, website },
 				} = cmToken;
 
 				let mint;
@@ -445,9 +515,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					logo,
 					symbol,
 					description,
-					twitter,
-					chat,
-					website,
+					extensions: {
+						twitter,
+						discord,
+						website,
+					},
 					pairs: pairs.pairs,
 				};
 
@@ -578,30 +650,26 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return fetch('https://serum-api.bonfida.com/pairs')
 			.then((res) => res.json())
 			.then((res) => {
-				//remove pools and dashes
-				const removedDashes = res.data.filter(
-					(str: string) => str.indexOf('-') === -1,
-				);
-				const removedToken = removedDashes.filter(
-					(str: string) => str.indexOf('LQID') === -1,
-				);
-				const removedToken2 = removedToken.filter(
-					(str: string) => str.indexOf('ODOP') === -1,
-				);
-				const removedToken3 = removedToken2.filter(
-					(str: string) => str.indexOf('xCOPE') === -1,
-				);
-				const removedToken4 = removedToken3.filter(
-					(str: string) => str.indexOf('CCAI') === -1,
-				);
-				const removedToken5 = removedToken4.filter(
-					(str: string) => str.indexOf('PLEB') === -1,
-				);
-				const removedToken6 = removedToken5.filter(
-					(str: string) => str.indexOf('BVOL') === -1,
-				);
-				const removedPools = removedToken6.filter(
-					(str: string) => str.indexOf('POOL') === -1,
+				const removedPools = res.data.filter(
+					(value) =>
+						![
+							'-',
+							'LQID',
+							'ODOP',
+							'xCOPE',
+							'CCAI',
+							'PLEB',
+							'BVOL',
+							'POOL',
+							'BTC/SRM',
+							'FTT/SRM',
+							'YFI/SRM',
+							'SUSHI/SRM',
+							'ETH/SRM',
+							'RAY/SRM',
+							'RAY/ETH',
+							'MSRM',
+						].some((el) => value.includes(el)),
 				);
 
 				//split the pairs into separate symbols
@@ -724,8 +792,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		getAllTokens();
-		// getCleanTokenList();
-		// getAddress();
+		getSubWallets();
 	}, []);
 
 	useEffect(() => {
@@ -767,7 +834,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	useEffect(() => {
 		getOwnedTokens();
 		// testMarkets();
-	}, [tokenMap, selectedWallet]);
+	}, [tokenMap]);
+
+	// useEffect(() => {
+	// 	getOwnedTokens();
+	// }, [selectedWallet]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -776,7 +847,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.getList();
 
 			setTokenMap(
-				tokenList.reduce((map, item) => {
+				tokenList?.reduce((map, item) => {
 					map.set(item.address, item);
 					return map;
 				}, new Map()),
@@ -791,7 +862,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.getList();
 
 			setTokenMapSymbols(
-				tokenList.reduce((map, item) => {
+				tokenList?.reduce((map, item) => {
 					map.set(item.symbol, item);
 					return map;
 				}, new Map()),
@@ -799,18 +870,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		});
 	}, [setTokenMapSymbols]);
 
-	const address = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-	const address2 = '6dk8qW3qLQz3KRBUAQf71k7aQw87rXTiqb6eguWD9rjK';
-	const token = tokenMap.get(address2);
-
 	let todayTotal;
 	let percentChange;
-	if (tokens) {
+	if (tokens && tokens.length > 0) {
 		const totals = tokens?.map((item) => {
 			return item.amount * item.price;
 		});
 
-		todayTotal = totals.reduce((prev, current) => prev + current);
+		todayTotal = totals?.reduce((prev, current) => prev + current);
 
 		const yesterdayTotals = tokens?.map((item) => {
 			const change = item.percent_change_24h * 0.01;
@@ -821,52 +888,166 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			return yesterday;
 		});
 
-		const yesterdayTotal = yesterdayTotals.reduce(
+		const yesterdayTotal = yesterdayTotals?.reduce(
 			(prev, current) => prev + current,
 		);
 
 		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
 
-	if (!tokens) {
+	if (!loading && tokens.length === 0 && account) {
 		return (
 			<Background>
-				<SubPageHeader backButton={true}>Dashboard</SubPageHeader>
-				<ScrollView>
-					<Modal
-						isVisible={modalVisible}
-						backdropColor={theme.colors.black_two}
-						backdropOpacity={0.35}
-					// onBackdropPress={() => setModalVisible(false)}
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+					<View
+						style={{
+							// borderColor: theme.colors.border,
+							borderWidth: 1,
+							borderRadius: 18,
+							padding: 16,
+							marginBottom: 16,
+							backgroundColor: theme.colors.black_one,
+						}}
 					>
 						<View
-							// onPress={() => {
-							// 	setModalVisible(false);
-							// 	navigation.navigate('Trade Success', token);
-							// }}
 							style={{
-								paddingHorizontal: 32,
-								paddingBottom: 32,
-								paddingTop: 8,
-								backgroundColor: '#111111',
-								borderRadius: 32,
-								width: 194,
-								alignItems: 'center',
-								alignSelf: 'center',
+								flexDirection: 'row',
+								justifyContent: 'space-between',
 							}}
 						>
-							<Image
-								source={require('../assets/images/logo_loader.png')}
-								style={{
-									width: 110,
-									height: 114,
-									marginBottom: 2,
-								}}
-							/>
-							<Text style={styles.loaderLabel}>Loading...</Text>
+							<View style={{ flexDirection: 'row' }}>
+								<Image
+									source={require('../assets/icons/wallet_green.png')}
+									style={{
+										width: 40,
+										height: 40,
+										borderRadius: 100,
+										marginRight: 16,
+									}}
+								/>
+								<View>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Body_M_Bold,
+											color: 'white',
+											paddingRight: 16,
+										}}
+									>
+										Send tokens to your wallet to get
+										started
+									</Text>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: theme.colors.black_six,
+										}}
+									>
+										Start by copying your Wallet Address
+									</Text>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: theme.colors.black_six,
+										}}
+									>
+										(
+										{shortenPublicKey(
+											account.publicKey.toString('hex'),
+										)}
+										)
+									</Text>
+								</View>
+							</View>
 						</View>
-					</Modal>
+						<View
+							style={{
+								borderTopColor: theme.colors.black_six,
+								borderTopWidth: 1,
+								marginVertical: 16,
+							}}
+						/>
+						<TouchableOpacity
+							style={{ flexDirection: 'row' }}
+							onPress={() =>
+								Clipboard.setString(
+									account.publicKey.toString('hex'),
+								)
+							}
+						>
+							<Text
+								style={{
+									...theme.fonts.Nunito_Sans.Body_M_Bold,
+									color: '#C9F977',
+									marginRight: 4,
+								}}
+							>
+								Copy Wallet Address
+							</Text>
+						</TouchableOpacity>
+					</View>
+					<View
+						style={{
+							borderTopColor: theme.colors.black_six,
+							borderTopWidth: 1,
+							marginVertical: 16,
+						}}
+					/>
+					<View style={{ alignItems: 'center', padding: 24 }}>
+						<Image
+							source={require('../assets/icons/chart_logo_small.png')}
+							style={{ width: 40, height: 40, marginBottom: 16 }}
+						/>
+						<Text style={{ color: theme.colors.black_four }}>
+							No tokens belong to this address.
+						</Text>
+					</View>
 				</ScrollView>
+			</Background>
+		);
+	}
+
+	if (loading) {
+		return (
+			<Background>
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+				</ScrollView>
+				<Modal
+					isVisible={true}
+					backdropColor={theme.colors.black_two}
+					backdropOpacity={0.35}
+					// onBackdropPress={() => setModalVisible(false)}
+				>
+					<TouchableOpacity
+						onPress={() => {
+							setModalVisible(false);
+						}}
+						style={{
+							paddingHorizontal: 32,
+							paddingBottom: 32,
+							paddingTop: 8,
+							backgroundColor: '#111111',
+							borderRadius: 32,
+							width: 194,
+							alignItems: 'center',
+							alignSelf: 'center',
+						}}
+					>
+						<Image
+							source={require('../assets/images/logo_loader.png')}
+							style={{
+								width: 110,
+								height: 114,
+								marginBottom: 2,
+							}}
+						/>
+						<Text style={styles.loaderLabel}>loading...</Text>
+					</TouchableOpacity>
+				</Modal>
 			</Background>
 		);
 	}

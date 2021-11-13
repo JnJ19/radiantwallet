@@ -52,9 +52,9 @@ const store = createStore({
 	setSelectedWallet: action((state, payload) => {
 		state.selectedWallet = payload;
 	}),
-	test: 'hello',
-	setTest: action((state, payload) => {
-		state.test = payload;
+	subWallets: '',
+	setSubWallets: action((state, payload) => {
+		state.subWallets = payload;
 	}),
 });
 

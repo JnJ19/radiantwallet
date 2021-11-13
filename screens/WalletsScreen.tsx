@@ -23,22 +23,19 @@ type Props = {
 
 const WalletsScreen = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
-	const [subWallets, setSubWallets] = useState([]);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
-	const test = useStoreState((state) => state.test);
-	const setTest = useStoreActions((actions) => actions.setTest);
+	const subWallets = useStoreState((state) => state.subWallets);
 	const setSelectedWallet = useStoreActions(
 		(actions) => actions.setSelectedWallet,
 	);
 	const [localSelectedWallet, setLocalSelectedWallet] =
 		useState(selectedWallet);
-	console.log('test: ', test);
-	setTest('something else');
 	console.log('subWallets: ', subWallets);
 	console.log('selectedWallet: ', selectedWallet);
 
 	async function getSubWallets() {
-		const url = 'https://solana-api.projectserum.com';
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 		const connection = new Connection(url);
 		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const bip39 = await import('bip39');
@@ -93,10 +90,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const handleSheetChanges = useCallback((index: number) => {
         //console.log('handleSheetChanges', index);
     }, []);
-
-	useEffect(() => {
-		getSubWallets();
-	}, []);
 
 	if (subWallets.length === 0) {
 		return <Text>Loading...</Text>;

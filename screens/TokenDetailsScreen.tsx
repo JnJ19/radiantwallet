@@ -10,6 +10,9 @@ import { Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
+import { normalizeNumber } from '../utils';
+import * as WebBrowser from 'expo-web-browser';
+
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -24,6 +27,7 @@ type Props = {
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
+	console.log('token: ', token);
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
 
@@ -125,7 +129,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
 						<Text style={{ fontSize: 24, marginRight: 8 }}>
-							${token.price.toFixed(2)}
+							${normalizeNumber(token.price)}
 						</Text>
 						{token.change_24h > 0 ? (
 							<View
@@ -149,7 +153,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 											.Caption_M_SemiBold,
 									}}
 								>
-									{token.change_24h}% Today
+									{normalizeNumber(token.percent_change_24h)}%
+									Today
 								</Text>
 							</View>
 						) : (
@@ -174,7 +179,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 											.Caption_M_SemiBold,
 									}}
 								>
-									{token.change_24h}% Today
+									{normalizeNumber(token.percent_change_24h)}%
+									Today
 								</Text>
 							</View>
 						)}
@@ -248,7 +254,10 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										color: colors.black_one,
 									}}
 								>
-									${(token.amount * token.price).toFixed(2)}
+									$
+									{normalizeNumber(
+										token.amount * token.price,
+									)}
 								</Text>
 								<Text
 									style={{
@@ -256,7 +265,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 										color: colors.black_five,
 									}}
 								>
-									{token.amount.toFixed(2)}
+									{normalizeNumber(token.amount)}
 								</Text>
 							</View>
 						</View>
@@ -323,7 +332,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								${token.market_cap.toFixed(0)}
+								${normalizeNumber(token.market_cap)}
 							</Text>
 						</View>
 						<View
@@ -353,7 +362,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								% {token.market_cap_dominance.toFixed(2)}
+								% {normalizeNumber(token.market_cap_dominance)}
 							</Text>
 						</View>
 						<View
@@ -383,10 +392,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								$
-								{token.volume_24h
-									.toFixed(0)
-									.toLocaleString('en-US')}
+								${normalizeNumber(token.volume_24h)}
 							</Text>
 						</View>
 					</View>
@@ -418,72 +424,84 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View
 							style={{ flexDirection: 'row', marginVertical: 24 }}
 						>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.twitter)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-									marginRight: 16,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Twitter_Logo.png')}
+							{token.extensions.twitter && (
+								<TouchableOpacity
+									onPress={() =>
+										WebBrowser.openBrowserAsync(
+											token.extensions.twitter,
+										)
+									}
 									style={{
-										width: 24,
-										height: 20,
-										margin: 16,
-									}}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.website)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-									marginRight: 16,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Discord_Logo.png')}
-									style={{
-										width: 24,
-										height: 19,
-										margin: 16,
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
 										marginRight: 16,
 									}}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL(token.extensions.website)
-								}
-								style={{
-									borderWidth: 1,
-									borderColor: colors.black_six,
-									borderRadius: 18,
-									width: 56,
-									height: 56,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/globe.png')}
+								>
+									<Image
+										source={require('../assets/icons/Twitter_Logo.png')}
+										style={{
+											width: 24,
+											height: 20,
+											margin: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							)}
+							{token.extensions.discord && (
+								<TouchableOpacity
+									onPress={() =>
+										WebBrowser.openBrowserAsync(
+											token.extensions.discord,
+										)
+									}
 									style={{
-										width: 24,
-										height: 24,
-										margin: 16,
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
+										marginRight: 16,
 									}}
-								/>
-							</TouchableOpacity>
+								>
+									<Image
+										source={require('../assets/icons/Discord_Logo.png')}
+										style={{
+											width: 24,
+											height: 19,
+											margin: 16,
+											marginRight: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							)}
+							{token.extensions.website && (
+								<TouchableOpacity
+									onPress={() =>
+										WebBrowser.openBrowserAsync(
+											token.extensions.website,
+										)
+									}
+									style={{
+										borderWidth: 1,
+										borderColor: colors.black_six,
+										borderRadius: 18,
+										width: 56,
+										height: 56,
+									}}
+								>
+									<Image
+										source={require('../assets/icons/globe.png')}
+										style={{
+											width: 24,
+											height: 24,
+											margin: 16,
+										}}
+									/>
+								</TouchableOpacity>
+							)}
 						</View>
 						<Text
 							style={{
@@ -516,7 +534,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					<>
 						<Button
 							mode="outlined"
-							onPress={() => navigation.navigate('Set Pin')}
+							onPress={() => navigation.navigate('Send', token)}
 							style={{ width: '50%' }}
 							icon={() => (
 								<Image
@@ -562,7 +580,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					<>
 						<Button
 							mode="contained"
-							onPress={() => navigation.navigate('Set Pin')}
+							onPress={() => navigation.navigate('Send', token)}
 							style={{ width: '100%' }}
 						>
 							Send

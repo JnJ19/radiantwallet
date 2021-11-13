@@ -56,7 +56,6 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				const symbol = pair.from.pairs[i].symbol;
 				arrayPairsSimple.push(symbol);
 			}
-			console.log('arrayPairsSimple: ', arrayPairsSimple);
 
 			const filteredList = allTokens.filter((token: object) =>
 				arrayPairsSimple.includes(token.symbol),
@@ -88,6 +87,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 
 	return (
 		<Background>
+			{console.log('pair from', pair.from.amount, pair.from.price)}
 			<SubPageHeader
 				subText={`$${(pair.from.amount * pair.from.price).toFixed(
 					2,
@@ -138,12 +138,17 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					style={styles.swapContainer}
 					onPress={() => {
 						const fromToken2 = pair.from;
-						const toToken2 = pair.to;
-						setPair({
-							...pair,
-							from: toToken2,
-							to: fromToken2,
-						});
+						let toToken2 = pair.to;
+						const match = ownedTokens.find(
+							(token) => token.symbol === toToken2.symbol,
+						);
+						if (match) {
+							setPair({
+								...pair,
+								from: match,
+								to: fromToken2,
+							});
+						}
 					}}
 				>
 					<Image

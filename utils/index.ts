@@ -70,6 +70,16 @@ function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
 	}
 }
 
+const deriveSeed2 = (
+	seed: string,
+	walletIndex: number,
+	derivationPath: string,
+	accountIndex: number,
+): Buffer | undefined => {
+	const path44Change = `m/44'/501'/${walletIndex}'/0'`;
+	return ed25519.derivePath(path44Change, Buffer.from(seed, 'hex')).key;
+};
+
 // export const DERIVATION_PATH = {
 // 	bip44Change: 'bip44Change',
 // };
@@ -113,6 +123,7 @@ export {
 	accountFromSeed,
 	maskedAddress,
 	deriveSeed,
+	deriveSeed2,
 	findAssociatedTokenAddress,
 	getAccountFromSeed,
 	DERIVATION_PATH,
