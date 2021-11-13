@@ -102,7 +102,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 
 			const { publicKey } = newAccount;
-			console.log('publicKey: ', publicKey.toString('hex'));
 
 			const programId = new PublicKey(
 				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -111,8 +110,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				.getTokenAccountsByOwner(publicKey, { programId })
 				.catch((err) => console.log('errorr', err));
 			const result2 = await connection.getParsedAccountInfo(publicKey);
-			console.log('ownedTokens: ', ownedTokens);
-			console.log('result2: ', result2);
 
 			if (!result2.value) {
 				count = i + 1;
@@ -129,7 +126,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
-		console.log('selectedwallet', selectedWallet);
 		// const url = 'https://api.mainnet-beta.solana.com';
 		// const url = 'https://solana-api.projectserum.com';
 		const url =
@@ -356,6 +352,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 					} = priceData;
 
+					console.log(
+						'stuff',
+						price,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					);
+
 					const price_30d = price * (1 + percent_change_30d * 0.01);
 					const price_60d = price * (1 + percent_change_60d * 0.01);
 					const price_90d = price * (1 + percent_change_90d * 0.01);
@@ -384,12 +392,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						...aboutData,
 					};
 
+					console.log(tokenObject.name);
+
 					tokens2.push(tokenObject);
 				}
 			}),
 		);
 
-		// console.log('tokens2', tokens2);
+		console.log('tokens2', tokens2);
 
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
@@ -823,12 +833,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	useEffect(() => {
 		getOwnedTokens();
 		// testMarkets();
-	}, [tokenMap, selectedWallet]);
+	}, [tokenMap]);
 
-	useEffect(() => {
-		console.log('hello selected wallet', selectedWallet);
-		getOwnedTokens();
-	}, [selectedWallet]);
+	// useEffect(() => {
+	// 	getOwnedTokens();
+	// }, [selectedWallet]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {

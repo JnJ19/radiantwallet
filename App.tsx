@@ -17,8 +17,6 @@ import store from './store';
 
 import Navigation from './navigation';
 
-// console.disableYellowBox = true;
-
 LogBox.ignoreAllLogs(true);
 
 export default function App() {
