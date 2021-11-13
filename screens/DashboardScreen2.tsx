@@ -45,7 +45,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
 
-	console.log('hello');
+	console.log('tokens: ', tokens)
+
+	//console.log('hello');
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -77,7 +79,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
-		console.log('selectedwallet', selectedWallet);
+		//console.log('selectedwallet', selectedWallet);
 		// const url = 'https://api.mainnet-beta.solana.com';
 		const url = 'https://solana-api.projectserum.com';
 		const connection = new Connection(url);
@@ -835,7 +837,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						isVisible={modalVisible}
 						backdropColor={theme.colors.black_two}
 						backdropOpacity={0.35}
-						// onBackdropPress={() => setModalVisible(false)}
+					// onBackdropPress={() => setModalVisible(false)}
 					>
 						<View
 							// onPress={() => {
@@ -889,7 +891,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio History
-					</Text>
+						</Text>
 					<View
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
@@ -924,34 +926,34 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 									}}
 								>
 									{percentChange?.toFixed(1)}% Today
-								</Text>
+									</Text>
 							</View>
 						) : (
-							<View
-								style={{
-									flexDirection: 'row',
-									alignItems: 'center',
-									marginBottom: 2,
-								}}
-							>
-								<Image
-									source={require('../assets/icons/Downward_Big.jpg')}
+								<View
 									style={{
-										width: 24,
-										height: 24,
-									}}
-								/>
-								<Text
-									style={{
-										color: theme.colors.error_one,
-										...theme.fonts.Nunito_Sans
-											.Caption_M_SemiBold,
+										flexDirection: 'row',
+										alignItems: 'center',
+										marginBottom: 2,
 									}}
 								>
-									{normalizeNumber(percentChange)}% Today
-								</Text>
-							</View>
-						)}
+									<Image
+										source={require('../assets/icons/Downward_Big.jpg')}
+										style={{
+											width: 24,
+											height: 24,
+										}}
+									/>
+									<Text
+										style={{
+											color: theme.colors.error_one,
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+										}}
+									>
+										{normalizeNumber(percentChange)}% Today
+									</Text>
+								</View>
+							)}
 					</View>
 					<AreaChart
 						style={{ height: 200 }}
@@ -978,7 +980,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio
-					</Text>
+						</Text>
 
 					{tokens ? (
 						<FlatList

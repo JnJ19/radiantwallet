@@ -28,7 +28,7 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 				.filterByClusterSlug('mainnet-beta')
 				.getList();
 			console.log(tokenList);
-			setTokens(tokenList);
+			setTokens(tokenList)
 		});
 
 		new TokenListProvider().resolve().then((tokens) => {

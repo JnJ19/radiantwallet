@@ -5,6 +5,10 @@ import { theme } from "../core/theme";
 
 type Props = React.ComponentProps<typeof Input> & { errorText?: string };
 
+
+
+
+
 const TextInput = ({ errorText, ...props }: Props) => (
   <View style={styles.container}>
     <Input
@@ -22,6 +26,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     marginVertical: 12,
+    borderColor: theme.colors.selection_border
   },
   input: {
     backgroundColor: theme.colors.surface,

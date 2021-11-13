@@ -16,7 +16,7 @@ type Props = {
 const SubPageHeader = ({ children, backButton, subText = '' }: Props) => {
 	const navigation = useNavigation();
 	return (
-		<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+		<View style={{ flexDirection: 'row', alignItems: 'center'}}>
 			{backButton && (
 				<TouchableOpacity
 					onPress={() => navigation.goBack()}
@@ -28,12 +28,13 @@ const SubPageHeader = ({ children, backButton, subText = '' }: Props) => {
 						width: 40,
 						borderRadius: 18,
 						marginRight: 16,
+						alignItems: 'center'
 					}}
 				>
 					<Image
 						source={require('../assets/icons/left-arrow.jpg')}
 						fadeDuration={0}
-						style={{ width: 16, height: 16, alignSelf: 'center' }}
+						style={{ width: 16, height: 16, alignSelf: 'center', alignItems: 'center' }}
 					/>
 				</TouchableOpacity>
 			)}
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
 	header: {
 		color: theme.colors.text,
 		...theme.fonts.Azeret_Mono.Header_S_SemiBold,
-		marginBottom: 4,
+		//marginBottom: 4,
 	},
 	subHeader: {
 		...theme.fonts.Nunito_Sans.Body_M_SemiBold,

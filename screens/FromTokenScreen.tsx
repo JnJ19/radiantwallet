@@ -52,7 +52,7 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 			<View style={{ marginBottom: 24 }}>
 				<SubPageHeader backButton={true}>
 					Select From Token
-				</SubPageHeader>
+					</SubPageHeader>
 
 				<View
 					style={{
