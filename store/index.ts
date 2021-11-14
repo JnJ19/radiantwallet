@@ -10,27 +10,6 @@ import {
 } from 'easy-peasy';
 import storage from '../storage';
 
-export interface Wallet {
-	passcode: number;
-	mnemonic: string[];
-	seed: string;
-}
-
-export interface Account {
-	index: number;
-	title: string;
-	derivationPath: string;
-}
-
-export interface WalletModel<K> {
-	wallet: Generic<K>;
-	accounts: Account[];
-	hasWallet: Computed<WalletModel<K>, Wallet | false>;
-	addWallet: Action<WalletModel<K>, K>;
-	addDefaultAccount: Action<WalletModel<K>, K>;
-	addAccount: Action<WalletModel<K>, K>;
-}
-
 const store = createStore({
 	account: 'hello',
 	passcode: '1234',

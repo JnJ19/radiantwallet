@@ -83,6 +83,15 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
 	}
 
+	// async function() {
+	// 	const allWallets = getSubWallets();
+
+	// 	const allOwnedTokens = []
+	// 	allWallets.map((wallet) => {
+
+	// 	})
+	// }
+
 	async function getSubWallets() {
 		const url =
 			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
@@ -121,12 +130,13 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			}
 		}
 
+		console.log('subWallets1', subWallets1);
+
 		setSubWallets(subWallets1);
 	}
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
-
 		// const url = 'https://api.mainnet-beta.solana.com';
 		// const url = 'https://solana-api.projectserum.com';
 		const url =
@@ -152,7 +162,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const ownedTokens = await connection
 			.getTokenAccountsByOwner(publicKey, { programId })
 			.catch((err) => console.log('errorr', err));
-		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		let tokens2 = [];
 		const tokenPairs = await getTokenPairs();
@@ -256,7 +265,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					result.value.data.parsed.info.tokenAmount.uiAmount;
 				const otherDetails = tokenMap.get(mint);
 				if (otherDetails) {
-					// console.log('otherdetails', otherDetails);
 					const { name, symbol, logoURI, extensions } = otherDetails;
 					const logo = logoURI;
 
@@ -352,18 +360,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap,
 						market_cap_dominance,
 					} = priceData;
-
-					console.log(
-						'stuff',
-						price,
-						percent_change_24h,
-						percent_change_30d,
-						percent_change_60d,
-						percent_change_90d,
-						volume_24h,
-						market_cap,
-						market_cap_dominance,
-					);
 
 					const price_30d = price * (1 + percent_change_30d * 0.01);
 					const price_60d = price * (1 + percent_change_60d * 0.01);
@@ -833,12 +829,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		getOwnedTokens();
-		// testMarkets();
 	}, [tokenMap]);
-
-	// useEffect(() => {
-	// 	getOwnedTokens();
-	// }, [selectedWallet]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -1072,7 +1063,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio History
-						</Text>
+					</Text>
 					<View
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
 					>
@@ -1107,34 +1098,34 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 									}}
 								>
 									{percentChange?.toFixed(1)}% Today
-									</Text>
+								</Text>
 							</View>
 						) : (
-								<View
+							<View
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginBottom: 2,
+								}}
+							>
+								<Image
+									source={require('../assets/icons/Downward_Big.jpg')}
 									style={{
-										flexDirection: 'row',
-										alignItems: 'center',
-										marginBottom: 2,
+										width: 24,
+										height: 24,
+									}}
+								/>
+								<Text
+									style={{
+										color: theme.colors.error_one,
+										...theme.fonts.Nunito_Sans
+											.Caption_M_SemiBold,
 									}}
 								>
-									<Image
-										source={require('../assets/icons/Downward_Big.jpg')}
-										style={{
-											width: 24,
-											height: 24,
-										}}
-									/>
-									<Text
-										style={{
-											color: theme.colors.error_one,
-											...theme.fonts.Nunito_Sans
-												.Caption_M_SemiBold,
-										}}
-									>
-										{normalizeNumber(percentChange)}% Today
-									</Text>
-								</View>
-							)}
+									{normalizeNumber(percentChange)}% Today
+								</Text>
+							</View>
+						)}
 					</View>
 					<AreaChart
 						style={{ height: 200 }}
@@ -1161,7 +1152,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						}}
 					>
 						Portfolio
-						</Text>
+					</Text>
 
 					{tokens ? (
 						<FlatList
