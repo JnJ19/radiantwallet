@@ -19,7 +19,6 @@ const TokenCard = (info: object) => {
 		logo = info.token.item.logo;
 		percent_change_24h = info.token.item.percent_change_24h;
 	} else {
-		console.log('route hitttt');
 		mint = info.mint;
 		price = info.price;
 		amount = info.amount;
@@ -30,16 +29,50 @@ const TokenCard = (info: object) => {
 	}
 	const { onPress } = info;
 
-	// console.log(
-	// 	'all the things',
-	// 	mint,
-	// 	price,
-	// 	amount,
-	// 	name,
-	// 	symbol,
-	// 	logo,
-	// 	percent_change_24h,
-	// );
+	const renderPercentChange = () => {
+		<>
+			{percent_change_24h > 0 ? (
+				<Image
+					source={require('../assets/icons/Upward.jpg')}
+					style={{
+						width: 16,
+						height: 16,
+						marginVertical: 2,
+					}}
+				/>
+			) : (
+				<Image
+					source={require('../assets/icons/Downward.jpg')}
+					style={{
+						width: 16,
+						height: 16,
+						marginVertical: 2,
+					}}
+				/>
+			)}
+			<Text
+				style={[
+					theme.fonts.Nunito_Sans.Caption_M_SemiBold,
+					percent_change_24h > 0
+						? {
+								color: theme.colors.success_one,
+						  }
+						: {
+								color: theme.colors.error_one,
+						  },
+				]}
+			>{`${normalizeNumber(percent_change_24h)}%`}</Text>
+		</>;
+	};
+
+	let total;
+	if (price === 0) {
+		total = 'Price Unavailable';
+	} else if (!amount) {
+		total = normalizeNumber(price);
+	} else {
+		total = normalizeNumber(price * amount);
+	}
 
 	return (
 		<TouchableOpacity onPress={onPress}>
@@ -85,58 +118,23 @@ const TokenCard = (info: object) => {
 									marginBottom: 4,
 								}}
 							>
-								{amount
-									? `$${normalizeNumber(amount * price)}`
-									: `$${normalizeNumber(price)}`}
+								{total}
 							</Text>
 							<View style={{ flexDirection: 'row' }}>
-								{percent_change_24h > 0 ? (
-									<Image
-										source={require('../assets/icons/Upward.jpg')}
-										style={{
-											width: 16,
-											height: 16,
-											marginVertical: 2,
-										}}
-									/>
-								) : (
-									<Image
-										source={require('../assets/icons/Downward.jpg')}
-										style={{
-											width: 16,
-											height: 16,
-											marginVertical: 2,
-										}}
-									/>
-								)}
-								<Text
-									style={[
-										theme.fonts.Nunito_Sans
-											.Caption_M_SemiBold,
-										percent_change_24h > 0
-											? {
-													color: theme.colors
-														.success_one,
-											  }
-											: {
-													color: theme.colors
-														.error_one,
-											  },
-									]}
-								>{`${normalizeNumber(
-									percent_change_24h,
-								)}%`}</Text>
+								{price !== 0 && renderPercentChange()}
 								{amount ? (
 									<>
-										<View
-											style={{
-												borderLeftColor:
-													theme.colors.black_six,
-												borderLeftWidth: 1,
-												marginHorizontal: 8,
-												marginVertical: 3,
-											}}
-										/>
+										{price !== 0 && (
+											<View
+												style={{
+													borderLeftColor:
+														theme.colors.black_six,
+													borderLeftWidth: 1,
+													marginHorizontal: 8,
+													marginVertical: 3,
+												}}
+											/>
+										)}
 										<Text
 											style={{
 												...theme.fonts.Nunito_Sans

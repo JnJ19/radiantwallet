@@ -44,6 +44,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
+	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 	const selectedWallet = useStoreState(
 		(state) => state.selectedWallet,
@@ -130,8 +131,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			}
 		}
 
-		console.log('subWallets1', subWallets1);
-
 		setSubWallets(subWallets1);
 	}
 
@@ -172,17 +171,31 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		if (solBalance > 0) {
+			// const priceData = await fetch(
+			// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
+			// 	{
+			// 		method: 'POST',
+			// 		body: JSON.stringify({
+			// 			url: '/quotes/latest?symbol=sol',
+			// 		}),
+			// 		headers: { 'Content-type': 'application/json' },
+			// 	},
+			// )
 			const priceData = await fetch(
-				`https://radiant-wallet-server.travissehansen.repl.co/api`,
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
 				{
-					method: 'POST',
-					body: JSON.stringify({
-						url: '/quotes/latest?symbol=sol',
-					}),
-					headers: { 'Content-type': 'application/json' },
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
 				},
 			)
-				.then((response) => response.json())
+				.then((response) => {
+					console.log('response for SOL call: ', response);
+
+					return response.json();
+				})
 				.then((data) => {
 					const dataArray = Object.values(data.data);
 					const percent_change_24h =
@@ -284,72 +297,163 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					const associatedTokenAddressHash =
 						associatedTokenAddress.toString('hex');
 
+					const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+					// const aboutData = await fetch(
+					// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
+					// 	{
+					// 		method: 'POST',
+					// 		body: JSON.stringify({
+					// 			url: `/info?symbol=${symbol}`,
+					// 		}),
+					// 		headers: { 'Content-type': 'application/json' },
+					// 	},
+					// )
 					const aboutData = await fetch(
-						`https://radiant-wallet-server.travissehansen.repl.co/api`,
+						`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
 						{
-							method: 'POST',
-							body: JSON.stringify({
-								url: `/info?symbol=${symbol}`,
-							}),
-							headers: { 'Content-type': 'application/json' },
+							headers: {
+								'X-CMC_PRO_API_KEY': apiKey,
+								Accept: 'application/json',
+								'Accept-Encoding': 'deflate, gzip',
+							},
 						},
 					)
-						.then((response) => response.json())
-						.then((data) => {
-							const dataArray = Object.values(data.data);
-							// console.log('data array', dataArray);
-							return {
-								description: dataArray[0].description,
-								logo: dataArray[0].logo,
-								name: dataArray[0].name,
-								extensions: {
-									website: dataArray[0].urls.website[0],
-									twitter: dataArray[0].urls.twitter[0],
-									discord: dataArray[0].urls.discord[0],
-								},
-							};
+						.then((response) => {
+							return response.json();
 						})
-						.catch((err) => console.log('error', err));
 
+						.then((res) => {
+							if (res.status.error_code !== 0) {
+								return {
+									description:
+										'No description available for this project.',
+									logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+									name: symbol,
+									extensions: {},
+								};
+							} else {
+								const dataArray = Object.values(res.data);
+								console.log('data array0', dataArray[0]);
+								console.log(
+									'description',
+									dataArray[0].description,
+								);
+								const logo = dataArray[0].logo
+									? dataArray[0].logo
+									: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png';
+								if (dataArray[0]) {
+									console.log('true');
+									return {
+										description: dataArray[0]?.description,
+										logo,
+										name: dataArray[0]?.name,
+										extensions: {
+											website:
+												dataArray[0]?.urls.website[0],
+											twitter:
+												dataArray[0]?.urls.twitter[0],
+											discord:
+												dataArray[0]?.urls.discord[0],
+										},
+									};
+								} else {
+									return {
+										description:
+											'No description available for this project.',
+										logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+										name: symbol,
+										extensions: {},
+									};
+								}
+							}
+						})
+						.catch((err) => console.log('info error', err));
+
+					// const priceData = await fetch(
+					// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
+					// 	{
+					// 		method: 'POST',
+					// 		body: JSON.stringify({
+					// 			url: `/quotes/latest?symbol=${symbol}`,
+					// 		}),
+					// 		headers: { 'Content-type': 'application/json' },
+					// 	},
+					// )
 					const priceData = await fetch(
-						`https://radiant-wallet-server.travissehansen.repl.co/api`,
+						`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
 						{
-							method: 'POST',
-							body: JSON.stringify({
-								url: `/quotes/latest?symbol=${symbol}`,
-							}),
-							headers: { 'Content-type': 'application/json' },
+							headers: {
+								'X-CMC_PRO_API_KEY': apiKey,
+								Accept: 'application/json',
+								'Accept-Encoding': 'deflate, gzip',
+							},
 						},
 					)
 						.then((response) => response.json())
-						.then((data) => {
-							const dataArray = Object.values(data.data);
-							const percent_change_24h =
-								dataArray[0].quote.USD.percent_change_24h;
-							const percent_change_30d =
-								dataArray[0].quote.USD.percent_change_30d;
-							const percent_change_60d =
-								dataArray[0].quote.USD.percent_change_60d;
-							const percent_change_90d =
-								dataArray[0].quote.USD.percent_change_90d;
-							const {
-								price,
-								volume_24h,
-								market_cap,
-								market_cap_dominance,
-							} = dataArray[0].quote.USD;
-							return {
-								price,
-								percent_change_24h,
-								percent_change_30d,
-								percent_change_60d,
-								percent_change_90d,
-								volume_24h,
-								market_cap,
-								market_cap_dominance,
-							};
+						.then((res) => {
+							if (res.status.error_code !== 0) {
+								console.log(
+									'error code',
+									res.status.error_code,
+								);
+								return {
+									price: 0,
+									percent_change_24h: 0,
+									percent_change_30d: 0,
+									percent_change_60d: 0,
+									percent_change_90d: 0,
+									volume_24h: 0,
+									market_cap: 0,
+									market_cap_dominance: 0,
+								};
+							} else {
+								const dataArray = Object.values(res.data);
+								if (dataArray[0]) {
+									const percent_change_24h =
+										dataArray[0].quote.USD
+											.percent_change_24h;
+									const percent_change_30d =
+										dataArray[0].quote.USD
+											.percent_change_30d;
+									const percent_change_60d =
+										dataArray[0].quote.USD
+											.percent_change_60d;
+									const percent_change_90d =
+										dataArray[0].quote.USD
+											.percent_change_90d;
+									const {
+										price,
+										volume_24h,
+										market_cap,
+										market_cap_dominance,
+									} = dataArray[0].quote.USD;
+									return {
+										price,
+										percent_change_24h,
+										percent_change_30d,
+										percent_change_60d,
+										percent_change_90d,
+										volume_24h,
+										market_cap,
+										market_cap_dominance,
+									};
+								} else {
+									console.log('data array issues');
+
+									return {
+										price: 0,
+										percent_change_24h: 0,
+										percent_change_30d: 0,
+										percent_change_60d: 0,
+										percent_change_90d: 0,
+										volume_24h: 0,
+										market_cap: 0,
+										market_cap_dominance: 0,
+									};
+								}
+							}
 						})
-						.catch((error) => console.log(error));
+						.catch((error) => console.log('quotes error', error));
 					const {
 						price,
 						percent_change_24h,
@@ -388,8 +492,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						market_cap_dominance,
 						...aboutData,
 					};
-
-					console.log(tokenObject.name);
 
 					tokens2.push(tokenObject);
 				}
@@ -792,12 +894,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, []);
 
 	useEffect(() => {
-		if (tokens) {
+		if (ownedTokens) {
 			let todayArray = [];
 			let d30Array = [];
 			let d60Array = [];
 			let d90Array = [];
-			tokens.forEach((token) => {
+			ownedTokens.forEach((token) => {
 				todayArray.push(token.price * token.amount);
 				d30Array.push(token.price_30d * token.amount);
 				d60Array.push(token.price_60d * token.amount);
@@ -825,7 +927,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 			setModalVisible(false);
 		}
-	}, [tokens]);
+	}, [ownedTokens]);
 
 	useEffect(() => {
 		getOwnedTokens();
@@ -1007,8 +1109,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				<ScrollView showsVerticalScrollIndicator={false}>
 					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
 				</ScrollView>
+
 				<Modal
-					isVisible={true}
+					isVisible={modalVisible}
 					backdropColor={theme.colors.black_two}
 					backdropOpacity={0.35}
 					// onBackdropPress={() => setModalVisible(false)}
