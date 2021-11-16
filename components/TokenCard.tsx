@@ -30,48 +30,50 @@ const TokenCard = (info: object) => {
 	const { onPress } = info;
 
 	const renderPercentChange = () => {
-		<>
-			{percent_change_24h > 0 ? (
-				<Image
-					source={require('../assets/icons/Upward.jpg')}
-					style={{
-						width: 16,
-						height: 16,
-						marginVertical: 2,
-					}}
-				/>
-			) : (
-				<Image
-					source={require('../assets/icons/Downward.jpg')}
-					style={{
-						width: 16,
-						height: 16,
-						marginVertical: 2,
-					}}
-				/>
-			)}
-			<Text
-				style={[
-					theme.fonts.Nunito_Sans.Caption_M_SemiBold,
-					percent_change_24h > 0
-						? {
-								color: theme.colors.success_one,
-						  }
-						: {
-								color: theme.colors.error_one,
-						  },
-				]}
-			>{`${normalizeNumber(percent_change_24h)}%`}</Text>
-		</>;
+		return (
+			<>
+				{percent_change_24h > 0 ? (
+					<Image
+						source={require('../assets/icons/Upward.jpg')}
+						style={{
+							width: 16,
+							height: 16,
+							marginVertical: 2,
+						}}
+					/>
+				) : (
+					<Image
+						source={require('../assets/icons/Downward.jpg')}
+						style={{
+							width: 16,
+							height: 16,
+							marginVertical: 2,
+						}}
+					/>
+				)}
+				<Text
+					style={[
+						theme.fonts.Nunito_Sans.Caption_M_SemiBold,
+						percent_change_24h > 0
+							? {
+									color: theme.colors.success_one,
+							  }
+							: {
+									color: theme.colors.error_one,
+							  },
+					]}
+				>{`${normalizeNumber(percent_change_24h)}%`}</Text>
+			</>
+		);
 	};
 
 	let total;
 	if (price === 0) {
 		total = 'Price Unavailable';
 	} else if (!amount) {
-		total = normalizeNumber(price);
+		total = '$' + normalizeNumber(price);
 	} else {
-		total = normalizeNumber(price * amount);
+		total = '$' + normalizeNumber(price * amount);
 	}
 
 	return (
@@ -121,10 +123,10 @@ const TokenCard = (info: object) => {
 								{total}
 							</Text>
 							<View style={{ flexDirection: 'row' }}>
-								{price !== 0 && renderPercentChange()}
+								{price !== 0 ? renderPercentChange() : null}
 								{amount ? (
 									<>
-										{price !== 0 && (
+										{price !== 0 ? (
 											<View
 												style={{
 													borderLeftColor:
@@ -134,7 +136,7 @@ const TokenCard = (info: object) => {
 													marginVertical: 3,
 												}}
 											/>
-										)}
+										) : null}
 										<Text
 											style={{
 												...theme.fonts.Nunito_Sans

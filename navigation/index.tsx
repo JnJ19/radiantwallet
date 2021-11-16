@@ -163,11 +163,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-								<Image
-									source={require('../assets/icons/Dashboard.jpg')}
-									style={{ width: 24, height: 24 }}
-								/>
-							),
+							<Image
+								source={require('../assets/icons/Dashboard.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
 				}}
 			/>
 			<Tab.Screen
@@ -181,11 +181,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-								<Image
-									source={require('../assets/icons/Search.jpg')}
-									style={{ width: 24, height: 24 }}
-								/>
-							),
+							<Image
+								source={require('../assets/icons/Search.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
 				}}
 			/>
 			<Tab.Screen
@@ -199,11 +199,11 @@ function Main() {
 								style={{ width: 24, height: 24 }}
 							/>
 						) : (
-								<Image
-									source={require('../assets/icons/wallet.jpg')}
-									style={{ width: 24, height: 24 }}
-								/>
-							),
+							<Image
+								source={require('../assets/icons/wallet.jpg')}
+								style={{ width: 24, height: 24 }}
+							/>
+						),
 				}}
 			/>
 		</Tab.Navigator>
@@ -261,7 +261,7 @@ function RootNavigator3() {
 		checkForAccount();
 	}, []);
 
-	if (hasAccount === false) { //this was written as "...=== 'true'" which always returns 'false' -JJ
+	if (hasAccount === 'true') {
 		return (
 			<Stack.Navigator>
 				{/* <Stack.Screen
