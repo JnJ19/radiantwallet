@@ -261,7 +261,7 @@ function RootNavigator3() {
 		checkForAccount();
 	}, []);
 
-	if (hasAccount === false) { //this was written as "...=== 'true'" which always returns 'false' -JJ
+	if (hasAccount === 'true') { 
 		return (
 			<Stack.Navigator>
 				{/* <Stack.Screen

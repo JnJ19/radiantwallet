@@ -50,7 +50,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		(state) => state.selectedWallet,
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
+	const subWallets = useStoreState((state) => state.subWallets);
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
+	const totalBalance = useStoreState((state) => state.totalBalance);
+	const setTotalBalance =useStoreActions((actions) => actions.setTotalBalance);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -84,15 +87,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
 	}
 
-	// async function() {
-	// 	const allWallets = getSubWallets();
-
-	// 	const allOwnedTokens = []
-	// 	allWallets.map((wallet) => {
-
-	// 	})
-	// }
-
 	async function getSubWallets() {
 		const url =
 			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
@@ -112,7 +106,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 
 			const { publicKey } = newAccount;
-
+			
 			const programId = new PublicKey(
 				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 			);
@@ -122,8 +116,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const result2 = await connection.getParsedAccountInfo(publicKey);
 
 			if (!result2.value) {
-				count = i + 1;
-				i = 100;
+				count = i + 1; //Could we write 'return' here and remove these two lines and the evaluation? -JJ
+				i = 100; 
 			} else {
 				subWallets1.push({
 					publicKey: publicKey.toString('hex'),
@@ -133,6 +127,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 		setSubWallets(subWallets1);
 	}
+	
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
@@ -151,7 +146,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			DERIVATION_PATH.bip44Change,
 		);
 
-		console.log('newAccount: ', newAccount);
+		//console.log('newAccount: ', newAccount);
 
 		setAccount(newAccount);
 
@@ -169,7 +164,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solPairs = tokenPairs.find(
 			(pair: object) => (pair.symbol = 'SOL'),
 		);
-
+		
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
@@ -196,7 +191,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				},
 			)
 				.then((response) => {
-					console.log('response for SOL call: ', response);
+					//console.log('response for SOL call: ', response);
 
 					return response.json();
 				})
@@ -490,9 +485,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				}
 			}),
 		);
-
-		console.log('tokens2', tokens2);
-
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
 		setLoading(false);
@@ -557,9 +549,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const tokenPairs = await getTokenPairs();
 		const symbolsList = await getCleanTokenList();
 		const combinedSymbolList = symbolsList.join();
-
-		// console.log('tokenPairs: ', tokenPairs);
-
 		const coinMarketCapTokens = await fetch(
 			`https://radiant-wallet-server.travissehansen.repl.co/api`,
 			{
@@ -888,6 +877,21 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		if (ownedTokens) {
+			let balanceArray = [];
+			ownedTokens.forEach((token) => {
+				balanceArray.push(token.price * token.amount);
+			});
+			let sumTotal = 0;
+			for (let i = 0; i < balanceArray.length; i++) {
+				sumTotal += balanceArray[i];
+			};
+			let formattedSumTotal = normalizeNumber(sumTotal);
+			setTotalBalance(formattedSumTotal);
+		};
+	}, [ownedTokens]);
+
+	useEffect(() => {
+		if (ownedTokens) {
 			let todayArray = [];
 			let d30Array = [];
 			let d60Array = [];
@@ -978,7 +982,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			(prev, current) => prev + current,
 		);
 
-		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
+		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;	
 	}
 
 	if (!loading && tokens.length === 0 && account) {
@@ -1169,7 +1173,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								marginRight: 4,
 							}}
 						>
-							{`$${normalizeNumber(todayTotal)}`}
+						{`$${normalizeNumber(todayTotal)}`}
 						</Text>
 						{percentChange > 0 ? (
 							<View
