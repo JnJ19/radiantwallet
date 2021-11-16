@@ -1,29 +1,49 @@
-import React, { memo, useState, useEffect } from 'react';
-import { SafeAreaView, Text, ScrollView, Linking } from 'react-native';
+import React, { memo, useState, useEffect, useRef } from 'react';
+import {
+	SafeAreaView,
+	Text,
+	ScrollView,
+	PanResponder,
+	Dimensions,
+} from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import { BlurView } from 'expo-blur';
 import { AreaChart, Path } from 'react-native-svg-charts';
-import { Defs, LinearGradient, Stop } from 'react-native-svg';
+import {
+	Circle,
+	Defs,
+	G,
+	Line,
+	LinearGradient,
+	Rect,
+	Stop,
+	Text as SvgText,
+} from 'react-native-svg';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
 import { normalizeNumber } from '../utils';
 import * as WebBrowser from 'expo-web-browser';
+import TestChart from '../components/TestChart';
 
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
-// const addCommas = new Intl.NumberFormat('en-US');
 
 type Props = {
 	navigation: Navigation;
 	route: Object;
 };
+
+// function apx(size = 0){
+// 	let width = Dimensions.get('window').width;
+// 	return (width / 750) * size;
+// };
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
@@ -68,6 +88,145 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		<Path key={'line'} d={line} stroke={'black'} fill={'none'} />
 	);
 
+	const apx = (size = 0) => {
+		let width = Dimensions.get('window').width;
+		return (width / 750) * size;
+	};
+	const size = useRef(4);
+
+	const [positionX, setPositionX] = useState(-1); // The currently selected X coordinate position
+
+	const panResponder = useRef(
+		PanResponder.create({
+			onStartShouldSetPanResponder: (evt, gestureState) => true,
+			onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+			onMoveShouldSetPanResponder: (evt, gestureState) => true,
+			onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+			onPanResponderTerminationRequest: (evt, gestureState) => true,
+
+			onPanResponderGrant: (evt, gestureState) => {
+				updatePosition(evt.nativeEvent.locationX);
+				return true;
+			},
+			onPanResponderMove: (evt, gestureState) => {
+				updatePosition(evt.nativeEvent.locationX);
+				return true;
+			},
+			onPanResponderRelease: () => {
+				setPositionX(-1);
+			},
+		}),
+	);
+
+	const updatePosition = (x) => {
+		const YAxisWidth = apx(130);
+		const x0 = apx(0); // x0 position
+		const chartWidth = apx(750) - YAxisWidth - x0;
+		const xN = x0 + chartWidth; //xN position
+		const xDistance = chartWidth / size.current; // The width of each coordinate point
+		if (x <= x0) {
+			x = x0;
+		}
+		if (x >= xN) {
+			x = xN;
+		}
+
+		// console.log((x - x0) )
+
+		// The selected coordinate x :
+		// (x - x0)/ xDistance = value
+		let value = ((x - x0) / xDistance).toFixed(0);
+		if (value >= size.current - 1) {
+			value = size.current - 1; // Out of chart range, automatic correction
+		}
+
+		setPositionX(Number(value));
+	};
+
+	const Tooltip = ({ x, y, ticks }) => {
+		if (positionX < 0) {
+			return null;
+		}
+
+		// const date = dateList[positionX];
+		const date = () => {
+			var today = new Date();
+			if (positionX === 0) {
+				return 'Today';
+			}
+			if (positionX === 1) {
+				return new Date().setDate(today.getDate() - 30);
+			}
+			if (positionX === 2) {
+				return new Date().setDate(today.getDate() - 60);
+			}
+			if (positionX === 3) {
+				return new Date().setDate(today.getDate() - 90);
+			}
+		};
+
+		console.log('position X', positionX);
+
+		return (
+			<G x={x(positionX)} key="tooltip">
+				<G
+					x={positionX > size.current / 2 ? -apx(300 + 10) : apx(10)}
+					y={y(priceList[positionX]) - apx(10)}
+				>
+					<Rect
+						y={-apx(24 + 24 + 20) / 2}
+						rx={apx(12)} // borderRadius
+						ry={apx(12)} // borderRadius
+						width={apx(200)}
+						height={apx(96)}
+						stroke="rgba(254, 190, 24, 0.27)"
+						fill={theme.colors.black_one}
+					/>
+
+					<SvgText
+						x={apx(20)}
+						fill="white"
+						fontWeight="bold"
+						opacity={0.75}
+						fontSize={12}
+						fontFamily="Nunito Sans"
+					>
+						{date()}
+					</SvgText>
+					<SvgText
+						x={apx(20)}
+						y={apx(24 + 20)}
+						fontSize={17}
+						fontWeight="Semibold"
+						fill="white"
+						fontFamily="Nunito Sans"
+					>
+						${priceList[positionX]}
+					</SvgText>
+				</G>
+
+				<G x={x}>
+					{/* <Line
+						y1={ticks[0]}
+						y2={ticks[Number(ticks.length)]}
+						stroke="#FEBE18"
+						strokeWidth={apx(4)}
+						strokeDasharray={[6, 3]}
+					/> */}
+
+					<Circle
+						cy={y(priceList[positionX])}
+						r={apx(70 / 2)}
+						stroke="#BABABA"
+						strokeWidth={15}
+						fill="#0C0C0D"
+						opacity={0.5}
+					/>
+				</G>
+			</G>
+		);
+	};
+
 	const Gradient = () => (
 		<Defs key={'defs'}>
 			<LinearGradient
@@ -91,12 +250,12 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		</Defs>
 	);
 
-	const d90 = token.price_90d;
-	const d60 = token.price_60d;
-	const d30 = token.price_30d;
-	const todayTotal = token.price;
+	const d90 = parseFloat(normalizeNumber(token.price_90d));
+	const d60 = parseFloat(normalizeNumber(token.price_60d));
+	const d30 = parseFloat(normalizeNumber(token.price_30d));
+	const todayTotal = parseFloat(normalizeNumber(token.price));
 	// setChartData([d90, d60, d30, todayTotal]);
-	console.log('charts data', d90, d60, d30, todayTotal);
+	const priceList = [d90, d60, d30, todayTotal];
 
 	return (
 		<Background>
@@ -185,22 +344,27 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							</View>
 						)}
 					</View>
-
-					<AreaChart
-						style={{ height: 200 }}
-						// data={chartData}
-						data={[d90, d60, d30, todayTotal]}
-						showGrid={false}
-						animate={true}
-						contentInset={{ top: 30, bottom: 30 }}
-						curve={shape.curveNatural}
-						svg={{
-							fill: 'url(#gradient)',
-						}}
+					<View
+						style={{ flex: 1 }}
+						{...panResponder.current.panHandlers}
 					>
-						<Gradient />
-						<Line />
-					</AreaChart>
+						<AreaChart
+							style={{ height: 200 }}
+							// data={chartData}
+							data={priceList}
+							showGrid={false}
+							animate={true}
+							contentInset={{ top: 30, bottom: 30 }}
+							curve={shape.curveNatural}
+							svg={{
+								fill: 'url(#gradient)',
+							}}
+						>
+							<Gradient />
+							<Line />
+							<Tooltip />
+						</AreaChart>
+					</View>
 				</View>
 				{token.amount ? (
 					<View

@@ -151,6 +151,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			DERIVATION_PATH.bip44Change,
 		);
 
+		console.log('newAccount: ', newAccount);
+
 		setAccount(newAccount);
 
 		const { publicKey } = newAccount;
@@ -170,6 +172,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
+		const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+
 		if (solBalance > 0) {
 			// const priceData = await fetch(
 			// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
@@ -297,7 +301,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					const associatedTokenAddressHash =
 						associatedTokenAddress.toString('hex');
 
-					const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 					// const aboutData = await fetch(
 					// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
 					// 	{
@@ -333,16 +336,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								};
 							} else {
 								const dataArray = Object.values(res.data);
-								console.log('data array0', dataArray[0]);
-								console.log(
-									'description',
-									dataArray[0].description,
-								);
 								const logo = dataArray[0].logo
 									? dataArray[0].logo
 									: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png';
 								if (dataArray[0]) {
-									console.log('true');
 									return {
 										description: dataArray[0]?.description,
 										logo,
@@ -392,10 +389,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						.then((response) => response.json())
 						.then((res) => {
 							if (res.status.error_code !== 0) {
-								console.log(
-									'error code',
-									res.status.error_code,
-								);
 								return {
 									price: 0,
 									percent_change_24h: 0,
