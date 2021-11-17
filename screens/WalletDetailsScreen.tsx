@@ -57,48 +57,48 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 		]);
 	};
 
-	async function getSubWallets() {
-		const url = 'https://solana-api.projectserum.com';
-		const connection = new Connection(url);
-		let mnemonic = await SecureStore.getItemAsync(passcode);
-		const bip39 = await import('bip39');
+	// async function getSubWallets() {
+	// 	const url = 'https://solana-api.projectserum.com';
+	// 	const connection = new Connection(url);
+	// 	let mnemonic = await SecureStore.getItemAsync(passcode);
+	// 	const bip39 = await import('bip39');
 
-		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+	// 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 
-		let count;
-		const subWallets1 = [];
-		for (let i = 0; i < 100; i++) {
-			const newAccount = getAccountFromSeed(
-				seed,
-				i,
-				DERIVATION_PATH.bip44Change,
-			);
+	// 	let count;
+	// 	const subWallets1 = [];
+	// 	for (let i = 0; i < 100; i++) {
+	// 		const newAccount = getAccountFromSeed(
+	// 			seed,
+	// 			i,
+	// 			DERIVATION_PATH.bip44Change,
+	// 		);
 
-			const { publicKey } = newAccount;
-			console.log('publicKey: ', publicKey.toString('hex'));
+	// 		const { publicKey } = newAccount;
+	// 		console.log('publicKey: ', publicKey.toString('hex'));
 
-			const programId = new PublicKey(
-				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-			);
-			const ownedTokens = await connection
-				.getTokenAccountsByOwner(publicKey, { programId })
-				.catch((err) => console.log('errorr', err));
-			const result2 = await connection.getParsedAccountInfo(publicKey);
-			console.log('ownedTokens: ', ownedTokens);
-			console.log('result2: ', result2);
+	// 		const programId = new PublicKey(
+	// 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+	// 		);
+	// 		const ownedTokens = await connection
+	// 			.getTokenAccountsByOwner(publicKey, { programId })
+	// 			.catch((err) => console.log('errorr', err));
+	// 		const result2 = await connection.getParsedAccountInfo(publicKey);
+	// 		console.log('ownedTokens: ', ownedTokens);
+	// 		console.log('result2: ', result2);
 
-			if (!result2.value) {
-				count = i + 1;
-				i = 100;
-			} else {
-				subWallets1.push({
-					publicKey: publicKey.toString('hex'),
-				});
-			}
-		}
+	// 		if (!result2.value) {
+	// 			count = i + 1;
+	// 			i = 100;
+	// 		} else {
+	// 			subWallets1.push({
+	// 				publicKey: publicKey.toString('hex'),
+	// 			});
+	// 		}
+	// 	}
 
-		setSubWallets(subWallets1);
-	}
+	// 	setSubWallets(subWallets1);
+	// }
 
 	let publicKeyVariable;
 
@@ -116,13 +116,13 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 		console.log('handleSheetChanges', index);
 	}, []);
 
-	useEffect(() => {
-		getSubWallets();
-	}, []);
+	// useEffect(() => {
+	// 	getSubWallets();
+	// }, []);
 
-	if (subWallets.length === 0) {
-		return <Text>Loading...</Text>;
-	}
+	// if (subWallets.length === 0) {
+	// 	return <Text>Loading...</Text>;
+	// }
 
 	let modal;
 	if (modal) {
