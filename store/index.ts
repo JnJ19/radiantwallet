@@ -35,6 +35,11 @@ const store = createStore({
 	setSubWallets: action((state, payload) => {
 		state.subWallets = payload;
 	}),
+	totalBalance: '',
+	setTotalBalance: action((state, payload) => {
+		state.totalBalance = payload;
+	}),
+
 });
 
 // const store = createStore<WalletModel>(
