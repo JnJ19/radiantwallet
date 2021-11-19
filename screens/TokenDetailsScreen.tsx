@@ -28,6 +28,15 @@ import { theme } from '../core/theme';
 import { normalizeNumber } from '../utils';
 import * as WebBrowser from 'expo-web-browser';
 import TestChart from '../components/TestChart';
+import * as Serum from '@project-serum/anchor';
+import { Jupiter } from '@jup-ag/core';
+import * as SecureStore from 'expo-secure-store';
+import {
+	findAssociatedTokenAddress,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+} from '../utils';
+import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 
 const {
 	colors,
@@ -50,6 +59,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	console.log('token: ', token);
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
+	const passcode = useStoreState((state) => state.passcode);
 
 	async function getDefaultPairToken() {
 		const hasUSDC = token.pairs.find(
@@ -77,10 +87,62 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	const main = async () => {
+		const connection = new Connection(
+			'https://solana-api.projectserum.com',
+		);
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const bip39 = await import('bip39');
+		const seed = await bip39.mnemonicToSeed(mnemonic);
+		const newAccount = getAccountFromSeed(
+			seed,
+			0,
+			DERIVATION_PATH.bip44Change,
+		);
+
+		let owner = new Account(newAccount.secretKey);
+		console.log('owner: ', owner);
+
+		// load Jupiter
+		const jupiter = await Jupiter.load({
+			connection,
+			cluster: 'mainnet-beta',
+			user: owner.publicKey, // or public key
+		});
+		console.log('jupiter: ', jupiter);
+
+		// RouteMap which map each tokenMint and their respective tokenMints that are swappable
+		const routeMap = jupiter.getRouteMap();
+		console.log('routeMap: ', routeMap);
+		const possibleSOLPairs = routeMap.get(
+			'So11111111111111111111111111111111111111112',
+		); // return an array of token mints that can be swapped with SOL
+		console.log('possibleSOLPairs: ', possibleSOLPairs);
+
+		// Calculate routes for swapping 1 SOL to USDC with 1% slippage
+		// routes are sorted based on outputAmount, so ideally the first route is the best.
+		const routes = jupiter.computeRoutes(
+			'So11111111111111111111111111111111111111112',
+			'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+			1_000_000_000,
+			1,
+		);
+		console.log('routes: ', routes);
+
+		console.log('Quoted out amount', routes[0].outAmount);
+
+		// Prepare execute exchange
+		const { execute } = await jupiter.exchange({
+			route: routes[0],
+		});
+	};
+
 	useEffect(() => {
 		if (token.pairs) {
 			getDefaultPairToken();
 		}
+		// main();
 	}, [token]);
 
 	//chart stuff
