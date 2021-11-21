@@ -1,3 +1,4 @@
+require('node-libs-expo/globals');
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';

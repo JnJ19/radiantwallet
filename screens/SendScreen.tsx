@@ -14,10 +14,11 @@ const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { web3, Wallet } from '@project-serum/anchor';
+import { Wallet } from '@project-serum/anchor';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import {
 	findAssociatedTokenAddress,
@@ -27,8 +28,13 @@ import {
 	deriveSeed2,
 } from '../utils';
 import * as SecureStore from 'expo-secure-store';
-import * as ed25519 from 'ed25519-hd-key';
+// import * as ed25519 from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import { utils } from 'ethers';
+var crypto = require('crypto');
+var bip39 = require('bip39');
+import * as web3 from '@solana/web3.js';
+import * as splToken from '@solana/spl-token';
 
 type Props = {
 	navigation: Navigation;
@@ -40,7 +46,9 @@ const SendScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	console.log('token: ', token);
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipientAddress, setRecipientAddress] = useState('');
+	const [recipientAddress, setRecipientAddress] = useState(
+		'BxMFVmXTcCqaPafCTfgvYMJ4KUTvkgTN3PFtEHN5pAGn',
+	);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
@@ -66,44 +74,106 @@ const SendScreen = ({ navigation, route }: Props) => {
 		)[0];
 	}
 
+	async function transferStuff() {
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+		const connection = new Connection(url);
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
+		const toWallet = new PublicKey(recipientAddress);
+
+		// Construct my token class
+		console.log('token.mintAddress: ', token.mint);
+		console.log('hello');
+		var myMint = new web3.PublicKey(token.mint);
+		var myToken = new splToken.Token(
+			connection,
+			myMint,
+			splToken.TOKEN_PROGRAM_ID,
+			fromWallet,
+		);
+
+		console.log('web3', web3);
+
+		if (token.mint === 'So11111111111111111111111111111111111111112') {
+			const transaction = new web3.Transaction().add(
+				web3.SystemProgram.transfer({
+					fromPubkey: fromWallet.publicKey,
+					toPubkey: toWallet,
+					lamports: web3.LAMPORTS_PER_SOL / 100,
+				}),
+			);
+
+			// Sign transaction, broadcast, and confirm
+			const signature = await web3.sendAndConfirmTransaction(
+				connection,
+				transaction,
+				[fromWallet],
+			);
+			return console.log('SIGNATURE', signature);
+		}
+
+		// Create associated token accounts for my token if they don't exist yet
+		var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+			fromWallet.publicKey,
+		);
+		console.log('fromTokenAccount: ', fromTokenAccount);
+		console.log(
+			'fromTokenAccount details: ',
+			fromTokenAccount.owner.toString('hex'),
+			fromTokenAccount.mint.toString('hex'),
+			fromTokenAccount.address.toString('hex'),
+		);
+		var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+			toWallet,
+		);
+		console.log('toTokenAccount: ', toTokenAccount);
+		console.log(
+			'toTokenAccount: ',
+			toTokenAccount.owner.toString('hex'),
+			toTokenAccount.mint.toString('hex'),
+			toTokenAccount.address.toString('hex'),
+		);
+		console.log('tradeAmount: ', parseFloat(tradeAmount));
+		const amount = parseFloat(tradeAmount);
+		// Add token transfer instructions to transaction
+		var transaction = new web3.Transaction().add(
+			splToken.Token.createTransferInstruction(
+				splToken.TOKEN_PROGRAM_ID,
+				fromTokenAccount.address,
+				toTokenAccount.address,
+				fromWallet.publicKey,
+				[],
+				parseFloat(tradeAmount),
+			),
+		);
+		console.log('toTokenAccount.address: ', toTokenAccount.address);
+		console.log('transaction: ', transaction);
+		// Sign transaction, broadcast, and confirm
+		var signature = await web3.sendAndConfirmTransaction(
+			connection,
+			transaction,
+			[fromWallet],
+		);
+		console.log('SIGNATURE', signature);
+		console.log('SUCCESS');
+	}
+
 	async function initiateTransfer() {
 		const url = 'https://solana-api.projectserum.com';
 		const connection = new Connection(url);
 
-		// let mnemonic = await SecureStore.getItemAsync(passcode);
-		// Generate a random mnemonic (12 words) (uses crypto.randomBytes under the hood)
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const account = accountFromSeed(seed, 0, 'bip44', 0);
 
-		const bip39 = await import('bip39');
-		var mnemonic = bip39.generateMnemonic();
-
-		// Convert 12 word mnemonic to 32 byte seed
-
-		// bip39.mnemonicToSeed(mnemonic);
-		console.log('mnemonic: ', mnemonic);
-
-		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
-		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed.slice(0, 32));
-		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed);
-		console.log('seed: ', seed);
-		// const newKeyPair = Keypair.fromSeed(seed);
-		// const newKeyPair = ed25519.generateKeyPair(seed);
-		const newAccount = getAccountFromSeed(
-			seed,
-			selectedWallet,
-			DERIVATION_PATH.bip44Change,
-		);
-		console.log('newAccount: ', newAccount);
-
-		console.log('wallet', Wallet);
-		console.log('web3', web3);
-
-		// const wallet = new Wallet(newKeyPair);
-		const publickey = newAccount.publicKey;
-		console.log('publickey: ', publickey);
+		const wallet = new Wallet(account);
 
 		transfer(
 			token.mint,
-			newAccount,
+			wallet,
 			recipientAddress,
 			connection,
 			parseFloat(tradeAmount),
@@ -125,10 +195,10 @@ const SendScreen = ({ navigation, route }: Props) => {
 			wallet.secretKey, // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
 		);
 
-		// const fromTokenAccount = await mintToken
-		// 	.getOrCreateAssociatedAccountInfo(wallet.publicKey)
-		// 	.catch((err) => console.log('errorrr', err));
-		// console.log('fromTokenAccount: ', fromTokenAccount);
+		const fromTokenAccount = await mintToken
+			.getOrCreateAssociatedAccountInfo(wallet.publicKey)
+			.catch((err) => console.log('errorrr', err));
+		console.log('fromTokenAccount: ', fromTokenAccount);
 
 		const destPublicKey = new web3.PublicKey(to);
 		console.log('destPublicKey: ', destPublicKey);
@@ -181,15 +251,24 @@ const SendScreen = ({ navigation, route }: Props) => {
 		const transaction = new web3.Transaction().add(...instructions);
 		console.log('transaction: ', transaction);
 		transaction.feePayer = wallet.publicKey;
+		console.log('transaction.feePayer: ', transaction.feePayer);
 		transaction.recentBlockhash = (
 			await connection.getRecentBlockhash()
 		).blockhash;
+		console.log(
+			'transaction.recentBlockhash: ',
+			transaction.recentBlockhash,
+		);
 
+		console.log('connection: ', connection);
+		console.log('transaction: ', transaction);
+		console.log('wallet: ', wallet);
 		var signature = await web3.sendAndConfirmTransaction(
 			connection,
 			transaction,
-			[wallet],
+			[wallet._keypair],
 		);
+		console.log('signature: ', signature);
 
 		// const transactionSignature = await connection
 		// 	.sendRawTransaction(transaction.serialize(), {
@@ -360,7 +439,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 				<Button
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
-							initiateTransfer();
+							transferStuff();
 						}
 					}}
 				>

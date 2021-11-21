@@ -1,8 +1,9 @@
 module.exports = {
-  resolver: {
-    sourceExts: ["jsx", "js", "ts", "tsx", "cjs"],
-    extraNodeModules: {
-      stream: require.resolve("readable-stream"),
-    },
-  },
+	resolver: {
+		sourceExts: ['jsx', 'js', 'ts', 'tsx', 'cjs'],
+		// extraNodeModules: {
+		//   stream: require.resolve("readable-stream"),
+		// },
+		extraNodeModules: require('node-libs-expo'),
+	},
 };

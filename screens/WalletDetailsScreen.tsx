@@ -38,12 +38,12 @@ type Props = {
 const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	const walletKey = route.params;
 	console.log('walletKey: ', walletKey);
-    const passcode = useStoreState((state) => state.passcode);
-    const [account, setAccount] = useState('');
+	const passcode = useStoreState((state) => state.passcode);
+	const [account, setAccount] = useState('');
 	const [connection, setConnection] = useState('');
-    const [tokens, setTokens] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+	const [tokens, setTokens] = useState('');
+	const [loading, setLoading] = useState(true);
+	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
 	>(new Map());
@@ -54,12 +54,13 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	);
 	const [localSelectedWallet, setLocalSelectedWallet] =
 		useState(selectedWallet);
-    const [copiedKey, setCopiedKey] = useState(walletKey.longKey);
-    const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const [copiedKey, setCopiedKey] = useState(walletKey.longKey);
+	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
-    const totalBalance = useStoreState((state) => state.totalBalance);
-	const setTotalBalance =useStoreActions((actions) => actions.setTotalBalance);
-
+	const totalBalance = useStoreState((state) => state.totalBalance);
+	const setTotalBalance = useStoreActions(
+		(actions) => actions.setTotalBalance,
+	);
 
 	//console.log('subWallets: ', subWallets);
 	//console.log('selectedWallet: ', selectedWallet);
@@ -88,18 +89,18 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	// 			DERIVATION_PATH.bip44Change,
 	// 		);
 
-			const { publicKey } = newAccount;
-			//console.log('publicKey: ', publicKey.toString('hex'));
+	// const { publicKey } = newAccount;
+	//console.log('publicKey: ', publicKey.toString('hex'));
 
-			const programId = new PublicKey(
-				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-			);
-			const ownedTokens = await connection
-				.getTokenAccountsByOwner(publicKey, { programId })
-				.catch((err) => console.log('errorr', err));
-			const result2 = await connection.getParsedAccountInfo(publicKey);
-			//console.log('ownedTokens: ', ownedTokens);
-			//console.log('result2: ', result2);
+	// const programId = new PublicKey(
+	// 	'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+	// );
+	// const ownedTokens = await connection
+	// 	.getTokenAccountsByOwner(publicKey, { programId })
+	// 	.catch((err) => console.log('errorr', err));
+	// const result2 = await connection.getParsedAccountInfo(publicKey);
+	//console.log('ownedTokens: ', ownedTokens);
+	//console.log('result2: ', result2);
 
 	// 		if (!result2.value) {
 	// 			count = i + 1;
@@ -111,10 +112,10 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	// 		}
 	// 	}
 
-		setSubWallets(subWallets1);
-    }
+	// 	setSubWallets(subWallets1);
+	// }
 
-    function getTokenPairs() {
+	function getTokenPairs() {
 		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
 
 		//then make two big calls to coinmarketcap - one for data, the other for price
@@ -207,8 +208,8 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 			})
 			.catch((err) => console.log(err));
 	}
-    
-    //gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
+
+	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
 		// const url = 'https://api.mainnet-beta.solana.com';
 		// const url = 'https://solana-api.projectserum.com';
@@ -241,12 +242,11 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 		const solPairs = tokenPairs.find(
 			(pair: object) => (pair.symbol = 'SOL'),
 		);
-		
+
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
 
-        
 		if (solBalance > 0) {
 			// const priceData = await fetch(
 			// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
@@ -341,8 +341,7 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 					'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 506,348,680.4303728 with 299,902,995.15039116 in circulation. The last known price of Solana is 146.68289748 USD and is up 1.09 over the last 24 hours. It is currently trading on 161 active market(s) with $2,959,138,044.47 traded over the last 24 hours. More information can be found at https://solana.com.',
 				market_cap_dominance,
 			};
-            tokens2.push(tokenObject);
-            
+			tokens2.push(tokenObject);
 		}
 
 		await Promise.all(
@@ -566,9 +565,8 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 		);
 		setTokens(tokens2);
 		setOwnedTokens(tokens2);
-        setLoading(false);                
+		setLoading(false);
 	}
-
 
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const snapPoints = useMemo(() => [0, '40%'], []);
@@ -581,11 +579,11 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	}, []);
 
 	useEffect(() => {
-        getSubWallets();
-        getOwnedTokens();
-    }, []);
-    
-    useEffect(() => {
+		getSubWallets();
+		getOwnedTokens();
+	}, []);
+
+	useEffect(() => {
 		if (ownedTokens) {
 			let balanceArray = [];
 			ownedTokens.forEach((token) => {
@@ -594,10 +592,10 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 			let sumTotal = 0;
 			for (let i = 0; i < balanceArray.length; i++) {
 				sumTotal += balanceArray[i];
-			};
+			}
 			let formattedSumTotal = normalizeNumber(sumTotal);
 			setTotalBalance(formattedSumTotal);
-		};
+		}
 	}, [ownedTokens]);
 
 	// if (subWallets.length === 0) {

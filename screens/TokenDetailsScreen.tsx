@@ -36,7 +36,18 @@ import {
 	getAccountFromSeed,
 	DERIVATION_PATH,
 } from '../utils';
-import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
+import { Wallet } from '@project-serum/anchor';
+import {
+	Account,
+	Connection,
+	PublicKey,
+	Keypair,
+	Transaction,
+	TransactionSignature,
+} from '@solana/web3.js';
+import * as walletAdapter from '@solana/wallet-adapter-base';
+console.log('walletAdapter: ', walletAdapter.BaseMessageSignerWalletAdapter);
+console.log('Transaction: ', Transaction);
 
 const {
 	colors,
@@ -50,6 +61,7 @@ type Props = {
 };
 
 // function apx(size = 0){
+
 // 	let width = Dimensions.get('window').width;
 // 	return (width / 750) * size;
 // };
@@ -122,9 +134,18 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 
 		// Calculate routes for swapping 1 SOL to USDC with 1% slippage
 		// routes are sorted based on outputAmount, so ideally the first route is the best.
-		const routes = jupiter.computeRoutes(
-			'So11111111111111111111111111111111111111112',
-			'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+		// const routes = await jupiter
+		// 	.computeRoutes(
+		// 		new PublicKey('So11111111111111111111111111111111111111112'),
+		// 		new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+		// 		1_000_000_000,
+		// 		1,
+		// 	)
+		// 	.catch((err) => console.log('err: ', err));
+
+		const routes = await jupiter.computeRoutes(
+			new PublicKey('So11111111111111111111111111111111111111112'),
+			new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
 			1_000_000_000,
 			1,
 		);
@@ -136,13 +157,17 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		const { execute } = await jupiter.exchange({
 			route: routes[0],
 		});
+		console.log('execute: ', execute);
+
+		const swapResult = await execute();
+		console.log('swapResult: ', swapResult);
 	};
 
 	useEffect(() => {
 		if (token.pairs) {
 			getDefaultPairToken();
 		}
-		// main();
+		main();
 	}, [token]);
 
 	//chart stuff
