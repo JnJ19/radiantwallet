@@ -166,7 +166,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		if (token.pairs) {
 			getDefaultPairToken();
 		}
-		main();
+		// main();
 	}, [token]);
 
 	//chart stuff
@@ -251,8 +251,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 			}
 		};
 
-		console.log('position X', positionX);
-
 		return (
 			<G x={x(positionX)} key="tooltip">
 				<G
@@ -268,14 +266,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						stroke="rgba(254, 190, 24, 0.27)"
 						fill={theme.colors.black_one}
 					/>
-
 					<SvgText
 						x={apx(20)}
 						fill="white"
 						fontWeight="bold"
 						opacity={0.75}
 						fontSize={12}
-						fontFamily="Nunito Sans"
+						// fontFamily="Nunito Sans"
 					>
 						{date()}
 					</SvgText>
@@ -285,21 +282,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						fontSize={17}
 						fontWeight="Semibold"
 						fill="white"
-						fontFamily="Nunito Sans"
+						// fontFamily="Nunito Sans"
 					>
 						${priceList[positionX]}
 					</SvgText>
 				</G>
 
 				<G x={x}>
-					{/* <Line
-						y1={ticks[0]}
-						y2={ticks[Number(ticks.length)]}
-						stroke="#FEBE18"
-						strokeWidth={apx(4)}
-						strokeDasharray={[6, 3]}
-					/> */}
-
 					<Circle
 						cy={y(priceList[positionX])}
 						r={apx(70 / 2)}
@@ -327,11 +316,11 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					stopColor={'rgb(222, 249, 119)'}
 					stopOpacity={0.9}
 				/>
-				<Stop
+				{/* <Stop
 					offset={'100%'}
 					stopColor={'rgb(201, 249, 119)'}
 					stopOpacity={0}
-				/>
+				/> */}
 			</LinearGradient>
 		</Defs>
 	);
@@ -342,6 +331,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const todayTotal = parseFloat(normalizeNumber(token.price));
 	// setChartData([d90, d60, d30, todayTotal]);
 	const priceList = [d90, d60, d30, todayTotal];
+	console.log('priceList: ', priceList);
 
 	return (
 		<Background>
@@ -438,6 +428,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							style={{ height: 200 }}
 							// data={chartData}
 							data={priceList}
+							start={0}
 							showGrid={false}
 							animate={true}
 							contentInset={{ top: 30, bottom: 30 }}
