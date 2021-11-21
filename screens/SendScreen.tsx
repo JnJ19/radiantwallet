@@ -35,6 +35,7 @@ var crypto = require('crypto');
 var bip39 = require('bip39');
 import * as web3 from '@solana/web3.js';
 import * as splToken from '@solana/spl-token';
+import * as spl from 'easy-spl';
 
 type Props = {
 	navigation: Navigation;
@@ -58,21 +59,21 @@ const SendScreen = ({ navigation, route }: Props) => {
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
 
-	async function findAssociatedTokenAddress(
-		walletAddress: PublicKey,
-		tokenMintAddress: PublicKey,
-	): Promise<PublicKey> {
-		return (
-			await PublicKey.findProgramAddress(
-				[
-					walletAddress.toBuffer(),
-					TOKEN_PROGRAM_ID.toBuffer(),
-					tokenMintAddress.toBuffer(),
-				],
-				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-			)
-		)[0];
-	}
+	// async function findAssociatedTokenAddress(
+	// 	walletAddress: PublicKey,
+	// 	tokenMintAddress: PublicKey,
+	// ): Promise<PublicKey> {
+	// 	return (
+	// 		await PublicKey.findProgramAddress(
+	// 			[
+	// 				walletAddress.toBuffer(),
+	// 				TOKEN_PROGRAM_ID.toBuffer(),
+	// 				tokenMintAddress.toBuffer(),
+	// 			],
+	// 			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+	// 		)
+	// 	)[0];
+	// }
 
 	async function transferStuff() {
 		const url =
@@ -83,19 +84,9 @@ const SendScreen = ({ navigation, route }: Props) => {
 		const seed = await mnemonicToSeed(mnemonic);
 		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
 		const toWallet = new PublicKey(recipientAddress);
+		const easySPLWallet = spl.Wallet.fromKeypair(connection, fromWallet);
 
-		// Construct my token class
-		console.log('token.mintAddress: ', token.mint);
-		console.log('hello');
-		var myMint = new web3.PublicKey(token.mint);
-		var myToken = new splToken.Token(
-			connection,
-			myMint,
-			splToken.TOKEN_PROGRAM_ID,
-			fromWallet,
-		);
-
-		console.log('web3', web3);
+		console.log('price', token.price);
 
 		if (token.mint === 'So11111111111111111111111111111111111111112') {
 			const transaction = new web3.Transaction().add(
@@ -114,51 +105,20 @@ const SendScreen = ({ navigation, route }: Props) => {
 			);
 			return console.log('SIGNATURE', signature);
 		}
+		// create accounts and wallets
 
-		// Create associated token accounts for my token if they don't exist yet
-		var fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-			fromWallet.publicKey,
-		);
-		console.log('fromTokenAccount: ', fromTokenAccount);
-		console.log(
-			'fromTokenAccount details: ',
-			fromTokenAccount.owner.toString('hex'),
-			fromTokenAccount.mint.toString('hex'),
-			fromTokenAccount.address.toString('hex'),
-		);
-		var toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+		// Construct my token class
+		var myMint = new web3.PublicKey(token.mint);
+
+		const transferAmount = parseFloat(tradeAmount) / token.price;
+		console.log('transferAmount: ', transferAmount);
+
+		const result = await easySPLWallet.transferToken(
+			myMint,
 			toWallet,
+			transferAmount,
 		);
-		console.log('toTokenAccount: ', toTokenAccount);
-		console.log(
-			'toTokenAccount: ',
-			toTokenAccount.owner.toString('hex'),
-			toTokenAccount.mint.toString('hex'),
-			toTokenAccount.address.toString('hex'),
-		);
-		console.log('tradeAmount: ', parseFloat(tradeAmount));
-		const amount = parseFloat(tradeAmount);
-		// Add token transfer instructions to transaction
-		var transaction = new web3.Transaction().add(
-			splToken.Token.createTransferInstruction(
-				splToken.TOKEN_PROGRAM_ID,
-				fromTokenAccount.address,
-				toTokenAccount.address,
-				fromWallet.publicKey,
-				[],
-				parseFloat(tradeAmount),
-			),
-		);
-		console.log('toTokenAccount.address: ', toTokenAccount.address);
-		console.log('transaction: ', transaction);
-		// Sign transaction, broadcast, and confirm
-		var signature = await web3.sendAndConfirmTransaction(
-			connection,
-			transaction,
-			[fromWallet],
-		);
-		console.log('SIGNATURE', signature);
-		console.log('SUCCESS');
+		return console.log('result: ', result);
 	}
 
 	async function initiateTransfer() {
