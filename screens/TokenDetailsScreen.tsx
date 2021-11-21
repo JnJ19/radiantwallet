@@ -46,8 +46,11 @@ import {
 	TransactionSignature,
 } from '@solana/web3.js';
 import * as walletAdapter from '@solana/wallet-adapter-base';
-console.log('walletAdapter: ', walletAdapter.BaseMessageSignerWalletAdapter);
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
+
+console.log('walletAdapter: ', walletAdapter.BaseSignerWalletAdapter);
 console.log('Transaction: ', Transaction);
+console.log('Serum: ', Serum.Wallet);
 
 const {
 	colors,
@@ -105,22 +108,17 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
-		const bip39 = await import('bip39');
-		const seed = await bip39.mnemonicToSeed(mnemonic);
-		const newAccount = getAccountFromSeed(
-			seed,
-			0,
-			DERIVATION_PATH.bip44Change,
-		);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
 
-		let owner = new Account(newAccount.secretKey);
-		console.log('owner: ', owner);
+		const wallet = new Wallet(fromWallet);
+		console.log('wallet: ', wallet);
 
 		// load Jupiter
 		const jupiter = await Jupiter.load({
 			connection,
 			cluster: 'mainnet-beta',
-			user: owner.publicKey, // or public key
+			user: wallet.payer, // or public key
 		});
 		console.log('jupiter: ', jupiter);
 
@@ -149,9 +147,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 			1_000_000_000,
 			1,
 		);
-		console.log('routes: ', routes);
 
-		console.log('Quoted out amount', routes[0].outAmount);
+		// console.log('Quoted out amount', routes[0].outAmount);
 
 		// Prepare execute exchange
 		const { execute } = await jupiter.exchange({
@@ -161,6 +158,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 
 		const swapResult = await execute();
 		console.log('swapResult: ', swapResult);
+		// const swapResult = await execute({ wallet: fromWallet, 'signTransaction' });
+		// console.log('swapResult: ', swapResult);
 	};
 
 	useEffect(() => {
