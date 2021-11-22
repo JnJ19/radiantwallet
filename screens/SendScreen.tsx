@@ -10,6 +10,7 @@ import {
 	TextInput as TextInputRN,
 } from 'react-native';
 import { theme } from '../core/theme';
+import Modal from 'react-native-modal';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -43,13 +44,10 @@ type Props = {
 };
 
 const SendScreen = ({ navigation, route }: Props) => {
-	console.log('route . params', route.params);
 	const token = route.params;
-	console.log('token: ', token);
+	const [modalVisible, setModalVisible] = useState(false);
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipientAddress, setRecipientAddress] = useState(
-		'BxMFVmXTcCqaPafCTfgvYMJ4KUTvkgTN3PFtEHN5pAGn',
-	);
+	const [recipientAddress, setRecipientAddress] = useState('');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
@@ -113,12 +111,19 @@ const SendScreen = ({ navigation, route }: Props) => {
 		const transferAmount = parseFloat(tradeAmount) / token.price;
 		console.log('transferAmount: ', transferAmount);
 
-		const result = await easySPLWallet.transferToken(
-			myMint,
-			toWallet,
-			transferAmount,
-		);
-		return console.log('result: ', result);
+		const result = await easySPLWallet
+			.transferToken(myMint, toWallet, transferAmount)
+			.catch((err) => console.log(err));
+
+		if (result) {
+			setModalVisible(false);
+			navigation.navigate('Send Success', {
+				toWallet: toWallet.toString('hex'),
+				tradeAmount,
+				transferAmount,
+				token,
+			});
+		}
 	}
 
 	async function initiateTransfer() {
@@ -399,6 +404,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 				<Button
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
+							setModalVisible(true);
 							transferStuff();
 						}
 					}}
@@ -406,6 +412,34 @@ const SendScreen = ({ navigation, route }: Props) => {
 					Send ${tradeAmount}
 				</Button>
 			</View>
+			<Modal
+				isVisible={modalVisible}
+				backdropColor={colors.black_two}
+				backdropOpacity={0.35}
+				// onBackdropPress={() => setModalVisible(false)}
+			>
+				<TouchableOpacity
+					onPress={() => {
+						setModalVisible(false);
+					}}
+					style={{
+						paddingHorizontal: 32,
+						paddingBottom: 32,
+						paddingTop: 8,
+						backgroundColor: '#111111',
+						borderRadius: 32,
+						width: 194,
+						alignItems: 'center',
+						alignSelf: 'center',
+					}}
+				>
+					<Image
+						source={require('../assets/images/logo_loader.png')}
+						style={{ width: 110, height: 114, marginBottom: 2 }}
+					/>
+					<Text style={styles.loaderLabel}>Sending...</Text>
+				</TouchableOpacity>
+			</Modal>
 		</Background>
 	);
 };
@@ -461,6 +495,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		marginHorizontal: 16,
 		marginBottom: 16,
+	},
+	loaderLabel: {
+		fontFamily: 'AzeretMono_SemiBold',
+		color: 'white',
+		fontSize: 12,
 	},
 });
 

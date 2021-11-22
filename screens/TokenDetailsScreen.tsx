@@ -30,13 +30,8 @@ import * as WebBrowser from 'expo-web-browser';
 import TestChart from '../components/TestChart';
 import * as Serum from '@project-serum/anchor';
 import { Jupiter } from '@jup-ag/core';
-import * as SecureStore from 'expo-secure-store';
-import {
-	findAssociatedTokenAddress,
-	getAccountFromSeed,
-	DERIVATION_PATH,
-} from '../utils';
 import { Wallet } from '@project-serum/anchor';
+import * as SecureStore from 'expo-secure-store';
 import {
 	Account,
 	Connection,

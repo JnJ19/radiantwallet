@@ -5249,10 +5249,10 @@ easy-peasy@^5.0.3:
     redux-thunk "^2.3.0"
     ts-toolbelt "^9.3.12"
 
-easy-spl@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/easy-spl/-/easy-spl-0.4.2.tgz#9cf4c2a34cb1ab3ce5faeac5216651de0b082a50"
-  integrity sha512-dEu7+PMJbvTlXT/V8jbKzCZf8xEffa71lS7gJ5CuWUc9EuCGXoR/AsBXNN/jbPk9t2ROZDu/ZJRMqf7nsOSbXQ==
+easy-spl@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/easy-spl/-/easy-spl-0.5.0.tgz#6ccf6471029210107939daee2c16d210076215b6"
+  integrity sha512-ywE14viVz9epRE3+9FlWjx4JTKG3uNJ2n2Fzwn1XfFmLcvNonrX6WMQW8VcOZ/acvCZZ0Nb5jlrioOqhyxF7cg==
   dependencies:
     "@solana/spl-token" "^0.1.8"
     "@solana/web3.js" "^1.29.2"

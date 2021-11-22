@@ -24,7 +24,9 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 import * as Clipboard from 'expo-clipboard';
 import Modal from 'react-native-modal';
-// const addCommas = new Intl.NumberFormat('en-US');
+import { Wallet } from '@project-serum/anchor';
+import { Jupiter } from '@jup-ag/core';
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 
 type Props = {
 	navigation: Navigation;
@@ -37,7 +39,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [loading, setLoading] = useState(true);
-	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+	const [tokenMap, setTokenMap] = useState('');
+	// const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
 	>(new Map());
@@ -53,7 +56,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const subWallets = useStoreState((state) => state.subWallets);
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 	const totalBalance = useStoreState((state) => state.totalBalance);
-	const setTotalBalance =useStoreActions((actions) => actions.setTotalBalance);
+	const setTotalBalance = useStoreActions(
+		(actions) => actions.setTotalBalance,
+	);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -87,6 +92,29 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		return publicKey.slice(0, 8) + '...' + publicKey.slice(-8);
 	}
 
+	const getRouteMap = async () => {
+		const connection = new Connection(
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5',
+		);
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
+
+		const wallet = new Wallet(fromWallet);
+
+		// load Jupiter
+		const jupiter = await Jupiter.load({
+			connection,
+			cluster: 'mainnet-beta',
+			user: wallet.payer, // or public key
+		});
+
+		// RouteMap which map each tokenMint and their respective tokenMints that are swappable
+		const routeMap = jupiter.getRouteMap();
+		return routeMap;
+	};
+
 	async function getSubWallets() {
 		const url =
 			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
@@ -106,7 +134,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 
 			const { publicKey } = newAccount;
-			
+
 			const programId = new PublicKey(
 				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 			);
@@ -117,7 +145,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 			if (!result2.value) {
 				count = i + 1; //Could we write 'return' here and remove these two lines and the evaluation? -JJ
-				i = 100; 
+				i = 100;
 			} else {
 				subWallets1.push({
 					publicKey: publicKey.toString('hex'),
@@ -127,7 +155,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 		setSubWallets(subWallets1);
 	}
-	
 
 	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
 	async function getOwnedTokens() {
@@ -164,7 +191,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const solPairs = tokenPairs.find(
 			(pair: object) => (pair.symbol = 'SOL'),
 		);
-		
+
 		const solBalance = await connection.getBalance(publicKey);
 		const realSolBalance = solBalance * 0.000000001;
 		const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
@@ -546,6 +573,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function getAllTokens() {
+		// const routeMap = await getRouteMap();
 		const tokenPairs = await getTokenPairs();
 		const symbolsList = await getCleanTokenList();
 		const combinedSymbolList = symbolsList.join();
@@ -884,10 +912,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			let sumTotal = 0;
 			for (let i = 0; i < balanceArray.length; i++) {
 				sumTotal += balanceArray[i];
-			};
+			}
 			let formattedSumTotal = normalizeNumber(sumTotal);
 			setTotalBalance(formattedSumTotal);
-		};
+		}
 	}, [ownedTokens]);
 
 	useEffect(() => {
@@ -927,7 +955,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, [ownedTokens]);
 
 	useEffect(() => {
-		getOwnedTokens();
+		if (tokenMap) {
+			getOwnedTokens();
+		}
 	}, [tokenMap]);
 
 	useEffect(() => {
@@ -943,7 +973,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				}, new Map()),
 			);
 		});
-	}, [setTokenMap]);
+	}, []);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -982,7 +1012,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			(prev, current) => prev + current,
 		);
 
-		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;	
+		percentChange = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
 	}
 
 	if (!loading && tokens.length === 0 && account) {
@@ -1173,7 +1203,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								marginRight: 4,
 							}}
 						>
-						{`$${normalizeNumber(todayTotal)}`}
+							{`$${normalizeNumber(todayTotal)}`}
 						</Text>
 						{percentChange > 0 ? (
 							<View

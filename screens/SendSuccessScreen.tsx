@@ -2,13 +2,15 @@ import React, { memo } from 'react';
 import { Text } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Alert } from 'react-native';
 import { theme } from '../core/theme';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
+import * as Clipboard from 'expo-clipboard';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
 	navigation: Navigation;
@@ -17,8 +19,17 @@ type Props = {
 
 const SendSuccessScreen = ({ navigation, route }: Props) => {
 	const token = route.params.token;
-	const amount = route.params.amount;
-	const recipienetAddress = route.params.recipienetAddress;
+	console.log('token: ', token);
+	const tradeAmount = route.params.tradeAmount;
+	const transferAmount = route.params.transferAmount;
+	const toWallet = route.params.toWallet;
+
+	const copyToClipboard = async (copiedKey: string) => {
+		Clipboard.setString(copiedKey);
+		Alert.alert('Address Copied!', copiedKey, [
+			{ text: 'Okay', style: 'destructive' },
+		]);
+	};
 
 	return (
 		<Background>
@@ -44,15 +55,31 @@ const SendSuccessScreen = ({ navigation, route }: Props) => {
 							...Nunito_Sans.Body_M_SemiBold,
 							color: colors.black_one,
 							marginBottom: 16,
+							alignSelf: 'center',
+							textAlign: 'center',
 						}}
 					>
-						${amount} of {token.symbol} was sent to{' '}
-						{recipienetAddress}
+						${tradeAmount} of {token.symbol} was sent to the
+						following address:
 					</Text>
+					<TouchableOpacity onPress={() => copyToClipboard(toWallet)}>
+						<Text
+							style={{
+								...Nunito_Sans.Body_M_Regular,
+								color: colors.black_five,
+								textAlign: 'center',
+								paddingHorizontal: 16,
+							}}
+						>
+							{toWallet}
+						</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button onPress={() => navigation.navigate('Dashboard')}>
+				<Button
+					onPress={() => navigation.navigate('Token Details', token)}
+				>
 					Done
 				</Button>
 			</View>
