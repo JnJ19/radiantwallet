@@ -332,7 +332,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		<Background>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				style={{ marginBottom: 80 }}
+				style={token.amount > 0 ? { marginBottom: 80 } : null}
 			>
 				<SubPageHeader backButton>{token.name} Details</SubPageHeader>
 
@@ -750,80 +750,84 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					</View>
 				</View>
 			</ScrollView>
-			{/* <BlurView intensity={48} style={{margin: 0}} > */}
-			{/* </BlurView> */}
-			<View
-				style={{
-					flexDirection: 'row',
-					justifyContent: 'space-between',
-					position: 'absolute',
-					bottom: 0,
-					margin: 16,
-					width: '100%',
-					shadowColor: '#656565',
-					shadowOpacity: 0.25,
-					shadowOffset: { width: 0, height: 8 },
-					shadowRadius: 24,
-				}}
-			>
-				{token.pairs ? (
-					<>
-						<Button
-							mode="outlined"
-							onPress={() => navigation.navigate('Send', token)}
-							style={{ width: '50%' }}
-							icon={() => (
-								<Image
-									source={require('../assets/icons/Send.png')}
-									style={{
-										width: 24,
-										height: 24,
-										marginRight: -24,
-									}}
-								/>
-							)}
-						>
-							Send
-						</Button>
-						<View style={{ width: 8 }} />
-						<Button
-							mode="contained"
-							onPress={() => {
-								console.log('stuffff', token, defaultPair);
-								navigation.navigate('Trade', {
-									from: token,
-									to: defaultPair,
-								});
-							}}
-							style={{
-								width: '50%',
-							}}
-							icon={() => (
-								<Image
-									source={require('../assets/icons/Trade.png')}
-									style={{
-										width: 24,
-										height: 24,
-										marginRight: -20,
-									}}
-								/>
-							)}
-						>
-							Trade
-						</Button>
-					</>
-				) : (
-					<>
-						<Button
-							mode="contained"
-							onPress={() => navigation.navigate('Send', token)}
-							style={{ width: '100%' }}
-						>
-							Send
-						</Button>
-					</>
-				)}
-			</View>
+			{token.amount > 0 ? (
+				<View
+					style={{
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						position: 'absolute',
+						bottom: 0,
+						margin: 16,
+						width: '100%',
+						shadowColor: '#656565',
+						shadowOpacity: 0.25,
+						shadowOffset: { width: 0, height: 8 },
+						shadowRadius: 24,
+					}}
+				>
+					{token.pairs ? (
+						<>
+							<Button
+								mode="outlined"
+								onPress={() =>
+									navigation.navigate('Send', token)
+								}
+								style={{ width: '50%' }}
+								icon={() => (
+									<Image
+										source={require('../assets/icons/Send.png')}
+										style={{
+											width: 24,
+											height: 24,
+											marginRight: -24,
+										}}
+									/>
+								)}
+							>
+								Send
+							</Button>
+							<View style={{ width: 8 }} />
+							<Button
+								mode="contained"
+								onPress={() => {
+									console.log('stuffff', token, defaultPair);
+									navigation.navigate('Trade', {
+										from: token,
+										to: defaultPair,
+									});
+								}}
+								style={{
+									width: '50%',
+								}}
+								icon={() => (
+									<Image
+										source={require('../assets/icons/Trade.png')}
+										style={{
+											width: 24,
+											height: 24,
+											marginRight: -20,
+										}}
+									/>
+								)}
+							>
+								Trade
+							</Button>
+						</>
+					) : (
+						<>
+							<Button
+								mode="contained"
+								onPress={() =>
+									navigation.navigate('Send', token)
+								}
+								style={{ width: '100%' }}
+							>
+								Send
+							</Button>
+						</>
+					)}
+				</View>
+			) : null}
 		</Background>
 	);
 };

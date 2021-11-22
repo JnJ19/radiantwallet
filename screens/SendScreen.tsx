@@ -47,7 +47,9 @@ const SendScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipientAddress, setRecipientAddress] = useState('');
+	const [recipientAddress, setRecipientAddress] = useState(
+		'BxMFVmXTcCqaPafCTfgvYMJ4KUTvkgTN3PFtEHN5pAGn',
+	);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
@@ -108,7 +110,13 @@ const SendScreen = ({ navigation, route }: Props) => {
 		// Construct my token class
 		var myMint = new web3.PublicKey(token.mint);
 
-		const transferAmount = parseFloat(tradeAmount) / token.price;
+		let transferAmount;
+		if (token.price > 0) {
+			transferAmount = parseFloat(tradeAmount) / token.price;
+		} else {
+			transferAmount = parseFloat(tradeAmount);
+		}
+
 		console.log('transferAmount: ', transferAmount);
 
 		const result = await easySPLWallet
@@ -271,19 +279,22 @@ const SendScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	function renderSubtext() {
+		if (token.price === 0) {
+			return `${token.amount} ${token.symbol} availalbe`;
+		}
+		return `$${normalizeNumber(token.amount * token.price)} available`;
+	}
+
 	return (
 		<Background dismissKeyboard={true}>
-			<SubPageHeader
-				subText={`$${normalizeNumber(
-					token.amount * token.price,
-				)} available`}
-				backButton
-			>
+			<SubPageHeader subText={renderSubtext()} backButton>
 				Send {token.name}{' '}
 			</SubPageHeader>
+			{console.log('token price: ', token.price)}
 			<View>
 				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
-					${tradeAmount}
+					{token.price > 0 ? `$${tradeAmount}` : tradeAmount}
 				</Text>
 			</View>
 			<View

@@ -59,8 +59,9 @@ const SendSuccessScreen = ({ navigation, route }: Props) => {
 							textAlign: 'center',
 						}}
 					>
-						${tradeAmount} of {token.symbol} was sent to the
-						following address:
+						{token.price < 0
+							? `$${tradeAmount} of ${token.symbol} was sent to the following address:`
+							: `${tradeAmount} of ${token.symbol} was sent to the following address:`}
 					</Text>
 					<TouchableOpacity onPress={() => copyToClipboard(toWallet)}>
 						<Text
