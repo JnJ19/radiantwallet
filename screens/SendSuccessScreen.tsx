@@ -2,15 +2,15 @@ import React, { memo } from 'react';
 import { Text } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
-import { View, Image, StyleSheet, Alert } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { theme } from '../core/theme';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
-import * as Clipboard from 'expo-clipboard';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { copyToClipboard } from '../utils/index';
 
 type Props = {
 	navigation: Navigation;
@@ -19,17 +19,9 @@ type Props = {
 
 const SendSuccessScreen = ({ navigation, route }: Props) => {
 	const token = route.params.token;
-	console.log('token: ', token);
 	const tradeAmount = route.params.tradeAmount;
 	const transferAmount = route.params.transferAmount;
 	const toWallet = route.params.toWallet;
-
-	const copyToClipboard = async (copiedKey: string) => {
-		Clipboard.setString(copiedKey);
-		Alert.alert('Address Copied!', copiedKey, [
-			{ text: 'Okay', style: 'destructive' },
-		]);
-	};
 
 	return (
 		<Background>

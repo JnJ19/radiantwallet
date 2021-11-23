@@ -9,6 +9,8 @@ import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { derivePath } from 'ed25519-hd-key';
 import * as bip32 from 'bip32';
+import { Alert } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
@@ -113,6 +115,16 @@ const maskedAddress = (address: string) => {
 	return `${address.slice(0, 8)}...${address.slice(address.length - 8)}`;
 };
 
+const copyToClipboard = async (
+	copiedText: string,
+	copiedTextName = 'Address',
+) => {
+	Clipboard.setString(copiedText);
+	Alert.alert(`${copiedTextName} Copied!`, copiedText, [
+		{ text: 'Okay', style: 'destructive' },
+	]);
+};
+
 export {
 	generateMnemonic,
 	mnemonicToSeed,
@@ -124,4 +136,5 @@ export {
 	getAccountFromSeed,
 	DERIVATION_PATH,
 	normalizeNumber,
+	copyToClipboard,
 };

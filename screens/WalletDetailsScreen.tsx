@@ -28,6 +28,7 @@ import {
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { copyToClipboard } from '../utils';
 import * as Clipboard from 'expo-clipboard'; //might have to change to '@react-native-community/clipboard' when not using expo but will not work on Android with expo.
 
 type Props = {
@@ -54,7 +55,6 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 	);
 	const [localSelectedWallet, setLocalSelectedWallet] =
 		useState(selectedWallet);
-	const [copiedKey, setCopiedKey] = useState(walletKey.longKey);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 	const totalBalance = useStoreState((state) => state.totalBalance);
@@ -64,13 +64,6 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 
 	//console.log('subWallets: ', subWallets);
 	//console.log('selectedWallet: ', selectedWallet);
-
-	const copyToClipboard = async () => {
-		Clipboard.setString(copiedKey);
-		Alert.alert('Address Copied!', copiedKey, [
-			{ text: 'Okay', style: 'destructive' },
-		]);
-	};
 
 	// async function getSubWallets() {
 	// 	const url = 'https://solana-api.projectserum.com';
@@ -651,8 +644,7 @@ const WalletDetailsScreen = ({ navigation, route }: Props) => {
 				<TouchableOpacity
 					style={styles.pressableContainer}
 					onPress={() => {
-						copyToClipboard();
-						setCopiedKey(walletKey.longKey);
+						copyToClipboard(walletKey.longKey);
 						//setLocalSelectedWallet(index);
 						//setSelectedWallet(index);
 					}}

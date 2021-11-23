@@ -17,12 +17,12 @@ import {
 	getAccountFromSeed,
 	DERIVATION_PATH,
 	normalizeNumber,
+	copyToClipboard,
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
-import * as Clipboard from 'expo-clipboard';
 import Modal from 'react-native-modal';
 import { Wallet } from '@project-serum/anchor';
 import { Jupiter } from '@jup-ag/core';
@@ -1093,7 +1093,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						<TouchableOpacity
 							style={{ flexDirection: 'row' }}
 							onPress={() =>
-								Clipboard.setString(
+								copyToClipboard(
 									account.publicKey.toString('hex'),
 								)
 							}

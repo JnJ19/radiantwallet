@@ -279,9 +279,14 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<View style={styles.removeWalletButton}>
 						<RedButton
 							mode="contained"
-							onPress={() =>
-								bottomSheetModalRef.current?.dismiss()
-							}
+							onPress={async () => {
+								const passcodeKey = passcode + 'key';
+								await SecureStore.deleteItemAsync(passcodeKey);
+								await SecureStore.deleteItemAsync(passcode);
+								await AsyncStorage.removeItem('hasAccount');
+								DevSettings.reload();
+								bottomSheetModalRef.current?.dismiss();
+							}}
 						>
 							Yes, Logout of Wallet
 						</RedButton>

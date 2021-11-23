@@ -16,6 +16,7 @@ import {
 	Image,
 	StyleSheet,
 	TouchableWithoutFeedback,
+	Alert,
 } from 'react-native';
 import {
 	BottomSheetModal,
@@ -24,6 +25,7 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Clipboard from 'expo-clipboard';
 import * as SecureStore from 'expo-secure-store';
+import { generateMnemonic, copyToClipboard } from '../utils/index';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 
 type Props = {
@@ -39,7 +41,6 @@ const DismissKeyboard = ({ children }) => (
 const CreateWalletScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
-	const [copiedText, setCopiedText] = React.useState('');
 	const passcode = useStoreState((state) => state.passcode);
 
 	async function storePhraseAndContinue(passcode: string, phrase: string) {
@@ -47,13 +48,8 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 		navigation.navigate('Main');
 	}
 
-	function wordCount(str: string) {
-		return str.split(' ').length;
-	}
-
 	async function generatePhrase() {
-		const bip39 = await import('bip39');
-		const mnemonic = bip39.generateMnemonic();
+		const mnemonic = await generateMnemonic();
 
 		setSecret(mnemonic);
 	}
@@ -126,7 +122,9 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 								backgroundColor: '#F1F4F9',
 								borderRadius: 6,
 							}}
-							onPress={() => Clipboard.setString(secret)}
+							onPress={() =>
+								copyToClipboard(secret, 'Secret Phrase')
+							}
 						>
 							<Image
 								source={require('../assets/icons/Copy_2.png')}
