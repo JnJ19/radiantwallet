@@ -26,6 +26,7 @@ import { getAccountFromSeed, DERIVATION_PATH } from '../utils';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import Storage from '../storage';
 
 type Props = {
 	navigation: Navigation;
@@ -35,6 +36,8 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
 	const subWallets = useStoreState((state) => state.subWallets);
+	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
+	console.warn('subWallets: ', subWallets);
 	const setSelectedWallet = useStoreActions(
 		(actions) => actions.setSelectedWallet,
 	);
@@ -100,6 +103,19 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const handleSheetChanges = useCallback((index: number) => {
 		//console.log('handleSheetChanges', index);
 	}, []);
+
+	async function getFirstWallet() {
+		if (subWallets.length === 0) {
+			const newWallet = await Storage.getItem('firstWalletKey');
+			setSubWallets([{ publicKey: newWallet }]);
+		}
+	}
+
+	useEffect(() => {
+		getFirstWallet();
+	}, []);
+
+	useEffect(() => {}, [subWallets]);
 
 	if (subWallets.length === 0) {
 		return <Text>Loading...</Text>;

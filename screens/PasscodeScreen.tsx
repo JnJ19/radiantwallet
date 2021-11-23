@@ -2,7 +2,13 @@ import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
 import { Background } from '../components';
 import { Navigation } from '../types';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+	View,
+	Image,
+	StyleSheet,
+	TouchableOpacity,
+	DevSettings,
+} from 'react-native';
 import { theme } from '../core/theme';
 const {
 	colors,
@@ -10,6 +16,7 @@ const {
 } = theme;
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
 	navigation: Navigation;
@@ -38,7 +45,20 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	// async function logout() {
+	// 	console.warn('hit');
+	// 	const passcodeKey = passcode + 'key';
+	// 	await SecureStore.deleteItemAsync(passcodeKey);
+	// 	console.warn('hit1');
+	// 	await SecureStore.deleteItemAsync(passcode);
+	// 	console.warn('hit2');
+	// 	await AsyncStorage.removeItem('hasAccount');
+	// 	console.warn('hit3');
+	// 	DevSettings.reload();
+	// }
+
 	useEffect(() => {
+		// logout();
 		if (code.length === 4) {
 			const passcodeKey = code + 'key';
 			checkLocalPasscode(passcodeKey, code);

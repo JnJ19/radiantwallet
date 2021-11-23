@@ -25,32 +25,47 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Clipboard from 'expo-clipboard';
 import * as SecureStore from 'expo-secure-store';
-import { generateMnemonic, copyToClipboard } from '../utils/index';
+import {
+	generateMnemonic,
+	mnemonicToSeed,
+	copyToClipboard,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+} from '../utils/index';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import Storage from '../storage';
 
 type Props = {
 	navigation: Navigation;
 };
 
-const DismissKeyboard = ({ children }) => (
-	<TouchableWithoutFeedback onPress={() => console.log('hello')}>
-		{children}
-	</TouchableWithoutFeedback>
-);
-
 const CreateWalletScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
 	const passcode = useStoreState((state) => state.passcode);
+	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 
 	async function storePhraseAndContinue(passcode: string, phrase: string) {
 		await SecureStore.setItemAsync(passcode, phrase);
 		navigation.navigate('Main');
 	}
 
+	async function setWallet(mnemonic: string) {
+		const seed = await mnemonicToSeed(mnemonic);
+		const newAccount = getAccountFromSeed(
+			seed,
+			0,
+			DERIVATION_PATH.bip44Change,
+		);
+		const { publicKey } = newAccount;
+		const walletKey = publicKey.toString('hex');
+
+		await Storage.setItem('firstWalletKey', walletKey);
+	}
+
 	async function generatePhrase() {
 		const mnemonic = await generateMnemonic();
-
+		setWallet(mnemonic);
 		setSecret(mnemonic);
 	}
 

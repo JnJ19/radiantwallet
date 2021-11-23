@@ -27,6 +27,7 @@ import Modal from 'react-native-modal';
 import { Wallet } from '@project-serum/anchor';
 import { Jupiter } from '@jup-ag/core';
 import { accountFromSeed, mnemonicToSeed } from '../utils/index';
+import Storage from '../storage';
 
 type Props = {
 	navigation: Navigation;
@@ -123,9 +124,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		const bip39 = await import('bip39');
 
 		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+		console.warn('seed: ', seed);
 
 		let count;
 		const subWallets1 = [];
+		console.warn('account', account);
+		console.warn('tokens', tokens);
 		for (let i = 0; i < 100; i++) {
 			const newAccount = getAccountFromSeed(
 				seed,
@@ -134,19 +138,25 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 
 			const { publicKey } = newAccount;
+			console.warn('publicKeyyyyy: ', publicKey.toString('hex'));
+			console.warn('helloooo');
 
-			const programId = new PublicKey(
-				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-			);
-			const ownedTokens = await connection
-				.getTokenAccountsByOwner(publicKey, { programId })
-				.catch((err) => console.log('errorr', err));
-			const result2 = await connection.getParsedAccountInfo(publicKey);
+			// const programId = new PublicKey(
+			// 	'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+			// );
+			// const ownedTokens = await connection
+			// 	.getTokenAccountsByOwner(publicKey, { programId })
+			// 	.catch((err) => console.log('errorr', err));
+			const result2 = await connection
+				.getParsedAccountInfo(publicKey)
+				.catch((err) => console.warn('errorr', err));
+			console.warn('result22: ', result2);
 
 			if (!result2.value) {
 				count = i + 1; //Could we write 'return' here and remove these two lines and the evaluation? -JJ
 				i = 100;
 			} else {
+				await Storage.removeItem('firstWalletKey');
 				subWallets1.push({
 					publicKey: publicKey.toString('hex'),
 				});
@@ -900,7 +910,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		getAllTokens();
-		getSubWallets();
+		if (!subWallets) {
+			getSubWallets();
+		}
 	}, []);
 
 	useEffect(() => {
