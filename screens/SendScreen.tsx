@@ -10,14 +10,16 @@ import {
 	TextInput as TextInputRN,
 } from 'react-native';
 import { theme } from '../core/theme';
+import Modal from 'react-native-modal';
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { web3, Wallet } from '@project-serum/anchor';
+import { Wallet } from '@project-serum/anchor';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import {
 	findAssociatedTokenAddress,
@@ -27,8 +29,14 @@ import {
 	deriveSeed2,
 } from '../utils';
 import * as SecureStore from 'expo-secure-store';
-import * as ed25519 from 'ed25519-hd-key';
+// import * as ed25519 from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import { utils } from 'ethers';
+var crypto = require('crypto');
+var bip39 = require('bip39');
+import * as web3 from '@solana/web3.js';
+import * as splToken from '@solana/spl-token';
+import * as spl from 'easy-spl';
 
 type Props = {
 	navigation: Navigation;
@@ -36,11 +44,12 @@ type Props = {
 };
 
 const SendScreen = ({ navigation, route }: Props) => {
-	console.log('route . params', route.params);
 	const token = route.params;
-	console.log('token: ', token);
+	const [modalVisible, setModalVisible] = useState(false);
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipientAddress, setRecipientAddress] = useState('');
+	const [recipientAddress, setRecipientAddress] = useState(
+		'BxMFVmXTcCqaPafCTfgvYMJ4KUTvkgTN3PFtEHN5pAGn',
+	);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
@@ -50,60 +59,94 @@ const SendScreen = ({ navigation, route }: Props) => {
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
 
-	async function findAssociatedTokenAddress(
-		walletAddress: PublicKey,
-		tokenMintAddress: PublicKey,
-	): Promise<PublicKey> {
-		return (
-			await PublicKey.findProgramAddress(
-				[
-					walletAddress.toBuffer(),
-					TOKEN_PROGRAM_ID.toBuffer(),
-					tokenMintAddress.toBuffer(),
-				],
-				SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
-			)
-		)[0];
+	// async function findAssociatedTokenAddress(
+	// 	walletAddress: PublicKey,
+	// 	tokenMintAddress: PublicKey,
+	// ): Promise<PublicKey> {
+	// 	return (
+	// 		await PublicKey.findProgramAddress(
+	// 			[
+	// 				walletAddress.toBuffer(),
+	// 				TOKEN_PROGRAM_ID.toBuffer(),
+	// 				tokenMintAddress.toBuffer(),
+	// 			],
+	// 			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+	// 		)
+	// 	)[0];
+	// }
+
+	async function transferStuff() {
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+		const connection = new Connection(url);
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
+		const toWallet = new PublicKey(recipientAddress);
+		const easySPLWallet = spl.Wallet.fromKeypair(connection, fromWallet);
+
+		console.log('price', token.price);
+
+		if (token.mint === 'So11111111111111111111111111111111111111112') {
+			const transaction = new web3.Transaction().add(
+				web3.SystemProgram.transfer({
+					fromPubkey: fromWallet.publicKey,
+					toPubkey: toWallet,
+					lamports: web3.LAMPORTS_PER_SOL / 100,
+				}),
+			);
+
+			// Sign transaction, broadcast, and confirm
+			const signature = await web3.sendAndConfirmTransaction(
+				connection,
+				transaction,
+				[fromWallet],
+			);
+			return console.log('SIGNATURE', signature);
+		}
+		// create accounts and wallets
+
+		// Construct my token class
+		var myMint = new web3.PublicKey(token.mint);
+
+		let transferAmount;
+		if (token.price > 0) {
+			transferAmount = parseFloat(tradeAmount) / token.price;
+		} else {
+			transferAmount = parseFloat(tradeAmount);
+		}
+
+		console.log('transferAmount: ', transferAmount);
+
+		const result = await easySPLWallet
+			.transferToken(myMint, toWallet, transferAmount)
+			.catch((err) => console.log(err));
+
+		if (result) {
+			setModalVisible(false);
+			navigation.navigate('Send Success', {
+				toWallet: toWallet.toString('hex'),
+				tradeAmount,
+				transferAmount,
+				token,
+			});
+		}
 	}
 
 	async function initiateTransfer() {
 		const url = 'https://solana-api.projectserum.com';
 		const connection = new Connection(url);
 
-		// let mnemonic = await SecureStore.getItemAsync(passcode);
-		// Generate a random mnemonic (12 words) (uses crypto.randomBytes under the hood)
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const account = accountFromSeed(seed, 0, 'bip44', 0);
 
-		const bip39 = await import('bip39');
-		var mnemonic = bip39.generateMnemonic();
-
-		// Convert 12 word mnemonic to 32 byte seed
-
-		// bip39.mnemonicToSeed(mnemonic);
-		console.log('mnemonic: ', mnemonic);
-
-		const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
-		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed.slice(0, 32));
-		// const newKeyPair = nacl.sign.keyPair.fromSeed(seed);
-		console.log('seed: ', seed);
-		// const newKeyPair = Keypair.fromSeed(seed);
-		// const newKeyPair = ed25519.generateKeyPair(seed);
-		const newAccount = getAccountFromSeed(
-			seed,
-			selectedWallet,
-			DERIVATION_PATH.bip44Change,
-		);
-		console.log('newAccount: ', newAccount);
-
-		console.log('wallet', Wallet);
-		console.log('web3', web3);
-
-		// const wallet = new Wallet(newKeyPair);
-		const publickey = newAccount.publicKey;
-		console.log('publickey: ', publickey);
+		const wallet = new Wallet(account);
 
 		transfer(
 			token.mint,
-			newAccount,
+			wallet,
 			recipientAddress,
 			connection,
 			parseFloat(tradeAmount),
@@ -125,10 +168,10 @@ const SendScreen = ({ navigation, route }: Props) => {
 			wallet.secretKey, // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
 		);
 
-		// const fromTokenAccount = await mintToken
-		// 	.getOrCreateAssociatedAccountInfo(wallet.publicKey)
-		// 	.catch((err) => console.log('errorrr', err));
-		// console.log('fromTokenAccount: ', fromTokenAccount);
+		const fromTokenAccount = await mintToken
+			.getOrCreateAssociatedAccountInfo(wallet.publicKey)
+			.catch((err) => console.log('errorrr', err));
+		console.log('fromTokenAccount: ', fromTokenAccount);
 
 		const destPublicKey = new web3.PublicKey(to);
 		console.log('destPublicKey: ', destPublicKey);
@@ -181,15 +224,24 @@ const SendScreen = ({ navigation, route }: Props) => {
 		const transaction = new web3.Transaction().add(...instructions);
 		console.log('transaction: ', transaction);
 		transaction.feePayer = wallet.publicKey;
+		console.log('transaction.feePayer: ', transaction.feePayer);
 		transaction.recentBlockhash = (
 			await connection.getRecentBlockhash()
 		).blockhash;
+		console.log(
+			'transaction.recentBlockhash: ',
+			transaction.recentBlockhash,
+		);
 
+		console.log('connection: ', connection);
+		console.log('transaction: ', transaction);
+		console.log('wallet: ', wallet);
 		var signature = await web3.sendAndConfirmTransaction(
 			connection,
 			transaction,
-			[wallet],
+			[wallet._keypair],
 		);
+		console.log('signature: ', signature);
 
 		// const transactionSignature = await connection
 		// 	.sendRawTransaction(transaction.serialize(), {
@@ -227,19 +279,22 @@ const SendScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	function renderSubtext() {
+		if (token.price === 0) {
+			return `${token.amount} ${token.symbol} availalbe`;
+		}
+		return `$${normalizeNumber(token.amount * token.price)} available`;
+	}
+
 	return (
 		<Background dismissKeyboard={true}>
-			<SubPageHeader
-				subText={`$${normalizeNumber(
-					token.amount * token.price,
-				)} available`}
-				backButton
-			>
+			<SubPageHeader subText={renderSubtext()} backButton>
 				Send {token.name}{' '}
 			</SubPageHeader>
+			{console.log('token price: ', token.price)}
 			<View>
 				<Text style={{ ...styles.bigNumber, alignSelf: 'center' }}>
-					${tradeAmount}
+					{token.price > 0 ? `$${tradeAmount}` : tradeAmount}
 				</Text>
 			</View>
 			<View
@@ -360,13 +415,42 @@ const SendScreen = ({ navigation, route }: Props) => {
 				<Button
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
-							initiateTransfer();
+							setModalVisible(true);
+							transferStuff();
 						}
 					}}
 				>
 					Send ${tradeAmount}
 				</Button>
 			</View>
+			<Modal
+				isVisible={modalVisible}
+				backdropColor={colors.black_two}
+				backdropOpacity={0.35}
+				// onBackdropPress={() => setModalVisible(false)}
+			>
+				<TouchableOpacity
+					onPress={() => {
+						setModalVisible(false);
+					}}
+					style={{
+						paddingHorizontal: 32,
+						paddingBottom: 32,
+						paddingTop: 8,
+						backgroundColor: '#111111',
+						borderRadius: 32,
+						width: 194,
+						alignItems: 'center',
+						alignSelf: 'center',
+					}}
+				>
+					<Image
+						source={require('../assets/images/logo_loader.png')}
+						style={{ width: 110, height: 114, marginBottom: 2 }}
+					/>
+					<Text style={styles.loaderLabel}>Sending...</Text>
+				</TouchableOpacity>
+			</Modal>
 		</Background>
 	);
 };
@@ -422,6 +506,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		marginHorizontal: 16,
 		marginBottom: 16,
+	},
+	loaderLabel: {
+		fontFamily: 'AzeretMono_SemiBold',
+		color: 'white',
+		fontSize: 12,
 	},
 });
 

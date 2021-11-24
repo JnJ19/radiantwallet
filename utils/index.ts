@@ -68,21 +68,15 @@ function getAccountFromSeed(
 	return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
 }
 
-function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
-	switch (derivationPath) {
-		case DERIVATION_PATH.deprecated:
-			const path = `m/501'/${walletIndex}'/0/${accountIndex}`;
-			return bip32.fromSeed(seed).derivePath(path).privateKey;
-		case DERIVATION_PATH.bip44:
-			const path44 = `m/44'/501'/${walletIndex}'`;
-			return derivePath(path44, seed).key;
-		case DERIVATION_PATH.bip44Change:
-			const path44Change = `m/44'/501'/${walletIndex}'/0'`;
-			return derivePath(path44Change, seed).key;
-		default:
-			throw new Error(`invalid derivation path: ${derivationPath}`);
-	}
-}
+const deriveSeed = (
+	seed: string,
+	walletIndex: number,
+	derivationPath: string,
+	accountIndex: number,
+): Buffer | undefined => {
+	const path44Change = `m/44'/501'/${walletIndex}'/0'`;
+	return ed25519.derivePath(path44Change, Buffer.from(seed, 'hex')).key;
+};
 
 const deriveSeed2 = (
 	seed: string,
@@ -130,7 +124,9 @@ const accountFromSeed = (
 		accountIndex,
 	);
 	const keyPair = nacl.sign.keyPair.fromSeed(derivedSeed);
-	return new solanaWeb3.Account(keyPair.secretKey);
+
+	const acc = new solanaWeb3.Keypair(keyPair);
+	return acc;
 };
 
 const maskedAddress = (address: string) => {

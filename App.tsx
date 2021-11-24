@@ -1,3 +1,4 @@
+require('node-libs-expo/globals');
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
@@ -13,7 +14,7 @@ import useCachedResources from './hooks/useCachedResources';
 import store from './store';
 import Navigation from './navigation';
 
-LogBox.ignoreAllLogs(true);
+// LogBox.ignoreAllLogs(true);
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();

@@ -9,6 +9,8 @@ const {
 	fonts: { Azeret_Mono, Nunito_Sans },
 } = theme;
 import { SubPageHeader } from '../components';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { copyToClipboard } from '../utils/index';
 
 type Props = {
 	navigation: Navigation;
@@ -17,8 +19,9 @@ type Props = {
 
 const SendSuccessScreen = ({ navigation, route }: Props) => {
 	const token = route.params.token;
-	const amount = route.params.amount;
-	const recipienetAddress = route.params.recipienetAddress;
+	const tradeAmount = route.params.tradeAmount;
+	const transferAmount = route.params.transferAmount;
+	const toWallet = route.params.toWallet;
 
 	return (
 		<Background>
@@ -44,15 +47,32 @@ const SendSuccessScreen = ({ navigation, route }: Props) => {
 							...Nunito_Sans.Body_M_SemiBold,
 							color: colors.black_one,
 							marginBottom: 16,
+							alignSelf: 'center',
+							textAlign: 'center',
 						}}
 					>
-						${amount} of {token.symbol} was sent to{' '}
-						{recipienetAddress}
+						{token.price < 0
+							? `$${tradeAmount} of ${token.symbol} was sent to the following address:`
+							: `${tradeAmount} of ${token.symbol} was sent to the following address:`}
 					</Text>
+					<TouchableOpacity onPress={() => copyToClipboard(toWallet)}>
+						<Text
+							style={{
+								...Nunito_Sans.Body_M_Regular,
+								color: colors.black_five,
+								textAlign: 'center',
+								paddingHorizontal: 16,
+							}}
+						>
+							{toWallet}
+						</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button onPress={() => navigation.navigate('Dashboard')}>
+				<Button
+					onPress={() => navigation.navigate('Token Details', token)}
+				>
 					Done
 				</Button>
 			</View>

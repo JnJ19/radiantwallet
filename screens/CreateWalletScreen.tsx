@@ -16,6 +16,7 @@ import {
 	Image,
 	StyleSheet,
 	TouchableWithoutFeedback,
+	Alert,
 } from 'react-native';
 import {
 	BottomSheetModal,
@@ -24,37 +25,47 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Clipboard from 'expo-clipboard';
 import * as SecureStore from 'expo-secure-store';
+import {
+	generateMnemonic,
+	mnemonicToSeed,
+	copyToClipboard,
+	getAccountFromSeed,
+	DERIVATION_PATH,
+} from '../utils/index';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import Storage from '../storage';
 
 type Props = {
 	navigation: Navigation;
 };
 
-const DismissKeyboard = ({ children }) => (
-	<TouchableWithoutFeedback onPress={() => console.log('hello')}>
-		{children}
-	</TouchableWithoutFeedback>
-);
-
 const CreateWalletScreen = ({ navigation }: Props) => {
 	const [name, setName] = useState('');
 	const [secret, setSecret] = useState('');
-	const [copiedText, setCopiedText] = React.useState('');
 	const passcode = useStoreState((state) => state.passcode);
+	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 
 	async function storePhraseAndContinue(passcode: string, phrase: string) {
 		await SecureStore.setItemAsync(passcode, phrase);
 		navigation.navigate('Main');
 	}
 
-	function wordCount(str: string) {
-		return str.split(' ').length;
+	async function setWallet(mnemonic: string) {
+		const seed = await mnemonicToSeed(mnemonic);
+		const newAccount = getAccountFromSeed(
+			seed,
+			0,
+			DERIVATION_PATH.bip44Change,
+		);
+		const { publicKey } = newAccount;
+		const walletKey = publicKey.toString('hex');
+
+		await Storage.setItem('firstWalletKey', walletKey);
 	}
 
 	async function generatePhrase() {
-		const bip39 = await import('bip39');
-		const mnemonic = bip39.generateMnemonic();
-
+		const mnemonic = await generateMnemonic();
+		setWallet(mnemonic);
 		setSecret(mnemonic);
 	}
 
@@ -126,7 +137,9 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 								backgroundColor: '#F1F4F9',
 								borderRadius: 6,
 							}}
-							onPress={() => Clipboard.setString(secret)}
+							onPress={() =>
+								copyToClipboard(secret, 'Secret Phrase')
+							}
 						>
 							<Image
 								source={require('../assets/icons/Copy_2.png')}

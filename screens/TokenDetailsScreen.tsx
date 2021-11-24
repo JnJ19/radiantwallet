@@ -28,6 +28,24 @@ import { theme } from '../core/theme';
 import { normalizeNumber } from '../utils';
 import * as WebBrowser from 'expo-web-browser';
 import TestChart from '../components/TestChart';
+import * as Serum from '@project-serum/anchor';
+import { Jupiter } from '@jup-ag/core';
+import { Wallet } from '@project-serum/anchor';
+import * as SecureStore from 'expo-secure-store';
+import {
+	Account,
+	Connection,
+	PublicKey,
+	Keypair,
+	Transaction,
+	TransactionSignature,
+} from '@solana/web3.js';
+import * as walletAdapter from '@solana/wallet-adapter-base';
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
+
+console.log('walletAdapter: ', walletAdapter.BaseSignerWalletAdapter);
+console.log('Transaction: ', Transaction);
+console.log('Serum: ', Serum.Wallet);
 
 const {
 	colors,
@@ -41,6 +59,7 @@ type Props = {
 };
 
 // function apx(size = 0){
+
 // 	let width = Dimensions.get('window').width;
 // 	return (width / 750) * size;
 // };
@@ -50,6 +69,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	console.log('token: ', token);
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
+	const passcode = useStoreState((state) => state.passcode);
 
 	async function getDefaultPairToken() {
 		const hasUSDC = token.pairs.find(
@@ -77,10 +97,71 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	const main = async () => {
+		const connection = new Connection(
+			'https://solana-api.projectserum.com',
+		);
+
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
+
+		const wallet = new Wallet(fromWallet);
+		console.log('wallet: ', wallet);
+
+		// load Jupiter
+		const jupiter = await Jupiter.load({
+			connection,
+			cluster: 'mainnet-beta',
+			user: wallet.payer, // or public key
+		});
+		console.log('jupiter: ', jupiter);
+
+		// RouteMap which map each tokenMint and their respective tokenMints that are swappable
+		const routeMap = jupiter.getRouteMap();
+		console.log('routeMap: ', routeMap);
+		const possibleSOLPairs = routeMap.get(
+			'So11111111111111111111111111111111111111112',
+		); // return an array of token mints that can be swapped with SOL
+		console.log('possibleSOLPairs: ', possibleSOLPairs);
+
+		// Calculate routes for swapping 1 SOL to USDC with 1% slippage
+		// routes are sorted based on outputAmount, so ideally the first route is the best.
+		// const routes = await jupiter
+		// 	.computeRoutes(
+		// 		new PublicKey('So11111111111111111111111111111111111111112'),
+		// 		new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+		// 		1_000_000_000,
+		// 		1,
+		// 	)
+		// 	.catch((err) => console.log('err: ', err));
+
+		const routes = await jupiter.computeRoutes(
+			new PublicKey('So11111111111111111111111111111111111111112'),
+			new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+			1_000_000_000,
+			1,
+		);
+
+		// console.log('Quoted out amount', routes[0].outAmount);
+
+		// Prepare execute exchange
+		const { execute } = await jupiter.exchange({
+			route: routes[0],
+		});
+		console.log('execute: ', execute);
+
+		const swapResult = await execute();
+		console.log('swapResult: ', swapResult);
+		// const swapResult = await execute({ wallet: fromWallet, 'signTransaction' });
+		// console.log('swapResult: ', swapResult);
+	};
+
 	useEffect(() => {
 		if (token.pairs) {
 			getDefaultPairToken();
 		}
+		// main();
 	}, [token]);
 
 	//chart stuff
@@ -165,8 +246,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 			}
 		};
 
-		console.log('position X', positionX);
-
 		return (
 			<G x={x(positionX)} key="tooltip">
 				<G
@@ -182,14 +261,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						stroke="rgba(254, 190, 24, 0.27)"
 						fill={theme.colors.black_one}
 					/>
-
 					<SvgText
 						x={apx(20)}
 						fill="white"
 						fontWeight="bold"
 						opacity={0.75}
 						fontSize={12}
-						fontFamily="Nunito Sans"
+						// fontFamily="Nunito Sans"
 					>
 						{date()}
 					</SvgText>
@@ -199,21 +277,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						fontSize={17}
 						fontWeight="Semibold"
 						fill="white"
-						fontFamily="Nunito Sans"
+						// fontFamily="Nunito Sans"
 					>
 						${priceList[positionX]}
 					</SvgText>
 				</G>
 
 				<G x={x}>
-					{/* <Line
-						y1={ticks[0]}
-						y2={ticks[Number(ticks.length)]}
-						stroke="#FEBE18"
-						strokeWidth={apx(4)}
-						strokeDasharray={[6, 3]}
-					/> */}
-
 					<Circle
 						cy={y(priceList[positionX])}
 						r={apx(70 / 2)}
@@ -241,11 +311,11 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					stopColor={'rgb(222, 249, 119)'}
 					stopOpacity={0.9}
 				/>
-				<Stop
+				{/* <Stop
 					offset={'100%'}
 					stopColor={'rgb(201, 249, 119)'}
 					stopOpacity={0}
-				/>
+				/> */}
 			</LinearGradient>
 		</Defs>
 	);
@@ -256,12 +326,13 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const todayTotal = parseFloat(normalizeNumber(token.price));
 	// setChartData([d90, d60, d30, todayTotal]);
 	const priceList = [d90, d60, d30, todayTotal];
+	console.log('priceList: ', priceList);
 
 	return (
 		<Background>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				style={{ marginBottom: 80 }}
+				style={token.amount > 0 ? { marginBottom: 80 } : null}
 			>
 				<SubPageHeader backButton>{token.name} Details</SubPageHeader>
 
@@ -352,6 +423,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 							style={{ height: 200 }}
 							// data={chartData}
 							data={priceList}
+							start={0}
 							showGrid={false}
 							animate={true}
 							contentInset={{ top: 30, bottom: 30 }}
@@ -678,80 +750,84 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					</View>
 				</View>
 			</ScrollView>
-			{/* <BlurView intensity={48} style={{margin: 0}} > */}
-			{/* </BlurView> */}
-			<View
-				style={{
-					flexDirection: 'row',
-					justifyContent: 'space-between',
-					position: 'absolute',
-					bottom: 0,
-					margin: 16,
-					width: '100%',
-					shadowColor: '#656565',
-					shadowOpacity: 0.25,
-					shadowOffset: { width: 0, height: 8 },
-					shadowRadius: 24,
-				}}
-			>
-				{token.pairs ? (
-					<>
-						<Button
-							mode="outlined"
-							onPress={() => navigation.navigate('Send', token)}
-							style={{ width: '50%' }}
-							icon={() => (
-								<Image
-									source={require('../assets/icons/Send.png')}
-									style={{
-										width: 24,
-										height: 24,
-										marginRight: -24,
-									}}
-								/>
-							)}
-						>
-							Send
-						</Button>
-						<View style={{ width: 8 }} />
-						<Button
-							mode="contained"
-							onPress={() => {
-								console.log('stuffff', token, defaultPair);
-								navigation.navigate('Trade', {
-									from: token,
-									to: defaultPair,
-								});
-							}}
-							style={{
-								width: '50%',
-							}}
-							icon={() => (
-								<Image
-									source={require('../assets/icons/Trade.png')}
-									style={{
-										width: 24,
-										height: 24,
-										marginRight: -20,
-									}}
-								/>
-							)}
-						>
-							Trade
-						</Button>
-					</>
-				) : (
-					<>
-						<Button
-							mode="contained"
-							onPress={() => navigation.navigate('Send', token)}
-							style={{ width: '100%' }}
-						>
-							Send
-						</Button>
-					</>
-				)}
-			</View>
+			{token.amount > 0 ? (
+				<View
+					style={{
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						position: 'absolute',
+						bottom: 0,
+						margin: 16,
+						width: '100%',
+						shadowColor: '#656565',
+						shadowOpacity: 0.25,
+						shadowOffset: { width: 0, height: 8 },
+						shadowRadius: 24,
+					}}
+				>
+					{token.pairs ? (
+						<>
+							<Button
+								mode="outlined"
+								onPress={() =>
+									navigation.navigate('Send', token)
+								}
+								style={{ width: '50%' }}
+								icon={() => (
+									<Image
+										source={require('../assets/icons/Send.png')}
+										style={{
+											width: 24,
+											height: 24,
+											marginRight: -24,
+										}}
+									/>
+								)}
+							>
+								Send
+							</Button>
+							<View style={{ width: 8 }} />
+							<Button
+								mode="contained"
+								onPress={() => {
+									console.log('stuffff', token, defaultPair);
+									navigation.navigate('Trade', {
+										from: token,
+										to: defaultPair,
+									});
+								}}
+								style={{
+									width: '50%',
+								}}
+								icon={() => (
+									<Image
+										source={require('../assets/icons/Trade.png')}
+										style={{
+											width: 24,
+											height: 24,
+											marginRight: -20,
+										}}
+									/>
+								)}
+							>
+								Trade
+							</Button>
+						</>
+					) : (
+						<>
+							<Button
+								mode="contained"
+								onPress={() =>
+									navigation.navigate('Send', token)
+								}
+								style={{ width: '100%' }}
+							>
+								Send
+							</Button>
+						</>
+					)}
+				</View>
+			) : null}
 		</Background>
 	);
 };

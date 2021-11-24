@@ -28,9 +28,11 @@ import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
-import * as Clipboard from 'expo-clipboard';
 import Modal from 'react-native-modal';
-// const addCommas = new Intl.NumberFormat('en-US');
+import { Wallet } from '@project-serum/anchor';
+import { Jupiter } from '@jup-ag/core';
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
+import Storage from '../storage';
 
 type Props = {
 	navigation: Navigation;
@@ -44,7 +46,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [loading, setLoading] = useState(true);
-	const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+	const [tokenMap, setTokenMap] = useState('');
+	// const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
 	>(new Map());
@@ -156,7 +159,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		getAllTokens();
-		getSubWallets();
+		if (!subWallets) {
+			getSubWallets();
+		}
 	}, []);
 	
 	useEffect(() => {
