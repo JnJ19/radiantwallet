@@ -31,13 +31,17 @@ const store = createStore({
 	setSelectedWallet: action((state, payload) => {
 		state.selectedWallet = payload;
 	}),
+	activeSubWallet: 0,
+	setActiveSubWallet: action((state, payload) => {
+		state.activeSubWallet = payload;
+	}),
 	subWallets: '',
 	setSubWallets: action((state, payload) => {
 		state.subWallets = payload;
 	}),
-	totalBalance: '',
-	setTotalBalance: action((state, payload) => {
-		state.totalBalance = payload;
+	subWalletTokensArray: '',
+	setSubWalletTokensArray: action((state, payload) => {
+		state.subWalletTokensArray = payload;
 	}),
 
 });

@@ -4,6 +4,7 @@ import TextInput from '../components/TextInput'
 import { Background, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
+import { useStoreState } from '../hooks/storeHooks';
 
 type Props = {
 	navigation: Navigation;
@@ -12,6 +13,8 @@ type Props = {
 const EditWalletNameScreen = () => {
 
 	const [name, setName] = useState('');
+	const selectedWallet = useStoreState((state) => state.selectedWallet);
+	const subWallets = useStoreState((state) => state.subWallets);
 
 	const walletNameHandler = inputText => {
 		setName(inputText);
@@ -28,7 +31,7 @@ const EditWalletNameScreen = () => {
 				<View style={styles.textBoxContainer}>    
 					<TextInputRN
 						style={styles.textBox}
-						placeholder="Current wallet name"
+						placeholder={subWallets[selectedWallet].subWalletName}
 						keyboardType="default"
 						value={name}
 						onChangeText={walletNameHandler}
