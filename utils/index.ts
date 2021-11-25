@@ -14,7 +14,6 @@ import * as Clipboard from 'expo-clipboard'; // <-- might have to change to '@re
 import { useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 
-
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 );
@@ -36,12 +35,14 @@ async function findAssociatedTokenAddress(
 }
 
 function shortenPublicKey(
-	publicKey: string, 
-	keepStart: number, 
-	keepEnd: number, 
-	sliceEnd: number
-){
-	return publicKey.slice(keepStart, keepEnd) + '...' + publicKey.slice(sliceEnd);
+	publicKey: string,
+	keepStart: number,
+	keepEnd: number,
+	sliceEnd: number,
+) {
+	return (
+		publicKey.slice(keepStart, keepEnd) + '...' + publicKey.slice(sliceEnd)
+	);
 }
 
 function normalizeNumber(number: number) {
@@ -145,7 +146,7 @@ async function getSubWalletsData(passcode: string) {
 	let iterate = true;
 	let i = 0;
 
-	while (iterate === true){ 
+	while (iterate === true) {
 		const newAccount = getAccountFromSeed(
 			seed,
 			i,
@@ -169,110 +170,263 @@ async function getSubWalletsData(passcode: string) {
 				publicKey: publicKey.toString('hex'),
 				subWalletName: subWalletName,
 			});
-		};
+		}
 		i++;
-	};
+	}
 	return subWallets1;
-	
-};
+}
 
-	//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
-async function getOwnedTokensData(subWallets: any, passcode: string, tokenMap: any) {
-		const tokensBySubWallet = [];
-		const newAccountArray = [];
-		for (let i = 0; i < subWallets.length; i++) {
-			// const url = 'https://api.mainnet-beta.solana.com';
-			// const url = 'https://solana-api.projectserum.com';
-			const url =
-				'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
-			const connection = new Connection(url);
+//gets owned tokens, adds sol to it, adds detail to all the coins, then sets to state
+async function getOwnedTokensData(
+	subWallets: any,
+	passcode: string,
+	tokenMap: any,
+) {
+	const url =
+		'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+	const connection = new Connection(url);
 
-			let mnemonic = await SecureStore.getItemAsync(passcode);
-			const bip39 = await import('bip39');
-			const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
-			const newAccount = getAccountFromSeed(
-				seed,
-				i,
-				DERIVATION_PATH.bip44Change,
-			);
-			
-			//setAccount(newAccount);
+	let mnemonic = await SecureStore.getItemAsync(passcode);
+	const bip39 = await import('bip39');
+	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
+	const programId = new PublicKey(
+		'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+	);
+	const tokenPairs = await getTokenPairs();
+	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
+	// const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+	const apiKey = 'fb778058-7d11-4c17-8f03-5212f68ed1c7';
 
-			const { publicKey } = newAccount;
+	const tokensBySubWallet = [];
+	const newAccountArray = [];
+	for (let i = 0; i < subWallets.length; i++) {
+		console.log('loop run', i);
+		const newAccount = getAccountFromSeed(
+			seed,
+			i,
+			DERIVATION_PATH.bip44Change,
+		);
 
-			const programId = new PublicKey(
-				'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-			);
-			const ownedTokens = await connection
-				.getTokenAccountsByOwner(publicKey, { programId })
-				.catch((err) => console.log('errorr', err));
+		const { publicKey } = newAccount;
 
-			let tokens2 = [];
-			const tokenPairs = await getTokenPairs();
-			const solPairs = tokenPairs.find(
-				(pair: object) => (pair.symbol = 'SOL'),
-			);
-			
-			const solBalance = await connection.getBalance(publicKey);
-			const realSolBalance = solBalance * 0.000000001;
-			const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
+		const ownedTokens = await connection
+			.getTokenAccountsByOwner(publicKey, { programId })
+			.catch((err) => console.log('errorr', err));
 
-			if (solBalance > 0) {
-				//console.log('here2 ');
-				// const priceData = await fetch(
-				// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
-				// 	{
-				// 		method: 'POST',
-				// 		body: JSON.stringify({
-				// 			url: '/quotes/latest?symbol=sol',
-				// 		}),
-				// 		headers: { 'Content-type': 'application/json' },
-				// 	},
-				// )
-				const priceData = await fetch(
-					`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
-					{
-						headers: {
-							'X-CMC_PRO_API_KEY': apiKey,
-							Accept: 'application/json',
-							'Accept-Encoding': 'deflate, gzip',
-						},
+		const solBalance = await connection.getBalance(publicKey);
+		console.log('solBalance: ', solBalance);
+		const realSolBalance = solBalance * 0.000000001;
+
+		const ownedTokensArray = [];
+		let solToken;
+		if (solBalance > 0) {
+			const priceData = await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
 					},
-				)
-					.then((response) => {
-						//console.log('response for SOL call: ', response);
+				},
+			)
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					const dataArray = Object.values(data.data);
+					const percent_change_24h =
+						dataArray[0].quote.USD.percent_change_24h;
+					const percent_change_30d =
+						dataArray[0].quote.USD.percent_change_30d;
+					const percent_change_60d =
+						dataArray[0].quote.USD.percent_change_60d;
+					const percent_change_90d =
+						dataArray[0].quote.USD.percent_change_90d;
+					const {
+						price,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					} = dataArray[0].quote.USD;
+					return {
+						price,
+						percent_change_24h,
+						percent_change_30d,
+						percent_change_60d,
+						percent_change_90d,
+						volume_24h,
+						market_cap,
+						market_cap_dominance,
+					};
+				})
+				.catch((error) => console.log('hello error', error));
 
-						return response.json();
-					})
-					.then((data) => {
-						const dataArray = Object.values(data.data);
-						const percent_change_24h =
-							dataArray[0].quote.USD.percent_change_24h;
-						const percent_change_30d =
-							dataArray[0].quote.USD.percent_change_30d;
-						const percent_change_60d =
-							dataArray[0].quote.USD.percent_change_60d;
-						const percent_change_90d =
-							dataArray[0].quote.USD.percent_change_90d;
-						const {
-							price,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-						} = dataArray[0].quote.USD;
-						return {
-							price,
-							percent_change_24h,
-							percent_change_30d,
-							percent_change_60d,
-							percent_change_90d,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-						};
-					})
-					.catch((error) => console.log('hello error', error));
+			const {
+				price,
+				percent_change_24h,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
+				volume_24h,
+				market_cap,
+				market_cap_dominance,
+			} = priceData;
+			const price_30d = price * (1 + percent_change_30d * 0.01);
+			const price_60d = price * (1 + percent_change_60d * 0.01);
+			const price_90d = price * (1 + percent_change_90d * 0.01);
+			const tokenObject = {
+				mint: 'So11111111111111111111111111111111111111112',
+				amount: realSolBalance,
+				name: 'Solana',
+				symbol: 'SOL',
+				logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+				extensions: {
+					discord: 'https://discord.com/invite/pquxPsq',
+					twitter: 'https://twitter.com/solana',
+					website: 'https://solana.com/',
+				},
+				price,
+				price_30d,
+				price_60d,
+				price_90d,
+				pairs: solPairs.pairs,
+				percent_change_24h,
+				percent_change_30d,
+				percent_change_60d,
+				percent_change_90d,
+				volume_24h,
+				market_cap,
+				description:
+					'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 506,348,680.4303728 with 299,902,995.15039116 in circulation. The last known price of Solana is 146.68289748 USD and is up 1.09 over the last 24 hours. It is currently trading on 161 active market(s) with $2,959,138,044.47 traded over the last 24 hours. More information can be found at https://solana.com.',
+				market_cap_dominance,
+			};
+			ownedTokensArray.push(tokenObject);
+			solToken = tokenObject;
+		}
+		const ownedTokensSymbols = [];
+		for (let i = 0; i < ownedTokens.value.length; i++) {
+			const result = await connection.getParsedAccountInfo(
+				ownedTokens.value[i].pubkey,
+			);
 
+			const mint = result.value.data.parsed.info.mint;
+			const amount = result.value.data.parsed.info.tokenAmount.uiAmount;
+			const otherDetails = await tokenMap.get(mint);
+			if (otherDetails) {
+				let pairs = tokenPairs.find(
+					(pair: object) => pair.symbol === otherDetails.symbol,
+				);
+
+				if (!pairs) {
+					pairs = { pairs: false };
+				}
+
+				const mintKey = new PublicKey(mint);
+
+				const associatedTokenAddress = await findAssociatedTokenAddress(
+					publicKey,
+					mintKey,
+				);
+
+				const associatedTokenAddressHash =
+					associatedTokenAddress.toString('hex');
+				const tokenObject = {
+					mint,
+					amount,
+					name: otherDetails.name,
+					symbol: otherDetails.symbol,
+					logo: otherDetails.logoURI,
+					extensions: otherDetails.extensions,
+					pairs,
+					associatedTokenAddressHash,
+					associatedTokenAddress,
+				};
+				ownedTokensArray.push(tokenObject);
+				ownedTokensSymbols.push(otherDetails.symbol);
+			}
+		}
+		const ownedSymbolsList = ownedTokensSymbols.join();
+
+		const aboutData = await fetch(
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
+			{
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
+				},
+			},
+		)
+			.then((response) => {
+				return response.json();
+			})
+			.then((res) => {
+				if (res.status.error_code !== 0) {
+					return {
+						description:
+							'No description available for this project.',
+						logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+						name: 'unkown',
+						extensions: {},
+					};
+				} else {
+					return Object.values(res.data);
+				}
+			})
+			.catch((err) => console.log('errerere', err));
+
+		const combinedOwnedTokensArray = [];
+		for (let i = 0; i < ownedTokensArray.length; i++) {
+			const tokenObject = ownedTokensArray[i];
+			const cmcToken = aboutData.find(
+				(token: object) => token.symbol === tokenObject.symbol,
+			);
+			const newTokenObject = {
+				description: cmcToken?.description
+					? cmcToken.description
+					: 'No description available',
+				...tokenObject,
+			};
+			combinedOwnedTokensArray.push(newTokenObject);
+		}
+
+		const priceData = await fetch(
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
+			{
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
+				},
+			},
+		)
+			.then((response) => {
+				return response.json();
+			})
+			.then((res) => {
+				if (res.status.error_code !== 0) {
+					return {
+						description:
+							'No description available for this project.',
+						logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+						name: 'unkown',
+						extensions: {},
+					};
+				} else {
+					return Object.values(res.data);
+				}
+			})
+			.catch((err) => console.log('errerere', err));
+
+		const finalCombinedOwnedTokensArray = [];
+
+		for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
+			const tokenObject = combinedOwnedTokensArray[i];
+			const cmcToken = priceData.find(
+				(token: object) => token.symbol === tokenObject.symbol,
+			);
+			if (cmcToken.quote) {
 				const {
 					price,
 					percent_change_24h,
@@ -282,265 +436,259 @@ async function getOwnedTokensData(subWallets: any, passcode: string, tokenMap: a
 					volume_24h,
 					market_cap,
 					market_cap_dominance,
-				} = priceData;
-				const price_30d = price * (1 + percent_change_30d * 0.01);
-				const price_60d = price * (1 + percent_change_60d * 0.01);
-				const price_90d = price * (1 + percent_change_90d * 0.01);
-				const tokenObject = {
-					mint: 'So11111111111111111111111111111111111111112',
-					amount: realSolBalance,
-					name: 'Solana',
-					symbol: 'SOL',
-					logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
-					extensions: {
-						discord: 'https://discord.com/invite/pquxPsq',
-						twitter: 'https://twitter.com/solana',
-						website: 'https://solana.com/',
-					},
+				} = cmcToken.quote.USD;
+				const newTokenObject = {
 					price,
-					price_30d,
-					price_60d,
-					price_90d,
-					pairs: solPairs.pairs,
 					percent_change_24h,
 					percent_change_30d,
 					percent_change_60d,
 					percent_change_90d,
 					volume_24h,
 					market_cap,
-					description:
-						'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 506,348,680.4303728 with 299,902,995.15039116 in circulation. The last known price of Solana is 146.68289748 USD and is up 1.09 over the last 24 hours. It is currently trading on 161 active market(s) with $2,959,138,044.47 traded over the last 24 hours. More information can be found at https://solana.com.',
 					market_cap_dominance,
+					price_30d: price * (1 + percent_change_30d * 0.01),
+					price_60d: price * (1 + percent_change_60d * 0.01),
+					price_90d: price * (1 + percent_change_90d * 0.01),
+					...tokenObject,
 				};
-				tokens2.push(tokenObject);
+				finalCombinedOwnedTokensArray.push(newTokenObject);
+			} else {
+				const newTokenObject = {
+					price: 0,
+					percent_change_24h: 0,
+					percent_change_30d: 0,
+					percent_change_60d: 0,
+					percent_change_90d: 0,
+					volume_24h: 0,
+					market_cap: 0,
+					market_cap_dominance: 0,
+					price_30d: price * (1 + percent_change_30d * 0.01),
+					price_60d: price * (1 + percent_change_60d * 0.01),
+					price_90d: price * (1 + percent_change_90d * 0.01),
+					...tokenObject,
+				};
+				finalCombinedOwnedTokensArray.push(newTokenObject);
 			}
-			await Promise.all(
-				ownedTokens.value.map(async (item) => {
-					const result = await connection.getParsedAccountInfo(
-						item.pubkey,
-					);
-
-					const mint = result.value.data.parsed.info.mint;
-					const amount =
-						result.value.data.parsed.info.tokenAmount.uiAmount;
-					const otherDetails = tokenMap.get(mint);
-					if (otherDetails) {
-						const { name, symbol, logoURI, extensions } = otherDetails;
-						const logo = logoURI;
-
-						let pairs = tokenPairs.find(
-							(pair: object) => pair.symbol === symbol,
-						);
-
-						if (!pairs) {
-							pairs = { pairs: false };
-						}
-
-						const mintKey = new PublicKey(mint);
-
-						const associatedTokenAddress =
-							await findAssociatedTokenAddress(publicKey, mintKey);
-
-						const associatedTokenAddressHash =
-							associatedTokenAddress.toString('hex');
-
-						// const aboutData = await fetch(
-						// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
-						// 	{
-						// 		method: 'POST',
-						// 		body: JSON.stringify({
-						// 			url: `/info?symbol=${symbol}`,
-						// 		}),
-						// 		headers: { 'Content-type': 'application/json' },
-						// 	},
-						// )
-						const aboutData = await fetch(
-							`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
-							{
-								headers: {
-									'X-CMC_PRO_API_KEY': apiKey,
-									Accept: 'application/json',
-									'Accept-Encoding': 'deflate, gzip',
-								},
-							},
-						)
-							.then((response) => {
-								return response.json();
-							})
-
-							.then((res) => {
-								if (res.status.error_code !== 0) {
-									return {
-										description:
-											'No description available for this project.',
-										logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
-										name: symbol,
-										extensions: {},
-									};
-								} else {
-									const dataArray = Object.values(res.data);
-									const logo = dataArray[0].logo
-										? dataArray[0].logo
-										: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png';
-									if (dataArray[0]) {
-										return {
-											description: dataArray[0]?.description,
-											logo,
-											name: dataArray[0]?.name,
-											extensions: {
-												website:
-													dataArray[0]?.urls.website[0],
-												twitter:
-													dataArray[0]?.urls.twitter[0],
-												discord:
-													dataArray[0]?.urls.discord[0],
-											},
-										};
-									} else {
-										return {
-											description:
-												'No description available for this project.',
-											logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
-											name: symbol,
-											extensions: {},
-										};
-									}
-								}
-							})
-							.catch((err) => console.log('info error', err));
-							
-						// const priceData = await fetch(
-						// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
-						// 	{
-						// 		method: 'POST',
-						// 		body: JSON.stringify({
-						// 			url: `/quotes/latest?symbol=${symbol}`,
-						// 		}),
-						// 		headers: { 'Content-type': 'application/json' },
-						// 	},
-						// )
-						const priceData = await fetch(
-							`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
-							{
-								headers: {
-									'X-CMC_PRO_API_KEY': apiKey,
-									Accept: 'application/json',
-									'Accept-Encoding': 'deflate, gzip',
-								},
-							},
-						)
-							.then((response) => response.json())
-							.then((res) => {
-								if (res.status.error_code !== 0) {
-									return {
-										price: 0,
-										percent_change_24h: 0,
-										percent_change_30d: 0,
-										percent_change_60d: 0,
-										percent_change_90d: 0,
-										volume_24h: 0,
-										market_cap: 0,
-										market_cap_dominance: 0,
-									};
-								} else {
-									const dataArray = Object.values(res.data);
-									if (dataArray[0]) {
-										const percent_change_24h =
-											dataArray[0].quote.USD
-												.percent_change_24h;
-										const percent_change_30d =
-											dataArray[0].quote.USD
-												.percent_change_30d;
-										const percent_change_60d =
-											dataArray[0].quote.USD
-												.percent_change_60d;
-										const percent_change_90d =
-											dataArray[0].quote.USD
-												.percent_change_90d;
-										const {
-											price,
-											volume_24h,
-											market_cap,
-											market_cap_dominance,
-										} = dataArray[0].quote.USD;
-										return {
-											price,
-											percent_change_24h,
-											percent_change_30d,
-											percent_change_60d,
-											percent_change_90d,
-											volume_24h,
-											market_cap,
-											market_cap_dominance,
-										};
-									} else {
-										console.log('data array issues');
-
-										return {
-											price: 0,
-											percent_change_24h: 0,
-											percent_change_30d: 0,
-											percent_change_60d: 0,
-											percent_change_90d: 0,
-											volume_24h: 0,
-											market_cap: 0,
-											market_cap_dominance: 0,
-										};
-									}
-								}
-							})
-							.catch((error) => console.log('quotes error', error));
-						const {
-							price,
-							percent_change_24h,
-							percent_change_30d,
-							percent_change_60d,
-							percent_change_90d,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-						} = priceData;
-
-						const price_30d = price * (1 + percent_change_30d * 0.01);
-						const price_60d = price * (1 + percent_change_60d * 0.01);
-						const price_90d = price * (1 + percent_change_90d * 0.01);
-
-						const tokenObject = {
-							mint,
-							amount,
-							name,
-							symbol,
-							logo,
-							extensions,
-							price,
-							pairs: pairs.pairs,
-							percent_change_24h,
-							percent_change_30d,
-							percent_change_60d,
-							percent_change_90d,
-							price_30d,
-							price_60d,
-							price_90d,
-							associatedTokenAddress,
-							associatedTokenAddressHash,
-							volume_24h,
-							market_cap,
-							market_cap_dominance,
-							...aboutData,
-						};
-
-						tokens2.push(tokenObject);					
-					}
-				}),
-			);
-			tokensBySubWallet.push(tokens2);
-			newAccountArray.push(newAccount);						
-		};		
-		return {
-			tokensBySubWallet: tokensBySubWallet,
-			newAccount: newAccountArray,
 		}
-};	
+		if (solToken) {
+			finalCombinedOwnedTokensArray.push(solToken);
+		}
+
+		// await Promise.all(
+		// 	ownedTokens.value.map(async (item) => {
+		// 		const result = await connection.getParsedAccountInfo(
+		// 			item.pubkey,
+		// 		);
+
+		// 		const mint = result.value.data.parsed.info.mint;
+		// 		const amount =
+		// 			result.value.data.parsed.info.tokenAmount.uiAmount;
+		// 		const otherDetails = tokenMap.get(mint);
+		// 		if (otherDetails) {
+		// 			const { name, symbol, logoURI, extensions } = otherDetails;
+		// 			const logo = logoURI;
+
+		// 			let pairs = tokenPairs.find(
+		// 				(pair: object) => pair.symbol === symbol,
+		// 			);
+
+		// 			if (!pairs) {
+		// 				pairs = { pairs: false };
+		// 			}
+
+		// 			const mintKey = new PublicKey(mint);
+
+		// 			const associatedTokenAddress =
+		// 				await findAssociatedTokenAddress(publicKey, mintKey);
+
+		// 			const associatedTokenAddressHash =
+		// 				associatedTokenAddress.toString('hex');
+
+		// 			const aboutData = await fetch(
+		// 				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbol}`,
+		// 				{
+		// 					headers: {
+		// 						'X-CMC_PRO_API_KEY': apiKey,
+		// 						Accept: 'application/json',
+		// 						'Accept-Encoding': 'deflate, gzip',
+		// 					},
+		// 				},
+		// 			)
+		// 				.then((response) => {
+		// 					return response.json();
+		// 				})
+
+		// 				.then((res) => {
+		// 					if (res.status.error_code !== 0) {
+		// 						return {
+		// 							description:
+		// 								'No description available for this project.',
+		// 							logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+		// 							name: symbol,
+		// 							extensions: {},
+		// 						};
+		// 					} else {
+		// 						const dataArray = Object.values(res.data);
+		// 						const logo = dataArray[0].logo
+		// 							? dataArray[0].logo
+		// 							: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png';
+		// 						if (dataArray[0]) {
+		// 							return {
+		// 								description: dataArray[0]?.description,
+		// 								logo,
+		// 								name: dataArray[0]?.name,
+		// 								extensions: {
+		// 									website:
+		// 										dataArray[0]?.urls.website[0],
+		// 									twitter:
+		// 										dataArray[0]?.urls.twitter[0],
+		// 									discord:
+		// 										dataArray[0]?.urls.discord[0],
+		// 								},
+		// 							};
+		// 						} else {
+		// 							return {
+		// 								description:
+		// 									'No description available for this project.',
+		// 								logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
+		// 								name: symbol,
+		// 								extensions: {},
+		// 							};
+		// 						}
+		// 					}
+		// 				})
+		// 				.catch((err) => console.log('info error', err));
+
+		// 			const priceData = await fetch(
+		// 				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
+		// 				{
+		// 					headers: {
+		// 						'X-CMC_PRO_API_KEY': apiKey,
+		// 						Accept: 'application/json',
+		// 						'Accept-Encoding': 'deflate, gzip',
+		// 					},
+		// 				},
+		// 			)
+		// 				.then((response) => response.json())
+		// 				.then((res) => {
+		// 					if (res.status.error_code !== 0) {
+		// 						return {
+		// 							price: 0,
+		// 							percent_change_24h: 0,
+		// 							percent_change_30d: 0,
+		// 							percent_change_60d: 0,
+		// 							percent_change_90d: 0,
+		// 							volume_24h: 0,
+		// 							market_cap: 0,
+		// 							market_cap_dominance: 0,
+		// 						};
+		// 					} else {
+		// 						const dataArray = Object.values(res.data);
+		// 						if (dataArray[0]) {
+		// 							const percent_change_24h =
+		// 								dataArray[0].quote.USD
+		// 									.percent_change_24h;
+		// 							const percent_change_30d =
+		// 								dataArray[0].quote.USD
+		// 									.percent_change_30d;
+		// 							const percent_change_60d =
+		// 								dataArray[0].quote.USD
+		// 									.percent_change_60d;
+		// 							const percent_change_90d =
+		// 								dataArray[0].quote.USD
+		// 									.percent_change_90d;
+		// 							const {
+		// 								price,
+		// 								volume_24h,
+		// 								market_cap,
+		// 								market_cap_dominance,
+		// 							} = dataArray[0].quote.USD;
+		// 							return {
+		// 								price,
+		// 								percent_change_24h,
+		// 								percent_change_30d,
+		// 								percent_change_60d,
+		// 								percent_change_90d,
+		// 								volume_24h,
+		// 								market_cap,
+		// 								market_cap_dominance,
+		// 							};
+		// 						} else {
+		// 							console.log('data array issues');
+
+		// 							return {
+		// 								price: 0,
+		// 								percent_change_24h: 0,
+		// 								percent_change_30d: 0,
+		// 								percent_change_60d: 0,
+		// 								percent_change_90d: 0,
+		// 								volume_24h: 0,
+		// 								market_cap: 0,
+		// 								market_cap_dominance: 0,
+		// 							};
+		// 						}
+		// 					}
+		// 				})
+		// 				.catch((error) => console.log('quotes error', error));
+		// 			const {
+		// 				price,
+		// 				percent_change_24h,
+		// 				percent_change_30d,
+		// 				percent_change_60d,
+		// 				percent_change_90d,
+		// 				volume_24h,
+		// 				market_cap,
+		// 				market_cap_dominance,
+		// 			} = priceData;
+
+		// 			const price_30d = price * (1 + percent_change_30d * 0.01);
+		// 			const price_60d = price * (1 + percent_change_60d * 0.01);
+		// 			const price_90d = price * (1 + percent_change_90d * 0.01);
+
+		// 			const tokenObject = {
+		// 				mint,
+		// 				amount,
+		// 				name,
+		// 				symbol,
+		// 				logo,
+		// 				extensions,
+		// 				price,
+		// 				pairs: pairs.pairs,
+		// 				percent_change_24h,
+		// 				percent_change_30d,
+		// 				percent_change_60d,
+		// 				percent_change_90d,
+		// 				price_30d,
+		// 				price_60d,
+		// 				price_90d,
+		// 				associatedTokenAddress,
+		// 				associatedTokenAddressHash,
+		// 				volume_24h,
+		// 				market_cap,
+		// 				market_cap_dominance,
+		// 				...aboutData,
+		// 			};
+
+		// 			tokens2.push(tokenObject);
+		// 		}
+		// 	}),
+		// );
+		// tokensBySubWallet.push(tokens2);
+		tokensBySubWallet.push(finalCombinedOwnedTokensArray);
+		console.log(
+			'finalCombinedOwnedTokensArray: ',
+			finalCombinedOwnedTokensArray,
+		);
+		newAccountArray.push(newAccount);
+	}
+	console.log('newAccountArray: ', newAccountArray);
+	console.log('tokensBySubWallet: ', tokensBySubWallet);
+	console.log('newAccount: ', newAccountArray);
+	return {
+		tokensBySubWallet: tokensBySubWallet,
+		newAccount: newAccountArray,
+	};
+}
 
 async function settleFundsData(account: any, Market: any, connection: any) {
 	let owner = new Account(account.secretKey);
@@ -598,11 +746,10 @@ async function settleFundsData(account: any, Market: any, connection: any) {
 }
 
 async function getAllTokensData(tokenMapSymbols: any) {
-	
 	const tokenPairs = await getTokenPairs();
-	
+
 	const symbolsList = await getCleanTokenList();
-	
+
 	const combinedSymbolList = symbolsList.join();
 	// const coinMarketCapTokens = await fetch(
 	// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
@@ -626,8 +773,6 @@ async function getAllTokensData(tokenMapSymbols: any) {
 	)
 		.then((response) => response.json())
 		.then((data) => {
-			
-
 			return Object.values(data.data);
 		});
 	//combine token pairs and coinmarketcap data
@@ -675,7 +820,7 @@ async function getAllTokensData(tokenMapSymbols: any) {
 			combinedArray.push(newObject);
 		}
 	}
-	
+
 	// console.log('combeind array', combinedArray);
 
 	//get and combine prices now too
@@ -748,7 +893,7 @@ async function getAllTokensData(tokenMapSymbols: any) {
 	return combinedArrayWithPrices;
 
 	//now add market address
-};
+}
 
 function getTokenPairs() {
 	//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
@@ -786,7 +931,7 @@ function getTokenPairs() {
 				const el = removedPools[i];
 				const splitArray = el.split('/');
 				symbolsArray.push(...splitArray);
-			};
+			}
 
 			//dedupe symbols
 			const dedupedSymbols = [...new Set(symbolsArray)];
@@ -797,8 +942,8 @@ function getTokenPairs() {
 				const el = dedupedSymbols[i];
 				if (el.length < 15) {
 					cleanArray.push(el);
-				};
-			};
+				}
+			}
 
 			const finishedArray = [];
 			for (let i = 0; i < cleanArray.length; i++) {
@@ -830,7 +975,7 @@ function getTokenPairs() {
 					};
 
 					pairsArray.push(newPair);
-				};
+				}
 
 				const finishedObject = {
 					symbol: el,
@@ -838,11 +983,11 @@ function getTokenPairs() {
 				};
 
 				finishedArray.push(finishedObject);
-			};
+			}
 			return finishedArray;
 		})
 		.catch((err) => console.log(err));
-};
+}
 
 function getCleanTokenList() {
 	return fetch('https://serum-api.bonfida.com/pairs')
@@ -880,7 +1025,7 @@ function getCleanTokenList() {
 				const el = removedPools[i];
 				const splitArray = el.split('/');
 				symbolsArray.push(...splitArray);
-			};
+			}
 
 			//dedupe symbols
 			const dedupedSymbols = [...new Set(symbolsArray)];
@@ -891,14 +1036,15 @@ function getCleanTokenList() {
 				const el = dedupedSymbols[i];
 				if (el.length < 15) {
 					cleanArray.push(el);
-				};
-			};
+				}
+			}
 			return cleanArray;
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-function getTokenPair(symbol: string) { //are we still using this?
+function getTokenPair(symbol: string) {
+	//are we still using this?
 	return fetch('https://serum-api.bonfida.com/pairs')
 		.then((res) => res.json())
 		.then((res) => {
@@ -947,23 +1093,22 @@ function getTokenPair(symbol: string) { //are we still using this?
 			return pairsArray;
 		})
 		.catch((err) => console.log(err));
-};
+}
 
 function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
 	const totalBalance = subWalletTokensArray?.map((item) => {
 		const result = item?.map((data) => {
 			return data.amount * data.price;
 		});
-		const unformattedBalance = result?.reduce((prev, current) => prev + current);
+		const unformattedBalance = result?.reduce(
+			(prev, current) => prev + current,
+		);
 		return normalizeNumber(unformattedBalance);
 	});
 	subWallets.map((item, index) => {
 		item['totalBalance'] = totalBalance[index];
-	});	
-};
-
-
-
+	});
+}
 
 export {
 	generateMnemonic,

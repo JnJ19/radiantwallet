@@ -58,12 +58,33 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
 	const selectedWallet = useStoreState(
 		(state) => state.selectedWallet,
-		(prev, next) => prev.selectedWallet === next.selectedWallet);
-	const setSelectedWallet = useStoreActions((actions) => actions.setSelectedWallet);
+		(prev, next) => prev.selectedWallet === next.selectedWallet,
+	);
+	const setSelectedWallet = useStoreActions(
+		(actions) => actions.setSelectedWallet,
+	);
 	const subWallets = useStoreState((state) => state.subWallets);
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
-	const subWalletTokensArray = useStoreState((state) => state.subWalletTokensArray);
-	const setSubWalletTokensArray = useStoreActions((actions) => actions.setSubWalletTokensArray);
+	const subWalletTokensArray = useStoreState(
+		(state) => state.subWalletTokensArray,
+	);
+	const setSubWalletTokensArray = useStoreActions(
+		(actions) => actions.setSubWalletTokensArray,
+	);
+	const [sortedTokens, setSortedTokens] = useState(tokens);
+
+	function sortTokens(tokens) {
+		const sortedTokens = tokens.sort((a, b) => {
+			return b.price * b.amount - a.price * a.amount;
+		});
+		setSortedTokens(sortedTokens);
+	}
+
+	useEffect(() => {
+		if (tokens) {
+			sortTokens(tokens);
+		}
+	}, [tokens]);
 
 	//chart stuff
 	const Line = ({ line }) => (
@@ -97,9 +118,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		let result = await getSubWalletsData(passcode);
 		setSubWallets(result);
 	}
-		
+
 	async function getOwnedTokens() {
-		let result = await getOwnedTokensData(subWallets, passcode, tokenMap)
+		let result = await getOwnedTokensData(subWallets, passcode, tokenMap);
 		setSubWalletTokensArray(result.tokensBySubWallet);
 		//deal with setAccount(newAccountArray)
 	}
@@ -123,38 +144,39 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			const totals = tokens?.map((item) => {
 				return item.amount * item.price;
 			});
-	
+
 			todayTotal = totals?.reduce((prev, current) => prev + current);
 			const yesterdayTotals = tokens?.map((item) => {
 				const change = item.percent_change_24h * 0.01;
 				let multiplier = 1 - change;
 				const total = item.amount * item.price;
 				const yesterday = total * multiplier;
-	
+
 				return yesterday;
 			});
-	
+
 			const yesterdayTotal = yesterdayTotals?.reduce(
 				(prev, current) => prev + current,
 			);
-	
-			let percentChange1 = ((todayTotal - yesterdayTotal) / todayTotal) * 100;
-			percentChangeFixed = percentChange1.toFixed(1);	
-		};
+
+			let percentChange1 =
+				((todayTotal - yesterdayTotal) / todayTotal) * 100;
+			percentChangeFixed = percentChange1.toFixed(1);
+		}
 		return {
 			totalBalance: normalizeNumber(todayTotal),
-			percentChange: percentChangeFixed
+			percentChange: percentChangeFixed,
 		};
-	};
+	}
 
 	useEffect(() => {
-		if (subWalletTokensArray) {			
+		if (subWalletTokensArray) {
 			if (subWalletTokensArray[selectedWallet]) {
 				setTokens(subWalletTokensArray[selectedWallet]);
 				setOwnedTokens(subWalletTokensArray[selectedWallet]);
 				setLoading(false);
-			};
-		};
+			}
+		}
 	}, [subWalletTokensArray, selectedWallet]);
 
 	useEffect(() => {
@@ -163,7 +185,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			getSubWallets();
 		}
 	}, []);
-	
+
 	useEffect(() => {
 		if (ownedTokens) {
 			let todayArray = [];
@@ -202,7 +224,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		if (tokenMap && subWallets) {
-			getOwnedTokens()
+			getOwnedTokens();
 		}
 	}, [tokenMap, subWallets]);
 
@@ -297,7 +319,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 									>
 										(
 										{shortenPublicKey(
-											subWallets[selectedWallet].publicKey.toString('hex'), 0, 8, -8
+											subWallets[
+												selectedWallet
+											].publicKey.toString('hex'),
+											0,
+											8,
+											-8,
 										)}
 										)
 									</Text>
@@ -314,7 +341,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						<TouchableOpacity
 							style={{ flexDirection: 'row' }}
 							onPress={() => {
-								setCopied(subWallets[selectedWallet].publicKey.toString('hex'));
+								setCopied(
+									subWallets[
+										selectedWallet
+									].publicKey.toString('hex'),
+								);
 								copyToClipboard(copied);
 							}}
 						>
@@ -421,9 +452,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 								...theme.fonts.Nunito_Sans.Header_L_Semibold,
 								marginRight: 4,
 							}}
-							
 						>
-						{populateDashboard().totalBalance}
+							{populateDashboard().totalBalance}
 						</Text>
 						{populateDashboard().percentChange > 0 ? (
 							<View
@@ -506,7 +536,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 					{tokens ? (
 						<FlatList
-							data={tokens}
+							data={sortedTokens}
 							renderItem={(token) => (
 								<TokenCard
 									token={token}
