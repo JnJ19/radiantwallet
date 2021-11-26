@@ -338,7 +338,7 @@ async function getOwnedTokensData(
 					symbol: otherDetails.symbol,
 					logo: otherDetails.logoURI,
 					extensions: otherDetails.extensions,
-					pairs,
+					pairs: pairs.pairs,
 					associatedTokenAddressHash,
 					associatedTokenAddress,
 				};
