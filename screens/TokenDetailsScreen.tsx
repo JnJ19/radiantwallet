@@ -139,7 +139,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		const routes = await jupiter.computeRoutes(
 			new PublicKey('So11111111111111111111111111111111111111112'),
 			new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
-			1_000_000_000,
+			1000000000,
 			1,
 		);
 
