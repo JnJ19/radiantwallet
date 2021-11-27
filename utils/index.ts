@@ -1163,21 +1163,6 @@ function getTokenPair(symbol: string) {
 		.catch((err) => console.log(err));
 }
 
-function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
-	const totalBalance = subWalletTokensArray?.map((item) => {
-		const result = item?.map((data) => {
-			return data.amount * data.price;
-		});
-		const unformattedBalance = result?.reduce(
-			(prev, current) => prev + current,
-		);
-		return normalizeNumber(unformattedBalance);
-	});
-	subWallets.map((item, index) => {
-		item['totalBalance'] = totalBalance[index];
-	});
-}
-
 export {
 	generateMnemonic,
 	mnemonicToSeed,
@@ -1195,6 +1180,5 @@ export {
 	getOwnedTokensData,
 	getAllTokensData,
 	settleFundsData,
-	summarySubWallet,
 	getSelectedWalletTokens,
 };

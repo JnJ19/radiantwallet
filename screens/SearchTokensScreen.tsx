@@ -8,9 +8,11 @@ import { SubPageHeader, LoadingCards } from '../components';
 import { theme } from '../core/theme';
 import TokenCard from '../components/TokenCard';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Colors from '../constants/Colors';
+import { SvgXml } from 'react-native-svg';
+import chartSVG from '../assets/icons/chart';
+<SvgXml xml={chartSVG} width="100%" height="125" />;
 
 type Props = {
 	navigation: Navigation;

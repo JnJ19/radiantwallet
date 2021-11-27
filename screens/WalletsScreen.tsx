@@ -28,7 +28,7 @@ import {
 	shortenPublicKey,
 	getSubWalletsData,
 	normalizeNumber,
-	summarySubWallet,
+	// summarySubWallet,
 } from '../utils';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -44,6 +44,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
 	const subWallets = useStoreState((state) => state.subWallets);
+	const [finalSubWallets, setFinalSubWallets] = useState([]);
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
 	console.warn('subWallets: ', subWallets);
 	const setSelectedWallet = useStoreActions(
@@ -63,11 +64,25 @@ const WalletsScreen = ({ navigation }: Props) => {
 
 	const handleSheetChanges = useCallback((index: number) => {}, []);
 
-	useEffect(() => {
-		if (subWallets && subWalletTokensArray) {
-			summarySubWallet(subWalletTokensArray, subWallets); //doesn't cause 'subWallets' to change because the array isn't changed. The object inside the array changes but this won't trigger an effect in Dashboard. Refer to: https://stackoverflow.com/questions/35922429/why-does-a-js-map-on-an-array-modify-the-original-array
-		}
-	}, [subWallets]);
+	function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
+		const totalBalance = subWalletTokensArray?.map((item) => {
+			const result = item?.map((data) => {
+				return data.amount * data.price;
+			});
+			const unformattedBalance = result?.reduce(
+				(prev, current) => prev + current,
+			);
+			return normalizeNumber(unformattedBalance);
+		});
+		const newSubWallets = subWallets.map((item, index) => {
+			return {
+				...item,
+				totalBalance: totalBalance[index],
+			};
+		});
+		console.log('newSubWallets: ', newSubWallets);
+		setFinalSubWallets(newSubWallets);
+	}
 
 	async function getFirstWallet() {
 		if (subWallets.length === 0) {
@@ -77,12 +92,20 @@ const WalletsScreen = ({ navigation }: Props) => {
 	}
 
 	useEffect(() => {
+		console.log('before');
+		if (subWallets && subWalletTokensArray) {
+			console.log('here');
+			summarySubWallet(subWalletTokensArray, subWallets);
+		}
+	}, [subWallets]);
+
+	useEffect(() => {
 		getFirstWallet();
 	}, []);
 
 	useEffect(() => {}, [subWallets]);
 
-	if (!subWallets && !subWalletTokensArray) {
+	if (finalSubWallets.length === 0) {
 		return <Text>Loading...</Text>;
 	}
 
@@ -130,7 +153,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<Text style={styles.cardTitle}>Add Subwallet</Text>
 				</TouchableOpacity> */}
 
-				{subWallets.map((subWallet, index) => {
+				{finalSubWallets.map((finalSubWallet, index) => {
 					return (
 						<TouchableOpacity
 							key={index}
@@ -160,7 +183,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 										}}
 									>
 										<Text style={styles.cardTitle}>
-											{subWallet.subWalletName}
+											{finalSubWallet.subWalletName}
 										</Text>
 										{activeSubWallet === index && (
 											<View
@@ -185,7 +208,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 										{/* <Text style={styles.subTitle}>400.02</Text> */}
 										<Text style={styles.address}>
 											{shortenPublicKey(
-												subWallet.publicKey,
+												finalSubWallet.publicKey,
 												0,
 												4,
 												-4,
@@ -202,7 +225,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 										marginBottom: 4,
 									}}
 								>
-									${subWallet.totalBalance}
+									${finalSubWallet.totalBalance}
 								</Text>
 							</View>
 						</TouchableOpacity>
