@@ -44,9 +44,14 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
 	const subWallets = useStoreState((state) => state.subWallets);
-	const [finalSubWallets, setFinalSubWallets] = useState([]);
+
+	const finalSubWallets = useStoreState((state) => state.finalSubWallets);
+	const setFinalSubWallets = useStoreActions(
+		(actions) => actions.setFinalSubWallets,
+	);
+	const [localSubWallets, setLocalSubWallets] = useState([]);
+
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
-	console.warn('subWallets: ', subWallets);
 	const setSelectedWallet = useStoreActions(
 		(actions) => actions.setSelectedWallet,
 	);
@@ -65,6 +70,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const handleSheetChanges = useCallback((index: number) => {}, []);
 
 	function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
+		console.log('hit');
 		const totalBalance = subWalletTokensArray?.map((item) => {
 			const result = item?.map((data) => {
 				return data.amount * data.price;
@@ -81,6 +87,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 			};
 		});
 		console.log('newSubWallets: ', newSubWallets);
+		setLocalSubWallets(newSubWallets);
 		setFinalSubWallets(newSubWallets);
 	}
 
@@ -93,11 +100,13 @@ const WalletsScreen = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		console.log('before');
+		console.log('subWallets: ', subWallets);
+		console.log('subWalletTokensArray: ', subWalletTokensArray);
 		if (subWallets && subWalletTokensArray) {
 			console.log('here');
 			summarySubWallet(subWalletTokensArray, subWallets);
 		}
-	}, [subWallets]);
+	}, [subWallets, subWalletTokensArray]);
 
 	useEffect(() => {
 		getFirstWallet();
@@ -105,7 +114,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 
 	useEffect(() => {}, [subWallets]);
 
-	if (finalSubWallets.length === 0) {
+	if (localSubWallets.length === 0) {
 		return <Text>Loading...</Text>;
 	}
 
@@ -120,11 +129,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<SubPageHeader>Wallets</SubPageHeader>
 					<TouchableOpacity
 						onPress={async () => {
-							// const passcodeKey = passcode + 'key';
-							// await SecureStore.deleteItemAsync(passcodeKey);
-							// await SecureStore.deleteItemAsync(passcode);
-							// await AsyncStorage.removeItem('hasAccount');
-							// DevSettings.reload();
 							bottomSheetModalRef.current?.present();
 						}}
 						style={{
@@ -153,7 +157,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<Text style={styles.cardTitle}>Add Subwallet</Text>
 				</TouchableOpacity> */}
 
-				{finalSubWallets.map((finalSubWallet, index) => {
+				{localSubWallets.map((finalSubWallet, index) => {
 					return (
 						<TouchableOpacity
 							key={index}

@@ -1,15 +1,5 @@
-import React, {
-	memo,
-	useState,
-	useMemo,
-	useRef,
-	useCallback,
-} from 'react';
-import {
-	Text,
-	TouchableOpacity,
-	StyleSheet,
-} from 'react-native';
+import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Background, Button, SubPageHeader, RedButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image } from 'react-native';
@@ -24,32 +14,37 @@ type Props = {
 
 const WalletDetailsScreen = ({ navigation }: Props) => {
 	const activeSubWallet = useStoreState((state) => state.activeSubWallet);
-	const setActiveSubWallet = useStoreActions((actions) => actions.setActiveSubWallet);
+	const setActiveSubWallet = useStoreActions(
+		(actions) => actions.setActiveSubWallet,
+	);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
-	const subWallets = useStoreState((state) => state.subWallets);
-	const [copied, setCopied] = useState(subWallets[selectedWallet].publicKey);
+	const finalSubWallets = useStoreState((state) => state.finalSubWallets);
+	const [copied, setCopied] = useState(
+		finalSubWallets[selectedWallet].publicKey,
+	);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const snapPoints = useMemo(() => [0, '40%'], []);
 	const handlePresentModalPress = useCallback(() => {
 		bottomSheetModalRef.current?.present();
 	}, []);
 
-	const handleSheetChanges = useCallback((index: number) => {
-	}, []);
-	
-	if (subWallets.length === 0) {
+	const handleSheetChanges = useCallback((index: number) => {}, []);
+
+	if (finalSubWallets.length === 0) {
 		return <Text>Loading...</Text>;
 	}
 
 	function updateActiveWallet() {
 		setActiveSubWallet(selectedWallet);
-	};
-	
+	}
+
 	return (
 		<Background>
 			<View>
 				<View style={styles.screenTitle}>
-					<SubPageHeader backButton>{subWallets[selectedWallet].subWalletName}</SubPageHeader>
+					<SubPageHeader backButton>
+						{finalSubWallets[selectedWallet].subWalletName}
+					</SubPageHeader>
 					{selectedWallet === activeSubWallet && (
 						<View
 							style={{
@@ -57,15 +52,15 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 								marginLeft: 4,
 							}}
 						>
-						<Text style={styles.active}>
-							Active Wallet
-						</Text>
+							<Text style={styles.active}>Active Wallet</Text>
 						</View>
 					)}
 				</View>
 				<View style={styles.balanceContainer}>
 					<Text style={styles.totalBalanceTitle}>Total Balance</Text>
-					<Text style={styles.WalletBalance}>${subWallets[selectedWallet].totalBalance}</Text>
+					<Text style={styles.WalletBalance}>
+						${finalSubWallets[selectedWallet].totalBalance}
+					</Text>
 				</View>
 				<TouchableOpacity
 					style={styles.pressableContainer}
@@ -88,7 +83,10 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 							</View>
 							<View style={styles.cardSubTitleContainer}>
 								<Text style={styles.cardSubTitle}>
-									{subWallets[selectedWallet].subWalletName}
+									{
+										finalSubWallets[selectedWallet]
+											.subWalletName
+									}
 								</Text>
 							</View>
 						</View>
@@ -101,7 +99,7 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 				<TouchableOpacity
 					style={styles.pressableContainer}
 					onPress={() => {
-						setCopied(subWallets[selectedWallet].publicKey);
+						setCopied(finalSubWallets[selectedWallet].publicKey);
 						copyToClipboard(copied);
 						//setLocalSelectedWallet(index);
 						//setSelectedWallet(index);
@@ -120,7 +118,13 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 							</View>
 							<View style={styles.cardSubTitleContainer}>
 								<Text style={styles.cardSubTitle}>
-									{shortenPublicKey(subWallets[selectedWallet].publicKey, 0, 8, -8)}
+									{shortenPublicKey(
+										finalSubWallets[selectedWallet]
+											.publicKey,
+										0,
+										8,
+										-8,
+									)}
 								</Text>
 							</View>
 						</View>
@@ -131,39 +135,42 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 					/>
 				</TouchableOpacity>
 			</View>
-			
-				{selectedWallet === activeSubWallet ? (
-					<View>
-						<View style={styles.removeWalletButton}>
-							<RedButton
-								mode="outlined"
-								onPress={() => bottomSheetModalRef.current?.present()}
-							>
-								Remove Wallet
-							</RedButton>
-						</View>
+
+			{selectedWallet === activeSubWallet ? (
+				<View>
+					<View style={styles.removeWalletButton}>
+						<RedButton
+							mode="outlined"
+							onPress={() =>
+								bottomSheetModalRef.current?.present()
+							}
+						>
+							Remove Wallet
+						</RedButton>
 					</View>
-				):(
-					<View>
-						<View style={styles.removeWalletButton}>
-							<RedButton
-								mode="outlined"
-								onPress={() => bottomSheetModalRef.current?.present()}
-							>
-								Remove Wallet
-							</RedButton>
-						</View>
-						<View style={styles.setAsActiveButton}>
-							<Button 
-								mode="contained"
-								onPress={() => updateActiveWallet()}
-							>
-								Set as Active
-								
-							</Button>
-						</View>
+				</View>
+			) : (
+				<View>
+					<View style={styles.removeWalletButton}>
+						<RedButton
+							mode="outlined"
+							onPress={() =>
+								bottomSheetModalRef.current?.present()
+							}
+						>
+							Remove Wallet
+						</RedButton>
 					</View>
-				)}
+					<View style={styles.setAsActiveButton}>
+						<Button
+							mode="contained"
+							onPress={() => updateActiveWallet()}
+						>
+							Set as Active
+						</Button>
+					</View>
+				</View>
+			)}
 			<BottomSheetModal
 				handleStyle
 				ref={bottomSheetModalRef}
