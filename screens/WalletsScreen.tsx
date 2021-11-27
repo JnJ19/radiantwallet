@@ -22,7 +22,14 @@ import {
 	BottomSheetModal,
 	BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import { getAccountFromSeed, DERIVATION_PATH, shortenPublicKey, getSubWalletsData, normalizeNumber, summarySubWallet } from '../utils';
+import {
+	getAccountFromSeed,
+	DERIVATION_PATH,
+	shortenPublicKey,
+	getSubWalletsData,
+	normalizeNumber,
+	summarySubWallet,
+} from '../utils';
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -44,7 +51,9 @@ const WalletsScreen = ({ navigation }: Props) => {
 	);
 	const [localSelectedWallet, setLocalSelectedWallet] =
 		useState(selectedWallet);
-	const subWalletTokensArray = useStoreState((state) => state.subWalletTokensArray);
+	const subWalletTokensArray = useStoreState(
+		(state) => state.subWalletTokensArray,
+	);
 
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const snapPoints = useMemo(() => [0, '48%'], []);
@@ -52,17 +61,13 @@ const WalletsScreen = ({ navigation }: Props) => {
 		bottomSheetModalRef.current?.present();
 	}, []);
 
-	const handleSheetChanges = useCallback((index: number) => {
-	}, []);
-	
-	summarySubWallet(subWalletTokensArray, subWallets); //doesn't cause 'subWallets' to change because the array isn't changed. The object inside the array changes but this won't trigger an effect in Dashboard. Refer to: https://stackoverflow.com/questions/35922429/why-does-a-js-map-on-an-array-modify-the-original-array
+	const handleSheetChanges = useCallback((index: number) => {}, []);
 
 	useEffect(() => {
-		//if (createNewWallet) {getSubWalletsData(passcode)};
-		//getSubWalletsData(passcode);
-		
-		
-	}, []);//createNewWallet
+		if (subWallets && subWalletTokensArray) {
+			summarySubWallet(subWalletTokensArray, subWallets); //doesn't cause 'subWallets' to change because the array isn't changed. The object inside the array changes but this won't trigger an effect in Dashboard. Refer to: https://stackoverflow.com/questions/35922429/why-does-a-js-map-on-an-array-modify-the-original-array
+		}
+	}, [subWallets]);
 
 	async function getFirstWallet() {
 		if (subWallets.length === 0) {
@@ -76,6 +81,10 @@ const WalletsScreen = ({ navigation }: Props) => {
 	}, []);
 
 	useEffect(() => {}, [subWallets]);
+
+	if (!subWallets && !subWalletTokensArray) {
+		return <Text>Loading...</Text>;
+	}
 
 	if (subWallets.length === 0) {
 		return <Text>Loading...</Text>;
@@ -109,7 +118,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 						/>
 					</TouchableOpacity>
 				</View>
-				<TouchableOpacity
+				{/* <TouchableOpacity
 					style={styles.pressableContainer}
 					//onPress={() => navigation.navigate('Onboarding')}
 				>
@@ -119,7 +128,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 					/>
 
 					<Text style={styles.cardTitle}>Add Subwallet</Text>
-				</TouchableOpacity>
+				</TouchableOpacity> */}
 
 				{subWallets.map((subWallet, index) => {
 					return (
@@ -133,7 +142,10 @@ const WalletsScreen = ({ navigation }: Props) => {
 							}}
 						>
 							<View
-								style={{ flexDirection: 'row', alignItems: 'center' }}
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+								}}
 							>
 								<Image
 									source={require('../assets/icons/wallet_gray.png')}
@@ -162,8 +174,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 												</Text>
 											</View>
 										)}
-										<View >
-										</View>
+										<View></View>
 									</View>
 									<View
 										style={{
@@ -173,14 +184,18 @@ const WalletsScreen = ({ navigation }: Props) => {
 									>
 										{/* <Text style={styles.subTitle}>400.02</Text> */}
 										<Text style={styles.address}>
-											{shortenPublicKey(subWallet.publicKey, 0, 4, -4)}
+											{shortenPublicKey(
+												subWallet.publicKey,
+												0,
+												4,
+												-4,
+											)}
 										</Text>
 									</View>
 								</View>
 							</View>
-							<View
-							> 
-								<Text 
+							<View>
+								<Text
 									style={{
 										...theme.fonts.Nunito_Sans.Body_M_Bold,
 										color: '#1F1F1F',
