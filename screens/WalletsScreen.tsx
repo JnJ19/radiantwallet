@@ -14,7 +14,13 @@ import {
 	View,
 	Image,
 } from 'react-native';
-import { Background, SubPageHeader, Button, RedButton } from '../components';
+import {
+	Background,
+	SubPageHeader,
+	Button,
+	RedButton,
+	LoadingCards,
+} from '../components';
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
@@ -115,7 +121,128 @@ const WalletsScreen = ({ navigation }: Props) => {
 	useEffect(() => {}, [subWallets]);
 
 	if (localSubWallets.length === 0) {
-		return <Text>Loading...</Text>;
+		return (
+			<Background>
+				<View>
+					<View style={styles.screenTitle}>
+						<SubPageHeader>Wallets</SubPageHeader>
+						<TouchableOpacity
+							onPress={async () => {
+								bottomSheetModalRef.current?.present();
+							}}
+							style={{
+								borderWidth: 1,
+								borderColor: theme.colors.border,
+								borderRadius: 18,
+								padding: 8,
+								height: 40,
+							}}
+						>
+							<Image
+								source={require('../assets/icons/logout.png')}
+								style={{ width: 24, height: 24 }}
+							/>
+						</TouchableOpacity>
+					</View>
+					<LoadingCards />
+				</View>
+				<BottomSheetModal
+					ref={bottomSheetModalRef}
+					index={1}
+					snapPoints={snapPoints}
+					onChange={handleSheetChanges}
+					style={{
+						// margin: 16,
+						shadowColor: '#000',
+						shadowOffset: {
+							width: 0,
+							height: 6,
+						},
+						shadowOpacity: 0.37,
+						shadowRadius: 7.49,
+						elevation: 12,
+					}}
+				>
+					<View
+						style={{
+							justifyContent: 'space-between',
+							margin: 16,
+						}}
+					>
+						<View
+							style={{
+								marginBottom: 24,
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+							}}
+						>
+							<Text
+								style={
+									theme.fonts.Azeret_Mono.Header_M_SemiBold
+								}
+							>
+								Logout of Main Wallet
+							</Text>
+							<TouchableOpacity
+								onPress={() =>
+									bottomSheetModalRef.current?.dismiss()
+								}
+							>
+								<Image
+									source={require('../assets/icons/Close.png')}
+									style={styles.iconsLeft}
+								/>
+							</TouchableOpacity>
+						</View>
+						<Text
+							style={{
+								...theme.fonts.Nunito_Sans.Body_M_SemiBold,
+								marginBottom: 24,
+							}}
+						>
+							Please ensure that you have access to your secret
+							phrase before logging out.
+						</Text>
+						<Text
+							style={{
+								...theme.fonts.Nunito_Sans.Body_M_SemiBold,
+								marginBottom: 24,
+							}}
+						>
+							Radiant does not store it and has no ability to
+							access it for you.
+						</Text>
+						<View style={styles.removeWalletButton}>
+							<RedButton
+								mode="contained"
+								onPress={async () => {
+									const passcodeKey = passcode + 'key';
+									await SecureStore.deleteItemAsync(
+										passcodeKey,
+									);
+									await SecureStore.deleteItemAsync(passcode);
+									await AsyncStorage.removeItem('hasAccount');
+									DevSettings.reload();
+									bottomSheetModalRef.current?.dismiss();
+								}}
+							>
+								Yes, Logout of Wallet
+							</RedButton>
+						</View>
+						<View style={styles.setAsActiveButton}>
+							<Button
+								onPress={() =>
+									bottomSheetModalRef.current?.dismiss()
+								}
+							>
+								No, Stay Logged In
+							</Button>
+						</View>
+					</View>
+				</BottomSheetModal>
+			</Background>
+		);
 	}
 
 	if (subWallets.length === 0) {
