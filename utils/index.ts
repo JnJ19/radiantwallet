@@ -150,7 +150,7 @@ async function getSubWalletsData(passcode: string) {
 		const newAccount = await getSolanaAccount(i, passcode);
 
 		const { publicKey } = newAccount;
-		const subWalletName = 'subWallet ' + (1 + i); //this needs to get the name from user input or a default name
+		const subWalletName = 'SubWallet ' + (1 + i); //this needs to get the name from user input or a default name
 		const programId = new PublicKey(
 			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 		);
