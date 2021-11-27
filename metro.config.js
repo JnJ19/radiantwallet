@@ -37,11 +37,12 @@ module.exports = async () => {
 			sourceExts: [...sourceExts, 'svg', 'jsx', 'js', 'ts', 'tsx', 'cjs'],
 			extraNodeModules: require('node-libs-expo'),
 			assetExts: [...assetExts.filter((ext) => ext !== 'svg')],
-			transformer: {
-				babelTransformerPath: require.resolve(
-					'react-native-svg-transformer',
-				),
-			},
+			assetPlugins: ['expo-asset/tools/hashAssetFiles'],
+		},
+		transformer: {
+			babelTransformerPath: require.resolve(
+				'react-native-svg-transformer',
+			),
 		},
 	};
 };
