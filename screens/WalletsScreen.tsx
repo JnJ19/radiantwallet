@@ -24,19 +24,8 @@ import {
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-import {
-	BottomSheetModal,
-	BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import {
-	getAccountFromSeed,
-	DERIVATION_PATH,
-	shortenPublicKey,
-	getSubWalletsData,
-	normalizeNumber,
-	// summarySubWallet,
-} from '../utils';
-import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { shortenPublicKey, normalizeNumber } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Storage from '../storage';
