@@ -23,6 +23,7 @@ import {
 	getOwnedTokensData,
 	getAllTokensData,
 	settleFundsData,
+	getSelectedWalletTokens,
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
@@ -119,6 +120,45 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setSubWallets(result);
 	}
 
+	async function getSelectedWalletOwnedTokens() {
+		const tokens = await getSelectedWalletTokens(
+			selectedWallet,
+			passcode,
+			tokenMap,
+		);
+		setTokens(tokens);
+		let todayArray = [];
+		let d30Array = [];
+		let d60Array = [];
+		let d90Array = [];
+		tokens.forEach((token) => {
+			todayArray.push(token.price * token.amount);
+			d30Array.push(token.price_30d * token.amount);
+			d60Array.push(token.price_60d * token.amount);
+			d90Array.push(token.price_90d * token.amount);
+		});
+		let sumToday = 0;
+		for (let i = 0; i < todayArray.length; i++) {
+			sumToday += todayArray[i];
+		}
+
+		let sum30 = 0;
+		for (let i = 0; i < d30Array.length; i++) {
+			sum30 += d30Array[i];
+		}
+		let sum60 = 0;
+		for (let i = 0; i < d60Array.length; i++) {
+			sum60 += d60Array[i];
+		}
+		let sum90 = 0;
+		for (let i = 0; i < d90Array.length; i++) {
+			sum90 += d90Array[i];
+		}
+
+		const today = setChartData([sum90, sum60, sum30, sumToday]);
+		setLoading(false);
+	}
+
 	async function getOwnedTokens() {
 		let result = await getOwnedTokensData(subWallets, passcode, tokenMap);
 		setSubWalletTokensArray(result.tokensBySubWallet);
@@ -126,10 +166,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function getAllTokens() {
-		console.log('here');
 		let result = await getAllTokensData(tokenMapSymbols);
 		setAllTokens(result);
-		console.log('getAllTokens', result);
 	}
 
 	// async function settleFunds() {
@@ -172,61 +210,28 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	useEffect(() => {
 		if (subWalletTokensArray) {
 			if (subWalletTokensArray[selectedWallet]) {
-				setTokens(subWalletTokensArray[selectedWallet]);
 				setOwnedTokens(subWalletTokensArray[selectedWallet]);
-				setLoading(false);
 			}
 		}
 	}, [subWalletTokensArray, selectedWallet]);
 
 	useEffect(() => {
-		getAllTokens();
+		if (tokens) {
+			getAllTokens();
+		}
 		if (!subWallets) {
 			getSubWallets();
 		}
-	}, []);
+	}, [tokens]);
 
 	useEffect(() => {
-		if (ownedTokens) {
-			let todayArray = [];
-			let d30Array = [];
-			let d60Array = [];
-			let d90Array = [];
-			ownedTokens.forEach((token) => {
-				todayArray.push(token.price * token.amount);
-				d30Array.push(token.price_30d * token.amount);
-				d60Array.push(token.price_60d * token.amount);
-				d90Array.push(token.price_90d * token.amount);
-			});
-			let sumToday = 0;
-			for (let i = 0; i < todayArray.length; i++) {
-				sumToday += todayArray[i];
-			}
-
-			let sum30 = 0;
-			for (let i = 0; i < d30Array.length; i++) {
-				sum30 += d30Array[i];
-			}
-			let sum60 = 0;
-			for (let i = 0; i < d60Array.length; i++) {
-				sum60 += d60Array[i];
-			}
-			let sum90 = 0;
-			for (let i = 0; i < d90Array.length; i++) {
-				sum90 += d90Array[i];
-			}
-
-			const today = setChartData([sum90, sum60, sum30, sumToday]);
-
-			setModalVisible(false);
-		}
-	}, [ownedTokens]);
-
-	useEffect(() => {
-		if (tokenMap && subWallets) {
+		if (tokenMap && subWallets && tokens) {
 			getOwnedTokens();
 		}
-	}, [tokenMap, subWallets]);
+		if (tokenMap && !tokens) {
+			getSelectedWalletOwnedTokens();
+		}
+	}, [tokenMap, subWallets, tokens]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
@@ -256,7 +261,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 				}, new Map()),
 			);
 		});
-	}, [setTokenMapSymbols]);
+	}, []);
 
 	if (!loading && tokens.length === 0 && account) {
 		return (
