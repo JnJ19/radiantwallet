@@ -1,37 +1,37 @@
 {
-  "expo": {
-    "name": "wallet",
-    "slug": "wallet",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash_radiant.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "backgroundColor": "#ffffff",
-      "bundleIdentifier": "com.moviendome.wallet"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.moviendome.wallet"
-    },
-    "web": {
-      "favicon": "./assets/images/favicon.png"
-    }
-  }
+	"expo": {
+		"name": "wallet",
+		"slug": "wallet",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"scheme": "myapp",
+		"userInterfaceStyle": "automatic",
+		"splash": {
+			"image": "./assets/images/splash_radiant.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"updates": {
+			"fallbackToCacheTimeout": 0
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true,
+			"backgroundColor": "#ffffff",
+			"bundleIdentifier": "com.radiant.wallet",
+			"buildNumber": "1.0.0"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/images/adaptive-icon.png",
+				"backgroundColor": "#ffffff"
+			},
+			"package": "com.radiant.wallet",
+			"versionCode": 1
+		},
+		"web": {
+			"favicon": "./assets/images/favicon.png"
+		}
+	}
 }
