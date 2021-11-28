@@ -1,7 +1,7 @@
 {
 	"expo": {
-		"name": "wallet",
-		"slug": "wallet",
+		"name": "wallet2",
+		"slug": "wallet2",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
 		"ios": {
 			"supportsTablet": true,
 			"backgroundColor": "#ffffff",
-			"bundleIdentifier": "com.radiant.wallet",
+			"bundleIdentifier": "com.radiant.wallet2",
 			"buildNumber": "1.0.0"
 		},
 		"android": {
@@ -27,7 +27,7 @@
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
 			},
-			"package": "com.radiant.wallet",
+			"package": "com.radiant.wallet2",
 			"versionCode": 1
 		},
 		"web": {
