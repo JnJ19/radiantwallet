@@ -201,14 +201,24 @@ async function getOwnedTokensData(
 		const ownedTokensArray = [];
 		let solToken;
 		if (solBalance > 0) {
+			// const priceData = await fetch(
+			// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
+			// 	{
+			// 		headers: {
+			// 			'X-CMC_PRO_API_KEY': apiKey,
+			// 			Accept: 'application/json',
+			// 			'Accept-Encoding': 'deflate, gzip',
+			// 		},
+			// 	},
+			// )
 			const priceData = await fetch(
-				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
+				`https://radiant-wallet-server.travissehansen.repl.co/api`,
 				{
-					headers: {
-						'X-CMC_PRO_API_KEY': apiKey,
-						Accept: 'application/json',
-						'Accept-Encoding': 'deflate, gzip',
-					},
+					method: 'POST',
+					body: JSON.stringify({
+						url: '/quotes/latest?symbol=sol',
+					}),
+					headers: { 'Content-type': 'application/json' },
 				},
 			)
 				.then((response) => {
@@ -329,14 +339,24 @@ async function getOwnedTokensData(
 		}
 		const ownedSymbolsList = ownedTokensSymbols.join();
 
+		// const aboutData = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': apiKey,
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
 		const aboutData = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
+			`https://radiant-wallet-server.travissehansen.repl.co/api`,
 			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
-				},
+				method: 'POST',
+				body: JSON.stringify({
+					url: `/info?symbol=${ownedSymbolsList}`,
+				}),
+				headers: { 'Content-type': 'application/json' },
 			},
 		)
 			.then((response) => {
@@ -372,14 +392,24 @@ async function getOwnedTokensData(
 			combinedOwnedTokensArray.push(newTokenObject);
 		}
 
+		// const priceData = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': apiKey,
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
 		const priceData = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
+			`https://radiant-wallet-server.travissehansen.repl.co/api`,
 			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
-				},
+				method: 'POST',
+				body: JSON.stringify({
+					url: `/quotes/latest?symbol=${ownedSymbolsList}`,
+				}),
+				headers: { 'Content-type': 'application/json' },
 			},
 		)
 			.then((response) => {
@@ -819,26 +849,26 @@ async function getAllTokensData(tokenMapSymbols: any) {
 	const symbolsList = await getCleanTokenList();
 
 	const combinedSymbolList = symbolsList.join();
-	// const coinMarketCapTokens = await fetch(
-	// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
-	// 	{
-	// 		method: 'POST',
-	// 		body: JSON.stringify({
-	// 			url: `/info?symbol=${combinedSymbolList}`,
-	// 		}),
-	// 		headers: { 'Content-type': 'application/json' },
-	// 	},
-	// )
 	const coinMarketCapTokens = await fetch(
-		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+		`https://radiant-wallet-server.travissehansen.repl.co/api`,
 		{
-			headers: {
-				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
-				Accept: 'application/json',
-				'Accept-Encoding': 'deflate, gzip',
-			},
+			method: 'POST',
+			body: JSON.stringify({
+				url: `/info?symbol=${combinedSymbolList}`,
+			}),
+			headers: { 'Content-type': 'application/json' },
 		},
 	)
+		// const coinMarketCapTokens = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
 		.then((response) => response.json())
 		.then((data) => {
 			return Object.values(data.data);
@@ -892,26 +922,26 @@ async function getAllTokensData(tokenMapSymbols: any) {
 	// console.log('combeind array', combinedArray);
 
 	//get and combine prices now too
-	// const coinMarketCapPrices = await fetch(
-	// 	`https://radiant-wallet-server.travissehansen.repl.co/api`,
-	// 	{
-	// 		method: 'POST',
-	// 		body: JSON.stringify({
-	// 			url: `/quotes/latest?symbol=${combinedSymbolList}`,
-	// 		}),
-	// 		headers: { 'Content-type': 'application/json' },
-	// 	},
-	// )
 	const coinMarketCapPrices = await fetch(
-		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${combinedSymbolList}`,
+		`https://radiant-wallet-server.travissehansen.repl.co/api`,
 		{
-			headers: {
-				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
-				Accept: 'application/json',
-				'Accept-Encoding': 'deflate, gzip',
-			},
+			method: 'POST',
+			body: JSON.stringify({
+				url: `/quotes/latest?symbol=${combinedSymbolList}`,
+			}),
+			headers: { 'Content-type': 'application/json' },
 		},
 	)
+		// const coinMarketCapPrices = await fetch(
+		// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${combinedSymbolList}`,
+		// 	{
+		// 		headers: {
+		// 			'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+		// 			Accept: 'application/json',
+		// 			'Accept-Encoding': 'deflate, gzip',
+		// 		},
+		// 	},
+		// )
 		.then((response) => response.json())
 		.then((data) => {
 			return Object.values(data.data);
