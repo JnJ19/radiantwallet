@@ -27,6 +27,10 @@ const { getDefaultConfig } = require('@expo/metro-config');
 // 		},
 // 	},
 // };
+
+const nodeLibs = require('node-libs-expo');
+console.warn('nodeLibsss: ', nodeLibs);
+
 module.exports = async () => {
 	const {
 		resolver: { sourceExts, assetExts },
@@ -35,7 +39,10 @@ module.exports = async () => {
 	return {
 		resolver: {
 			sourceExts: [...sourceExts, 'svg', 'jsx', 'js', 'ts', 'tsx', 'cjs'],
-			extraNodeModules: require('node-libs-expo'),
+			extraNodeModules: {
+				...nodeLibs,
+				stream: require.resolve('readable-stream'),
+			},
 			assetExts: [...assetExts.filter((ext) => ext !== 'svg')],
 			assetPlugins: ['expo-asset/tools/hashAssetFiles'],
 		},

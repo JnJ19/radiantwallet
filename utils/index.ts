@@ -145,6 +145,7 @@ async function getSubWalletsData(passcode: string) {
 	const subWallets1 = [];
 	let iterate = true;
 	let i = 0;
+	console.warn('hello');
 
 	while (iterate === true) {
 		const newAccount = await getSolanaAccount(i, passcode);
@@ -156,7 +157,7 @@ async function getSubWalletsData(passcode: string) {
 		);
 		const ownedTokens = await connection
 			.getTokenAccountsByOwner(publicKey, { programId })
-			.catch((err) => console.log('errorr', err));
+			.catch((err) => console.warn('errorr', err));
 		const result2 = await connection.getParsedAccountInfo(publicKey);
 
 		if (!result2.value) {
@@ -178,13 +179,15 @@ async function getOwnedTokensData(
 	passcode: string,
 	tokenMap: any,
 ) {
+	console.warn('helloooo');
 	const tokenPairs = await getTokenPairs();
+	console.warn('tokenPairs: ', tokenPairs);
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
 	const tokensBySubWallet = [];
 	const newAccountArray = [];
 	for (let i = 0; i < subWallets.length; i++) {
-		console.log('loop run', i);
+		console.warn('loop run', i);
 
 		const newAccount = await getSolanaAccount(i, passcode);
 
@@ -195,7 +198,7 @@ async function getOwnedTokensData(
 			.catch((err) => console.log('errorr', err));
 
 		const solBalance = await connection.getBalance(publicKey);
-		console.log('solBalance: ', solBalance);
+		console.warn('solBalance: ', solBalance);
 		const realSolBalance = solBalance * 0.000000001;
 
 		const ownedTokensArray = [];
@@ -251,7 +254,7 @@ async function getOwnedTokensData(
 						market_cap_dominance,
 					};
 				})
-				.catch((error) => console.log('hello error', error));
+				.catch((error) => console.warn('hello error', error));
 
 			const {
 				price,
@@ -501,15 +504,34 @@ async function getOwnedTokensData(
 	};
 }
 
+// const accountFromSeed = (
+// 	seed: string,
+// 	walletIndex: number,
+// 	derivationPath: string,
+// 	accountIndex: 0,
+// ) => {
+// 	const derivedSeed = deriveSeed(
+// 		seed,
+// 		walletIndex,
+// 		derivationPath,
+// 		accountIndex,
+// 	);
+// 	const keyPair = nacl.sign.keyPair.fromSeed(derivedSeed);
+
+// 	const acc = new solanaWeb3.Keypair(keyPair);
+// 	return acc;
+// };
+
 async function getSolanaAccount(selectedWallet: number, passcode: string) {
 	let mnemonic = await SecureStore.getItemAsync(passcode);
 	const bip39 = await import('bip39');
 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 
-	const newAccount = getAccountFromSeed(
+	const newAccount = accountFromSeed(
 		seed,
 		selectedWallet,
 		DERIVATION_PATH.bip44Change,
+		0,
 	);
 
 	return newAccount;
@@ -521,7 +543,6 @@ async function getSelectedWalletTokens(
 	tokenMap: any,
 ) {
 	const newAccount = await getSolanaAccount(selectedWallet, passcode);
-
 	const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
@@ -533,6 +554,7 @@ async function getSelectedWalletTokens(
 
 	const solBalance = await connection.getBalance(publicKey);
 	const realSolBalance = solBalance * 0.000000001;
+	console.log('realSolBalance: ', realSolBalance);
 
 	const ownedTokensArray = [];
 	let solToken;
@@ -636,11 +658,13 @@ async function getSelectedWalletTokens(
 			}
 
 			const mintKey = new PublicKey(mint);
+			console.log('mintKey: ', mintKey);
 
 			const associatedTokenAddress = await findAssociatedTokenAddress(
 				publicKey,
 				mintKey,
-			);
+			).catch((err) => console.log('errorr', err));
+			console.log('associatedTokenAddress: ', associatedTokenAddress);
 
 			const associatedTokenAddressHash =
 				associatedTokenAddress.toString('hex');
@@ -874,7 +898,7 @@ async function getAllTokensData(tokenMapSymbols: any) {
 			return Object.values(data.data);
 		});
 	//combine token pairs and coinmarketcap data
-	console.log('inside getAllTokensData', coinMarketCapTokens);
+	console.warn('inside getAllTokensData', coinMarketCapTokens);
 
 	const combinedArray = [];
 	for (let i = 0; i < coinMarketCapTokens.length; i++) {
@@ -987,7 +1011,7 @@ async function getAllTokensData(tokenMapSymbols: any) {
 		};
 		combinedArrayWithPrices.push(newObject);
 	}
-	console.log('combineedArray: ', combinedArrayWithPrices);
+	console.warn('combineedArray: ', combinedArrayWithPrices);
 	return combinedArrayWithPrices;
 
 	//now add market address
@@ -1138,7 +1162,7 @@ function getCleanTokenList() {
 			}
 			return cleanArray;
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => console.warn(err));
 }
 
 function getTokenPair(symbol: string) {
