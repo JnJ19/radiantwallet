@@ -21,6 +21,7 @@ import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
 import { normalizeNumber } from '../utils';
+import * as Haptics from 'expo-haptics';
 
 type Props = {
 	navigation: Navigation;
@@ -102,6 +103,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			.then((response) => {
 				console.log('response hit');
 				console.log(response);
+				Haptics.notificationAsync(
+					Haptics.NotificationFeedbackType.Success,
+				);
 				setModalVisible(false);
 				navigation.navigate('Trade Success', {
 					tradeAmount,
@@ -327,6 +331,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			<View style={{ marginBottom: 40 }}>
 				<Button
 					onPress={() => {
+						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						setModalVisible(true);
 						submitTrade();
 					}}

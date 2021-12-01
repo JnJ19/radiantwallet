@@ -10,7 +10,7 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-// const addCommas = new Intl.NumberFormat('en-US');
+import * as Haptics from 'expo-haptics';
 
 type Props = {
 	navigation: Navigation;
@@ -30,6 +30,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	});
 
 	function addNumber(numberString: string) {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (tradeAmount === '0') {
 			const replaceZero = tradeAmount.slice(0, -1);
 			const newAmount = replaceZero.concat(numberString);
@@ -41,6 +42,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	}
 
 	function removeNumber() {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (tradeAmount.length === 1) {
 			setTradeAmount('0');
 		} else {
@@ -137,6 +139,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				<TouchableOpacity
 					style={styles.swapContainer}
 					onPress={() => {
+						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						const fromToken2 = pair.from;
 						let toToken2 = pair.to;
 						const match = ownedTokens.find(
@@ -271,12 +274,13 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			</View>
 			<View style={{ marginBottom: 40 }}>
 				<Button
-					onPress={() =>
+					onPress={() => {
+						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						navigation.navigate('Trade Preview', {
 							tradeAmount,
 							pair,
-						})
-					}
+						});
+					}}
 				>
 					Review Trade
 				</Button>

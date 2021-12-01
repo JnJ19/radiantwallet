@@ -17,6 +17,7 @@ const {
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 
 type Props = {
 	navigation: Navigation;
@@ -35,11 +36,15 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 			updatePasscode(code);
 			const mnemonic = await SecureStore.getItemAsync(code);
 			if (mnemonic) {
+				Haptics.notificationAsync(
+					Haptics.NotificationFeedbackType.Success,
+				);
 				navigation.navigate('Main');
 			} else {
 				navigation.navigate('Onboarding');
 			}
 		} else {
+			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 			setError(true);
 			setCode('');
 		}
@@ -69,6 +74,7 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	}, [code]);
 
 	function addNumber(numberString: string) {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (code.length < 4) {
 			if (code === '0') {
 				const replaceZero = code.slice(0, -1);
@@ -86,6 +92,7 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	}, []);
 
 	function removeNumber() {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (code.length === 1) {
 			setCode('');
 		} else {

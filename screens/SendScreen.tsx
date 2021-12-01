@@ -37,6 +37,7 @@ var bip39 = require('bip39');
 import * as web3 from '@solana/web3.js';
 import * as splToken from '@solana/spl-token';
 import * as spl from 'easy-spl';
+import * as Haptics from 'expo-haptics';
 
 type Props = {
 	navigation: Navigation;
@@ -123,6 +124,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 
 		if (result) {
 			setModalVisible(false);
+			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 			navigation.navigate('Send Success', {
 				toWallet: toWallet.toString('hex'),
 				tradeAmount,
@@ -258,6 +260,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 	}
 
 	function addNumber(numberString: string) {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (tradeAmount === '0') {
 			const replaceZero = tradeAmount.slice(0, -1);
 			const newAmount = replaceZero.concat(numberString);
@@ -269,6 +272,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 	}
 
 	function removeNumber() {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (tradeAmount.length === 1) {
 			setTradeAmount('0');
 		} else {
@@ -413,6 +417,9 @@ const SendScreen = ({ navigation, route }: Props) => {
 				<Button
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
+							Haptics.impactAsync(
+								Haptics.ImpactFeedbackStyle.Medium,
+							);
 							setModalVisible(true);
 							transferStuff();
 						}
