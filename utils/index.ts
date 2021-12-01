@@ -179,6 +179,7 @@ async function getOwnedTokensData(
 	passcode: string,
 	tokenMap: any,
 ) {
+	console.log('get owned tokens');
 	const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
@@ -199,24 +200,14 @@ async function getOwnedTokensData(
 		const ownedTokensArray = [];
 		let solToken;
 		if (solBalance > 0) {
-			// const priceData = await fetch(
-			// 	`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
-			// 	{
-			// 		headers: {
-			// 			'X-CMC_PRO_API_KEY': apiKey,
-			// 			Accept: 'application/json',
-			// 			'Accept-Encoding': 'deflate, gzip',
-			// 		},
-			// 	},
-			// )
 			const priceData = await fetch(
-				`https://radiant-wallet-server.travissehansen.repl.co/api`,
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SOL`,
 				{
-					method: 'POST',
-					body: JSON.stringify({
-						url: '/quotes/latest?symbol=sol',
-					}),
-					headers: { 'Content-type': 'application/json' },
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
 				},
 			)
 				.then((response) => {
@@ -338,13 +329,13 @@ async function getOwnedTokensData(
 		const ownedSymbolsList = ownedTokensSymbols.join();
 
 		const aboutData = await fetch(
-			`https://radiant-wallet-server.travissehansen.repl.co/api`,
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 			{
-				method: 'POST',
-				body: JSON.stringify({
-					url: `/info?symbol=${ownedSymbolsList}`,
-				}),
-				headers: { 'Content-type': 'application/json' },
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
+				},
 			},
 		)
 			.then((response) => {
@@ -464,15 +455,8 @@ async function getOwnedTokensData(
 		}
 
 		tokensBySubWallet.push(finalCombinedOwnedTokensArray);
-		console.log(
-			'finalCombinedOwnedTokensArray: ',
-			finalCombinedOwnedTokensArray,
-		);
 		newAccountArray.push(newAccount);
 	}
-	console.log('newAccountArray: ', newAccountArray);
-	console.log('tokensBySubWallet: ', tokensBySubWallet);
-	console.log('newAccount: ', newAccountArray);
 	return {
 		tokensBySubWallet: tokensBySubWallet,
 		newAccount: newAccountArray,

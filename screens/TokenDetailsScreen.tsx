@@ -311,11 +311,11 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					stopColor={'rgb(222, 249, 119)'}
 					stopOpacity={0.9}
 				/>
-				{/* <Stop
+				<Stop
 					offset={'100%'}
 					stopColor={'rgb(201, 249, 119)'}
 					stopOpacity={0}
-				/> */}
+				/>
 			</LinearGradient>
 		</Defs>
 	);

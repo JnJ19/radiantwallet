@@ -169,7 +169,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	async function getAllTokens() {
 		let result = await getAllTokensData(tokenMapSymbols);
-		console.log('result: ', result);
 		setAllTokens(result);
 	}
 

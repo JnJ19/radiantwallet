@@ -65,7 +65,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 	const handleSheetChanges = useCallback((index: number) => {}, []);
 
 	function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
-		console.log('hit');
 		const totalBalance = subWalletTokensArray?.map((item) => {
 			const result = item?.map((data) => {
 				return data.amount * data.price;
@@ -81,7 +80,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 				totalBalance: totalBalance[index],
 			};
 		});
-		console.log('newSubWallets: ', newSubWallets);
 		setLocalSubWallets(newSubWallets);
 		setFinalSubWallets(newSubWallets);
 	}
@@ -94,11 +92,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 	}
 
 	useEffect(() => {
-		console.log('before');
-		console.log('subWallets: ', subWallets);
-		console.log('subWalletTokensArray: ', subWalletTokensArray);
 		if (subWallets && subWalletTokensArray) {
-			console.log('here');
 			summarySubWallet(subWalletTokensArray, subWallets);
 		}
 	}, [subWallets, subWalletTokensArray]);
