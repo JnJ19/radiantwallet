@@ -74,6 +74,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	);
 	const [sortedTokens, setSortedTokens] = useState(tokens);
 
+	const [ownedTokensHasRendered, setOwnedTokensHasRendered] = useState(false);
+
 	function sortTokens(tokens) {
 		const sortedTokens = tokens.sort((a, b) => {
 			return b.price * b.amount - a.price * a.amount;
@@ -167,6 +169,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	async function getAllTokens() {
 		let result = await getAllTokensData(tokenMapSymbols);
+		console.log('result: ', result);
 		setAllTokens(result);
 	}
 
@@ -232,9 +235,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, [tokenMap]);
 
 	useEffect(() => {
-		if (tokenMap && subWallets && tokens) {
-			console.log('hit 2');
+		if (tokenMap && subWallets && tokens && !ownedTokensHasRendered) {
 			getOwnedTokens();
+			setOwnedTokensHasRendered(true);
 		}
 	}, [tokenMap, subWallets, tokens]);
 
