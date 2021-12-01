@@ -2,7 +2,7 @@
 	"expo": {
 		"name": "wallet2",
 		"slug": "wallet2",
-		"version": "1.0.1",
+		"version": "1.0.3",
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
 		"scheme": "myapp",
@@ -20,7 +20,7 @@
 			"supportsTablet": true,
 			"backgroundColor": "#ffffff",
 			"bundleIdentifier": "com.radiant.wallet2",
-			"buildNumber": "1.0.1"
+			"buildNumber": "1.0.3"
 		},
 		"android": {
 			"adaptiveIcon": {

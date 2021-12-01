@@ -225,11 +225,16 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}, [tokens]);
 
 	useEffect(() => {
-		if (tokenMap && subWallets && tokens) {
-			getOwnedTokens();
-		}
 		if (tokenMap && !tokens) {
+			console.warn('hit selected wallet');
 			getSelectedWalletOwnedTokens();
+		}
+	}, [tokenMap]);
+
+	useEffect(() => {
+		if (tokenMap && subWallets && tokens) {
+			console.log('hit 2');
+			getOwnedTokens();
 		}
 	}, [tokenMap, subWallets, tokens]);
 

@@ -179,16 +179,13 @@ async function getOwnedTokensData(
 	passcode: string,
 	tokenMap: any,
 ) {
-	console.warn('helloooo');
+	console.log('get owned tokens');
 	const tokenPairs = await getTokenPairs();
-	console.warn('tokenPairs: ', tokenPairs);
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
 	const tokensBySubWallet = [];
 	const newAccountArray = [];
 	for (let i = 0; i < subWallets.length; i++) {
-		console.warn('loop run', i);
-
 		const newAccount = await getSolanaAccount(i, passcode);
 
 		const { publicKey } = newAccount;
@@ -198,7 +195,6 @@ async function getOwnedTokensData(
 			.catch((err) => console.log('errorr', err));
 
 		const solBalance = await connection.getBalance(publicKey);
-		console.warn('solBalance: ', solBalance);
 		const realSolBalance = solBalance * 0.000000001;
 
 		const ownedTokensArray = [];
@@ -542,6 +538,7 @@ async function getSelectedWalletTokens(
 	passcode: string,
 	tokenMap: any,
 ) {
+	console.log('get selected wallet tokens');
 	const newAccount = await getSolanaAccount(selectedWallet, passcode);
 	const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
@@ -658,13 +655,11 @@ async function getSelectedWalletTokens(
 			}
 
 			const mintKey = new PublicKey(mint);
-			console.log('mintKey: ', mintKey);
 
 			const associatedTokenAddress = await findAssociatedTokenAddress(
 				publicKey,
 				mintKey,
 			).catch((err) => console.log('errorr', err));
-			console.log('associatedTokenAddress: ', associatedTokenAddress);
 
 			const associatedTokenAddressHash =
 				associatedTokenAddress.toString('hex');
@@ -868,6 +863,7 @@ async function settleFundsData(account: any, Market: any, connection: any) {
 }
 
 async function getAllTokensData(tokenMapSymbols: any) {
+	console.log('get all tokens');
 	const tokenPairs = await getTokenPairs();
 
 	const symbolsList = await getCleanTokenList();
