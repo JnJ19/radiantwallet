@@ -47,9 +47,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tradeAmount, setTradeAmount] = useState('0');
-	const [recipientAddress, setRecipientAddress] = useState(
-		'BxMFVmXTcCqaPafCTfgvYMJ4KUTvkgTN3PFtEHN5pAGn',
-	);
+	const [recipientAddress, setRecipientAddress] = useState('');
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
