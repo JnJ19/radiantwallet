@@ -19,6 +19,19 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
+import * as Serum from '@project-serum/anchor';
+import { Jupiter, TOKEN_LIST_URL } from '@jup-ag/core';
+import { Wallet } from '@project-serum/anchor';
+import {
+	Account,
+	Connection,
+	PublicKey,
+	Keypair,
+	Transaction,
+	TransactionSignature,
+} from '@solana/web3.js';
+import * as walletAdapter from '@solana/wallet-adapter-base';
+import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 
 type Props = {
 	navigation: Navigation;
@@ -32,6 +45,7 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const [error, setError] = useState(false);
 	const tokenMap = useStoreState((state) => state.tokenMap);
 	const setTokenMap = useStoreActions((actions) => actions.setTokenMap);
+	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 
 	async function checkLocalPasscode(passcodeKey: string, code: string) {
 		let result = await SecureStore.getItemAsync(passcodeKey);
@@ -64,6 +78,30 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	// 	console.warn('hit3');
 	// 	DevSettings.reload();
 	// }
+
+	// const getJupRoutes = async () => {
+	// 	console.log('hello');
+	// 	const connection = new Connection(
+	// 		'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5',
+	// 	);
+
+	// 	const tokens = await (
+	// 		await fetch(TOKEN_LIST_URL['mainnet-beta'])
+	// 	).json();
+	// 	console.log(tokens[0].logoURI);
+	// 	console.log(tokens[10].logoURI);
+	// 	console.log(tokens[40].logoURI);
+	// 	console.log(tokens[200].logoURI);
+	// 	console.log(tokens[300].logoURI);
+	// 	console.log(tokens[400].logoURI);
+	// 	console.log(tokens[500].logoURI);
+	// 	console.log(tokens[1000].logoURI);
+	// 	setAllTokens(tokens);
+	// };
+
+	// useEffect(() => {
+	// 	getJupRoutes();
+	// }, [tokenMap]);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {

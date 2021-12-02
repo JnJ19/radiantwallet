@@ -32,6 +32,13 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 		});
 	};
 
+	const renderItem = (token) => (
+		<TokenCard
+			token={token}
+			onPress={() => navigation.navigate('Token Details', { token })}
+		/>
+	);
+
 	useEffect(() => {
 		if (allTokens) {
 			setFilteredTokens(searchFilter(allTokens));
@@ -123,14 +130,9 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 			{filteredTokens ? (
 				<FlatList
 					data={filteredTokens}
-					renderItem={(token) => (
-						<TokenCard
-							token={token}
-							onPress={() =>
-								navigation.navigate('Token Details', token.item)
-							}
-						/>
-					)}
+					renderItem={renderItem}
+					initialNumToRender={10}
+					maxToRenderPerBatch={10}
 					keyExtractor={(item) => item.address}
 				/>
 			) : null}

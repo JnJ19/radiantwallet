@@ -11,8 +11,8 @@ import {
 import storage from '../storage';
 
 const store = createStore({
-	account: 'hello',
-	passcode: '1234',
+	account: '',
+	passcode: '',
 	updatePasscode: action((state, payload) => {
 		state.passcode = payload;
 	}),
