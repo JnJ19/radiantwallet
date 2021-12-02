@@ -18,6 +18,7 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 
 type Props = {
 	navigation: Navigation;
@@ -29,6 +30,8 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
 	const [error, setError] = useState(false);
+	const tokenMap = useStoreState((state) => state.tokenMap);
+	const setTokenMap = useStoreActions((actions) => actions.setTokenMap);
 
 	async function checkLocalPasscode(passcodeKey: string, code: string) {
 		let result = await SecureStore.getItemAsync(passcodeKey);
@@ -61,6 +64,21 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	// 	console.warn('hit3');
 	// 	DevSettings.reload();
 	// }
+
+	useEffect(() => {
+		new TokenListProvider().resolve().then((tokens) => {
+			const tokenList = tokens
+				.filterByClusterSlug('mainnet-beta')
+				.getList();
+
+			setTokenMap(
+				tokenList?.reduce((map, item) => {
+					map.set(item.address, item);
+					return map;
+				}, new Map()),
+			);
+		});
+	}, []);
 
 	useEffect(() => {
 		// logout();

@@ -47,7 +47,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [loading, setLoading] = useState(true);
-	const [tokenMap, setTokenMap] = useState('');
+	// const [tokenMap, setTokenMap] = useState('');
+	const tokenMap = useStoreState((state) => state.tokenMap);
 	// const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
@@ -240,20 +241,20 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		}
 	}, [tokenMap, subWallets, tokens]);
 
-	useEffect(() => {
-		new TokenListProvider().resolve().then((tokens) => {
-			const tokenList = tokens
-				.filterByClusterSlug('mainnet-beta')
-				.getList();
+	// useEffect(() => {
+	// 	new TokenListProvider().resolve().then((tokens) => {
+	// 		const tokenList = tokens
+	// 			.filterByClusterSlug('mainnet-beta')
+	// 			.getList();
 
-			setTokenMap(
-				tokenList?.reduce((map, item) => {
-					map.set(item.address, item);
-					return map;
-				}, new Map()),
-			);
-		});
-	}, []);
+	// 		setTokenMap(
+	// 			tokenList?.reduce((map, item) => {
+	// 				map.set(item.address, item);
+	// 				return map;
+	// 			}, new Map()),
+	// 		);
+	// 	});
+	// }, []);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
