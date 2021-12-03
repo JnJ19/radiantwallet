@@ -55,6 +55,10 @@ const store = createStore({
 	setTokenPairs: action((state, payload) => {
 		state.tokenPairs = payload;
 	}),
+	web3Connection: '',
+	setWeb3Connection: action((state, payload) => {
+		state.web3Connection = payload;
+	}),
 });
 
 // const store = createStore<WalletModel>(

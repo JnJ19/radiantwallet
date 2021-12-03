@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect, useCallback, useRef, } from 'react';
+import React, { memo, useState, useEffect, useCallback, useRef } from 'react';
 import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
@@ -51,9 +51,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const [connection, setConnection] = useState('');
 	const [tokens, setTokens] = useState('');
 	const [loading, setLoading] = useState(true);
-	// const [tokenMap, setTokenMap] = useState('');
 	const tokenMap = useStoreState((state) => state.tokenMap);
-	// const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 	const [tokenMapSymbols, setTokenMapSymbols] = useState<
 		Map<string, TokenInfo>
 	>(new Map());
@@ -300,8 +298,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			populateDashboard();
 			getActiveSubWalletOwnedTokens();
 			previousActiveSubWallet.current = myContext.globalActiveWallet;
-		};
-	}, [myContext.globalActiveWallet])
+		}
+	}, [myContext.globalActiveWallet]);
 
 	if (!loading && tokens.length === 0 && account) {
 		return (

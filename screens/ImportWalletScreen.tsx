@@ -52,23 +52,6 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 		setCopiedText(text);
 	};
 
-	// const pollClipBoard = setInterval(() => {
-	// 	// fetchCopiedText();
-	// 	console.log('hellooooo');
-	// }, 1000);
-
-	// useEffect(() => {
-	// 	if (copiedText) {
-	// 		const count = wordCount(copiedText);
-	// 		console.log('count', count);
-	// 		if (count > 9 && count < 30) {
-	// 			clearInterval(pollClipBoard);
-	// 		}
-	// 	}
-	// }, [copiedText]);
-
-	// clearInterval(pollClipBoard);
-
 	// bottomsheet stuff
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const snapPoints = useMemo(() => ['25%', '50%'], []);
@@ -178,12 +161,6 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 						</TouchableOpacity>
 					</View>
 				</View>
-				{/* <Button
-				onPress={handlePresentModalPress}
-				title="Present Modal"
-				mode="contained"
-				// color="black"
-			/> */}
 				<TouchableOpacity
 					onPress={() => bottomSheetModalRef.current?.present()}
 				>
@@ -191,7 +168,6 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 						What is a Secret Phrase?
 					</Text>
 				</TouchableOpacity>
-				{/* <View style={{ height: 250 }}></View> */}
 			</View>
 			<View style={{ marginBottom: 40 }}>
 				<Button

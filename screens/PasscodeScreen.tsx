@@ -48,6 +48,9 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const tokenPairs = useStoreState((state) => state.tokenPairs);
 	const setTokenPairs = useStoreActions((actions) => actions.setTokenPairs);
+	const setWeb3Connection = useStoreActions(
+		(actions) => actions.web3Connection,
+	);
 
 	async function checkLocalPasscode(passcodeKey: string, code: string) {
 		let result = await SecureStore.getItemAsync(passcodeKey);
@@ -197,6 +200,13 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 				setTokenPairs(finishedArray);
 			})
 			.catch((err) => console.log(err));
+	}
+
+	async function setupWeb3() {
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+		const connection = new Connection(url);
+		setWeb3Connection(connection);
 	}
 
 	useEffect(() => {
