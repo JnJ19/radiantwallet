@@ -487,7 +487,7 @@ async function getActiveSubWalletTokens(
 	tokenPairs: any,
 ) {
 	console.log('get selected wallet tokens');
-	const newAccount = await getSolanaAccount(selectedWallet, passcode);
+	const newAccount = await getSolanaAccount(activeSubWallet, passcode);
 	// const tokenPairs = await getTokenPairs();
 	console.log('token pairs', tokenPairs);
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));

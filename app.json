@@ -32,6 +32,19 @@
 		},
 		"web": {
 			"favicon": "./assets/images/favicon.png"
+		},
+		"plugins": ["sentry-expo"],
+		"hooks": {
+			"postPublish": [
+				{
+					"file": "sentry-expo/upload-sourcemaps",
+					"config": {
+						"organization": "radiant-wallet",
+						"project": "react-native",
+						"authToken": "2f929bb097fd4f5f89bd66566c0b33ea7af8658d919c45799b78faad1ba584d6"
+					}
+				}
+			]
 		}
 	}
 }
