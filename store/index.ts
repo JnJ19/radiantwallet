@@ -51,6 +51,10 @@ const store = createStore({
 	setTokenMap: action((state, payload) => {
 		state.tokenMap = payload;
 	}),
+	tokenPairs: '',
+	setTokenPairs: action((state, payload) => {
+		state.tokenPairs = payload;
+	}),
 });
 
 // const store = createStore<WalletModel>(

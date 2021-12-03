@@ -178,9 +178,10 @@ async function getOwnedTokensData(
 	subWallets: any,
 	passcode: string,
 	tokenMap: any,
+	tokenPairs: any,
 ) {
 	console.log('get owned tokens');
-	const tokenPairs = await getTokenPairs();
+	// const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
 	const tokensBySubWallet = [];
@@ -482,10 +483,12 @@ async function getSelectedWalletTokens(
 	selectedWallet: number,
 	passcode: string,
 	tokenMap: any,
+	tokenPairs: any,
 ) {
 	console.log('get selected wallet tokens');
 	const newAccount = await getSolanaAccount(selectedWallet, passcode);
-	const tokenPairs = await getTokenPairs();
+	// const tokenPairs = await getTokenPairs();
+	console.log('token pairs', tokenPairs);
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
 	const { publicKey } = newAccount;
@@ -807,9 +810,9 @@ async function settleFundsData(account: any, Market: any, connection: any) {
 	}
 }
 
-async function getAllTokensData(tokenMapSymbols: any) {
+async function getAllTokensData(tokenMapSymbols: any, tokenPairs: any) {
 	console.log('get all tokens');
-	const tokenPairs = await getTokenPairs();
+	// const tokenPairs = await getTokenPairs();
 
 	const symbolsList = await getCleanTokenList();
 

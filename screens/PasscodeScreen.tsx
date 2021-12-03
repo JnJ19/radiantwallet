@@ -46,6 +46,8 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	const tokenMap = useStoreState((state) => state.tokenMap);
 	const setTokenMap = useStoreActions((actions) => actions.setTokenMap);
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
+	const tokenPairs = useStoreState((state) => state.tokenPairs);
+	const setTokenPairs = useStoreActions((actions) => actions.setTokenPairs);
 
 	async function checkLocalPasscode(passcodeKey: string, code: string) {
 		let result = await SecureStore.getItemAsync(passcodeKey);
@@ -103,7 +105,102 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 	// 	getJupRoutes();
 	// }, [tokenMap]);
 
+	function getTokenPairs() {
+		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
+
+		//then make two big calls to coinmarketcap - one for data, the other for price
+		//then combine all of those results based on symbol name 🎉
+		return fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				const removedPools = res.data.filter(
+					(value) =>
+						![
+							'-',
+							'LQID',
+							'ODOP',
+							'xCOPE',
+							'CCAI',
+							'PLEB',
+							'BVOL',
+							'POOL',
+							'BTC/SRM',
+							'FTT/SRM',
+							'YFI/SRM',
+							'SUSHI/SRM',
+							'ETH/SRM',
+							'RAY/SRM',
+							'RAY/ETH',
+							'MSRM',
+						].some((el) => value.includes(el)),
+				);
+
+				//split the pairs into separate symbols
+				const symbolsArray = [];
+				for (let i = 0; i < removedPools.length; i++) {
+					const el = removedPools[i];
+					const splitArray = el.split('/');
+					symbolsArray.push(...splitArray);
+				}
+
+				//dedupe symbols
+				const dedupedSymbols = [...new Set(symbolsArray)];
+
+				//remove random hashes
+				const cleanArray = [];
+				for (let i = 0; i < dedupedSymbols.length; i++) {
+					const el = dedupedSymbols[i];
+					if (el.length < 15) {
+						cleanArray.push(el);
+					}
+				}
+
+				const finishedArray = [];
+				for (let i = 0; i < cleanArray.length; i++) {
+					const el = cleanArray[i];
+
+					//find matching pairs
+					const pairs = removedPools.filter(
+						(str: string) => str.indexOf(el) >= 0,
+					);
+					const pairsArray = [];
+					for (let i = 0; i < pairs.length; i++) {
+						const el2 = pairs[i];
+
+						//take away the name and slash
+						const removeSymbol = el2.replace(el, '');
+						const removeSlash = removeSymbol.replace('/', '');
+
+						//deduce whether sell or buy side
+						let side;
+						removeSlash === el2.slice(0, removeSlash.length)
+							? (side = 'buy')
+							: (side = 'sell');
+
+						//construct array object
+						const newPair = {
+							pair: el2,
+							symbol: removeSlash,
+							side: side,
+						};
+
+						pairsArray.push(newPair);
+					}
+
+					const finishedObject = {
+						symbol: el,
+						pairs: pairsArray,
+					};
+
+					finishedArray.push(finishedObject);
+				}
+				setTokenPairs(finishedArray);
+			})
+			.catch((err) => console.log(err));
+	}
+
 	useEffect(() => {
+		getTokenPairs();
 		new TokenListProvider().resolve().then((tokens) => {
 			const tokenList = tokens
 				.filterByClusterSlug('mainnet-beta')

@@ -97,6 +97,25 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	async function getHistory(options = { limit: 20 }) {
+		let mnemonic = await SecureStore.getItemAsync(passcode);
+		const seed = await mnemonicToSeed(mnemonic);
+		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
+		const publicKey = fromWallet.publicKey;
+
+		const url =
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+
+		const connection = new Connection(url);
+		const result = await connection.getConfirmedSignaturesForAddress2(
+			publicKey,
+			options,
+		);
+
+		console.log('result of history: ', result);
+		return result;
+	}
+
 	const main = async () => {
 		const connection = new Connection(
 			'https://solana-api.projectserum.com',
@@ -158,6 +177,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	};
 
 	useEffect(() => {
+		getHistory();
 		if (token.pairs) {
 			getDefaultPairToken();
 		}

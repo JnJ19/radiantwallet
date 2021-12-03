@@ -73,6 +73,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const setSubWalletTokensArray = useStoreActions(
 		(actions) => actions.setSubWalletTokensArray,
 	);
+	const tokenPairs = useStoreState((state) => state.tokenPairs);
+
 	const [sortedTokens, setSortedTokens] = useState(tokens);
 
 	const [ownedTokensHasRendered, setOwnedTokensHasRendered] = useState(false);
@@ -128,6 +130,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			selectedWallet,
 			passcode,
 			tokenMap,
+			tokenPairs,
 		);
 		setTokens(tokens);
 		let todayArray = [];
@@ -163,13 +166,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	async function getOwnedTokens() {
-		let result = await getOwnedTokensData(subWallets, passcode, tokenMap);
+		let result = await getOwnedTokensData(
+			subWallets,
+			passcode,
+			tokenMap,
+			tokenPairs,
+		);
 		setSubWalletTokensArray(result.tokensBySubWallet);
 		//deal with setAccount(newAccountArray)
 	}
 
 	async function getAllTokens() {
-		let result = await getAllTokensData(tokenMapSymbols);
+		let result = await getAllTokensData(tokenMapSymbols, tokenPairs);
 		setAllTokens(result);
 	}
 
