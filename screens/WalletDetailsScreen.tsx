@@ -8,6 +8,11 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { shortenPublicKey, copyToClipboard } from '../utils';
 
+import { useContext } from 'react';
+import AppContext from '../components/AppContext';
+
+
+
 type Props = {
 	navigation: Navigation;
 };
@@ -30,13 +35,23 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 
 	const handleSheetChanges = useCallback((index: number) => {}, []);
 
+	const myContext = useContext(AppContext);
+
 	if (finalSubWallets.length === 0) {
 		return <Text>Loading...</Text>;
 	}
 
 	function updateActiveWallet() {
 		setActiveSubWallet(selectedWallet);
+		myContext.setGlobalActiveWallet(selectedWallet);
+		
 	}
+	// console.log('active WD', activeSubWallet);
+	// console.log('selected WD', selectedWallet);
+	// console.log('global', myContext.globalActiveWalletName);
+	// myContext.setGlobalActiveWallet(1);
+	// console.log('global2', myContext.globalActiveWalletName);
+	
 
 	return (
 		<Background>

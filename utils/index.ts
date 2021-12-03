@@ -28,6 +28,7 @@ async function findAssociatedTokenAddress(
 	walletAddress: PublicKey,
 	tokenMintAddress: PublicKey,
 ): Promise<PublicKey> {
+	//console.log('here');
 	return (
 		await PublicKey.findProgramAddress(
 			[
@@ -464,14 +465,14 @@ async function getOwnedTokensData(
 	};
 }
 
-async function getSolanaAccount(selectedWallet: number, passcode: string) {
+async function getSolanaAccount(activeSubWallet: number, passcode: string) {
 	let mnemonic = await SecureStore.getItemAsync(passcode);
 	const bip39 = await import('bip39');
 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 
 	const newAccount = accountFromSeed(
 		seed,
-		selectedWallet,
+		activeSubWallet,
 		DERIVATION_PATH.bip44Change,
 		0,
 	);
@@ -479,8 +480,8 @@ async function getSolanaAccount(selectedWallet: number, passcode: string) {
 	return newAccount;
 }
 
-async function getSelectedWalletTokens(
-	selectedWallet: number,
+async function getActiveSubWalletTokens(
+	activeSubWallet: number,
 	passcode: string,
 	tokenMap: any,
 	tokenPairs: any,
@@ -1157,5 +1158,5 @@ export {
 	getOwnedTokensData,
 	getAllTokensData,
 	settleFundsData,
-	getSelectedWalletTokens,
+	getActiveSubWalletTokens,
 };

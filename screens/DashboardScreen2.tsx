@@ -1,5 +1,5 @@
-import React, { memo, useState, useEffect } from 'react';
-import { Text, ScrollView, StyleSheet } from 'react-native';
+import React, { memo, useState, useEffect, useCallback, useRef, } from 'react';
+import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image, TouchableOpacity } from 'react-native';
@@ -23,7 +23,7 @@ import {
 	getOwnedTokensData,
 	getAllTokensData,
 	settleFundsData,
-	getSelectedWalletTokens,
+	getActiveSubWalletTokens,
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
@@ -34,6 +34,10 @@ import { Wallet } from '@project-serum/anchor';
 import { Jupiter } from '@jup-ag/core';
 import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 import Storage from '../storage';
+import { useFocusEffect } from '@react-navigation/core';
+
+import { useContext } from 'react';
+import AppContext from '../components/AppContext';
 
 type Props = {
 	navigation: Navigation;
@@ -76,6 +80,17 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const tokenPairs = useStoreState((state) => state.tokenPairs);
 
 	const [sortedTokens, setSortedTokens] = useState(tokens);
+	const activeSubWallet = useStoreState(
+		(state) => state.activeSubWallet,
+		(prev, next) => prev.activeSubWallet === next.activeSubWallet,
+	);
+	const setActiveSubWallet = useStoreActions(
+		(actions) => actions.setActiveSubWallet,
+	);
+
+	const previousActiveSubWallet = useRef(0);
+
+	const myContext = useContext(AppContext);
 
 	const [ownedTokensHasRendered, setOwnedTokensHasRendered] = useState(false);
 
@@ -125,9 +140,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setSubWallets(result);
 	}
 
-	async function getSelectedWalletOwnedTokens() {
-		const tokens = await getSelectedWalletTokens(
-			selectedWallet,
+	async function getActiveSubWalletOwnedTokens() {
+		const tokens = await getActiveSubWalletTokens(
+			activeSubWallet,
 			passcode,
 			tokenMap,
 			tokenPairs,
@@ -187,6 +202,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	// }
 
 	function populateDashboard() {
+		//console.log('popDash')
 		let todayTotal;
 		let percentChangeFixed;
 		if (tokens && tokens.length > 0) {
@@ -220,11 +236,11 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	useEffect(() => {
 		if (subWalletTokensArray) {
-			if (subWalletTokensArray[selectedWallet]) {
-				setOwnedTokens(subWalletTokensArray[selectedWallet]);
+			if (subWalletTokensArray[activeSubWallet]) {
+				setOwnedTokens(subWalletTokensArray[activeSubWallet]);
 			}
 		}
-	}, [subWalletTokensArray, selectedWallet]);
+	}, [subWalletTokensArray, activeSubWallet]);
 
 	useEffect(() => {
 		if (tokens) {
@@ -238,7 +254,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	useEffect(() => {
 		if (tokenMap && !tokens) {
 			console.warn('hit selected wallet');
-			getSelectedWalletOwnedTokens();
+			getActiveSubWalletOwnedTokens();
 		}
 	}, [tokenMap]);
 
@@ -278,6 +294,14 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 		});
 	}, []);
+
+	useEffect(() => {
+		if (previousActiveSubWallet.current !== myContext.globalActiveWallet) {
+			populateDashboard();
+			getActiveSubWalletOwnedTokens();
+			previousActiveSubWallet.current = myContext.globalActiveWallet;
+		};
+	}, [myContext.globalActiveWallet])
 
 	if (!loading && tokens.length === 0 && account) {
 		return (
@@ -341,7 +365,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 										(
 										{shortenPublicKey(
 											subWallets[
-												selectedWallet
+												activeSubWallet
 											].publicKey.toString('hex'),
 											0,
 											8,
@@ -364,7 +388,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							onPress={() => {
 								setCopied(
 									subWallets[
-										selectedWallet
+										activeSubWallet
 									].publicKey.toString('hex'),
 								);
 								copyToClipboard(copied);

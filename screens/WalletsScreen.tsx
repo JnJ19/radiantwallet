@@ -95,13 +95,18 @@ const WalletsScreen = ({ navigation }: Props) => {
 		if (subWallets && subWalletTokensArray) {
 			summarySubWallet(subWalletTokensArray, subWallets);
 		}
+		console.log('here');
 	}, [subWallets, subWalletTokensArray]);
 
 	useEffect(() => {
 		getFirstWallet();
+		console.log('here1');
 	}, []);
 
-	useEffect(() => {}, [subWallets]);
+	useEffect(() => { console.log('here3')}, [subWallets]);
+
+	console.log('active W', activeSubWallet);
+	console.log('selected W', selectedWallet);
 
 	if (localSubWallets.length === 0) {
 		return (
@@ -311,7 +316,6 @@ const WalletsScreen = ({ navigation }: Props) => {
 												</Text>
 											</View>
 										)}
-										<View></View>
 									</View>
 									<View
 										style={{
@@ -319,8 +323,20 @@ const WalletsScreen = ({ navigation }: Props) => {
 											alignItems: 'center',
 										}}
 									>
-										{/* <Text style={styles.subTitle}>400.02</Text> */}
-										<Text style={styles.address}>
+										<Text
+											style={{
+												...theme.fonts.Nunito_Sans.Body_M_Bold,
+												color: '#1F1F1F',
+												marginBottom: 4,
+											}}
+										>
+											${finalSubWallet.totalBalance}
+										</Text>
+										<Image
+											source={require('../assets/icons/Bullet.png')}
+											style={{marginLeft: 4}}
+										/>
+										<Text style={{...styles.address, marginLeft: 4}}>
 											{shortenPublicKey(
 												finalSubWallet.publicKey,
 												0,
@@ -332,15 +348,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 								</View>
 							</View>
 							<View>
-								<Text
-									style={{
-										...theme.fonts.Nunito_Sans.Body_M_Bold,
-										color: '#1F1F1F',
-										marginBottom: 4,
-									}}
-								>
-									${finalSubWallet.totalBalance}
-								</Text>
+								
 							</View>
 						</TouchableOpacity>
 					);
