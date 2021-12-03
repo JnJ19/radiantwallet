@@ -17,6 +17,10 @@ import Navigation from './navigation';
 import AppContext from './components/AppContext';
 import * as Sentry from 'sentry-expo';
 
+const routingInstrumentation =
+	new Sentry.Native.ReactNavigationInstrumentation();
+console.log('routingInstrumentation: ', routingInstrumentation);
+
 Sentry.init({
 	dsn: 'https://8622adb754c3410cbb75dc3a947de79d@o1082874.ingest.sentry.io/6091873',
 	enableInExpoDevelopment: true,
@@ -27,6 +31,7 @@ Sentry.init({
 	integrations: [
 		new Sentry.Native.ReactNativeTracing({
 			tracingOrigins: ['localhost', /^\//, /^https:\/\//],
+			routingInstrumentation,
 		}),
 	],
 });
