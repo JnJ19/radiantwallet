@@ -17,8 +17,10 @@ import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 );
+// const url =
+// 	'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
 const url =
-	'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
+	'https://proud-small-pond.solana-mainnet.quiknode.pro/b9308b243fd5cda46faf633bfc52df5a1b2d7abf/';
 const connection = new Connection(url);
 const programId = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 // const apiKey = 'f7353e06-2e44-4912-9fff-05929a5681a7';
@@ -702,10 +704,13 @@ async function getActiveSubWalletTokens(
 
 	for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
 		const tokenObject = combinedOwnedTokensArray[i];
+		console.log('tokenObject: ', tokenObject.symbol);
 		const cmcToken = priceData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
 		);
-		if (cmcToken.quote) {
+		console.log('cmcToken: ', cmcToken);
+
+		if (cmcToken && cmcToken.quote) {
 			const {
 				price,
 				percent_change_24h,
@@ -732,6 +737,7 @@ async function getActiveSubWalletTokens(
 			};
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		} else {
+			console.log('hello');
 			const newTokenObject = {
 				price: 0,
 				percent_change_24h: 0,
@@ -741,14 +747,17 @@ async function getActiveSubWalletTokens(
 				volume_24h: 0,
 				market_cap: 0,
 				market_cap_dominance: 0,
-				price_30d: price * (1 + percent_change_30d * 0.01),
-				price_60d: price * (1 + percent_change_60d * 0.01),
-				price_90d: price * (1 + percent_change_90d * 0.01),
+				price_30d: 0,
+				price_60d: 0,
+				price_90d: 0,
 				...tokenObject,
 			};
+			console.log('newTokenObject: ', newTokenObject);
+
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		}
 	}
+	console.log('hello');
 	if (solToken) {
 		finalCombinedOwnedTokensArray.push(solToken);
 	}
