@@ -232,6 +232,18 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		};
 	}
 
+	function getSOL(tokens) {
+		console.log('tokennnns', tokens);
+
+		const sol = tokens.find((token: object) => {
+			if (token.symbol === 'SOL') {
+				console.log('hello');
+				return token;
+			}
+		});
+		return sol;
+	}
+
 	useEffect(() => {
 		if (subWalletTokensArray) {
 			if (subWalletTokensArray[activeSubWallet]) {
@@ -466,10 +478,76 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			</Background>
 		);
 	}
+
+	const SOL = getSOL(tokens);
+
 	return (
 		<Background>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+				{SOL ? (
+					<View
+						style={{
+							// borderColor: theme.colors.border,
+							borderWidth: 1,
+							borderRadius: 18,
+							padding: 16,
+							marginBottom: 16,
+							backgroundColor: theme.colors.black_one,
+						}}
+					>
+						<TouchableOpacity
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+							}}
+							onPress={() => navigation.navigate('Stake', SOL)}
+						>
+							<View style={{ flexDirection: 'row' }}>
+								<Image
+									source={require('../assets/icons/green_trophy.png')}
+									style={{
+										width: 40,
+										height: 40,
+										borderRadius: 100,
+										marginRight: 16,
+									}}
+								/>
+								<View>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Body_M_Bold,
+											color: 'white',
+											paddingRight: 16,
+										}}
+									>
+										Earn interest on your SOL
+									</Text>
+									<Text
+										style={{
+											...theme.fonts.Nunito_Sans
+												.Caption_M_SemiBold,
+											color: theme.colors.black_six,
+										}}
+									>
+										Earn 8% interest for holding
+									</Text>
+								</View>
+							</View>
+							<Image
+								source={require('../assets/icons/Chevron_Up_White.png')}
+								style={{
+									width: 24,
+									height: 24,
+									borderRadius: 100,
+									marginRight: 16,
+								}}
+							/>
+						</TouchableOpacity>
+					</View>
+				) : null}
 				<View
 					style={{
 						borderWidth: 1,
