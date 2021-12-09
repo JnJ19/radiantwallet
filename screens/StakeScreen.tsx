@@ -215,12 +215,14 @@ const StakeScreen = ({ navigation, route }: Props) => {
 			<View style={{ marginBottom: 40 }}>
 				<Button
 					onPress={() => {
-						if (tradeAmount !== '0' && recipientAddress !== '') {
+						if (tradeAmount !== '0') {
 							Haptics.impactAsync(
 								Haptics.ImpactFeedbackStyle.Medium,
 							);
-							setModalVisible(true);
-							transferStuff();
+							navigation.navigate('Stake Preview', {
+								tradeAmount,
+								price: token.price,
+							});
 						}
 					}}
 				>

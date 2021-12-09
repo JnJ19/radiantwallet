@@ -26,6 +26,7 @@ import {
 	EditWalletNameScreen,
 	SendScreen,
 	StakeScreen,
+	StakePreviewScreen,
 	SendSuccessScreen,
 	CreateWalletScreen,
 } from '../screens';
@@ -308,6 +309,11 @@ function RootNavigator3() {
 				<Stack.Screen
 					name="Stake"
 					component={StakeScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="Stake Preview"
+					component={StakePreviewScreen}
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
