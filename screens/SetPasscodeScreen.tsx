@@ -4,6 +4,8 @@ import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
+import { PublicKey, Keypair } from '@solana/web3.js';
+
 const {
 	colors,
 	fonts: { Azeret_Mono, Nunito_Sans },
@@ -21,6 +23,12 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	const [code, setCode] = useState('');
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
+
+	console.log('Keypair: ', Keypair);
+	console.log(
+		'PublicKey: ',
+		new PublicKey('GfaY1fZfTF9WRqtdXhno9FS8Wn71fbj8qZawnGak5DLs'),
+	);
 
 	function addNumber(numberString: string) {
 		if (code.length < 4) {

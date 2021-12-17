@@ -267,10 +267,10 @@ function RootNavigator3() {
 		return (
 			<Stack.Navigator>
 				{/* <Stack.Screen
-						name="Test Screen"
-						component={TestScreen}
-						options={{ headerShown: false }}
-					/> */}
+					name="Test Screen"
+					component={TestScreen}
+					options={{ headerShown: false }}
+				/> */}
 				<Stack.Screen
 					name="Passcode"
 					component={PasscodeScreen}
@@ -362,6 +362,11 @@ function RootNavigator3() {
 
 	return (
 		<Stack.Navigator>
+			{/* <Stack.Screen
+				name="Test Screen"
+				component={TestScreen}
+				options={{ headerShown: false }}
+			/> */}
 			<Stack.Screen
 				name="Intro"
 				component={IntroScreen}
