@@ -5,6 +5,7 @@ import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
 import { PublicKey, Keypair } from '@solana/web3.js';
+import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 
 const {
 	colors,
@@ -23,12 +24,117 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	const [code, setCode] = useState('');
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
+	const setTokenMap = useStoreActions((actions) => actions.setTokenMap);
 
-	console.log('Keypair: ', Keypair);
-	console.log(
-		'PublicKey: ',
-		new PublicKey('GfaY1fZfTF9WRqtdXhno9FS8Wn71fbj8qZawnGak5DLs'),
-	);
+	function getTokenPairs() {
+		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
+
+		//then make two big calls to coinmarketcap - one for data, the other for price
+		//then combine all of those results based on symbol name 🎉
+		return fetch('https://serum-api.bonfida.com/pairs')
+			.then((res) => res.json())
+			.then((res) => {
+				const removedPools = res.data.filter(
+					(value) =>
+						![
+							'-',
+							'LQID',
+							'ODOP',
+							'xCOPE',
+							'CCAI',
+							'PLEB',
+							'BVOL',
+							'POOL',
+							'BTC/SRM',
+							'FTT/SRM',
+							'YFI/SRM',
+							'SUSHI/SRM',
+							'ETH/SRM',
+							'RAY/SRM',
+							'RAY/ETH',
+							'MSRM',
+						].some((el) => value.includes(el)),
+				);
+
+				//split the pairs into separate symbols
+				const symbolsArray = [];
+				for (let i = 0; i < removedPools.length; i++) {
+					const el = removedPools[i];
+					const splitArray = el.split('/');
+					symbolsArray.push(...splitArray);
+				}
+
+				//dedupe symbols
+				const dedupedSymbols = [...new Set(symbolsArray)];
+
+				//remove random hashes
+				const cleanArray = [];
+				for (let i = 0; i < dedupedSymbols.length; i++) {
+					const el = dedupedSymbols[i];
+					if (el.length < 15) {
+						cleanArray.push(el);
+					}
+				}
+
+				const finishedArray = [];
+				for (let i = 0; i < cleanArray.length; i++) {
+					const el = cleanArray[i];
+
+					//find matching pairs
+					const pairs = removedPools.filter(
+						(str: string) => str.indexOf(el) >= 0,
+					);
+					const pairsArray = [];
+					for (let i = 0; i < pairs.length; i++) {
+						const el2 = pairs[i];
+
+						//take away the name and slash
+						const removeSymbol = el2.replace(el, '');
+						const removeSlash = removeSymbol.replace('/', '');
+
+						//deduce whether sell or buy side
+						let side;
+						removeSlash === el2.slice(0, removeSlash.length)
+							? (side = 'buy')
+							: (side = 'sell');
+
+						//construct array object
+						const newPair = {
+							pair: el2,
+							symbol: removeSlash,
+							side: side,
+						};
+
+						pairsArray.push(newPair);
+					}
+
+					const finishedObject = {
+						symbol: el,
+						pairs: pairsArray,
+					};
+
+					finishedArray.push(finishedObject);
+				}
+				setTokenPairs(finishedArray);
+			})
+			.catch((err) => console.log(err));
+	}
+
+	useEffect(() => {
+		getTokenPairs();
+		new TokenListProvider().resolve().then((tokens) => {
+			const tokenList = tokens
+				.filterByClusterSlug('mainnet-beta')
+				.getList();
+
+			setTokenMap(
+				tokenList?.reduce((map, item) => {
+					map.set(item.address, item);
+					return map;
+				}, new Map()),
+			);
+		});
+	}, []);
 
 	function addNumber(numberString: string) {
 		if (code.length < 4) {

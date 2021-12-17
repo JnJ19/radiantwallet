@@ -250,10 +250,6 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
-	useEffect(() => {
-		SecureStore.setItemAsync('test', 'test1');
-	}, []);
-
 	function removeNumber() {
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (code.length === 1) {
