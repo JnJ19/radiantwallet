@@ -20,13 +20,24 @@ import {
 import { Account, Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Market } from '@project-serum/serum';
-import { normalizeNumber } from '../utils';
+import { normalizeNumber, mnemonicToSeed, accountFromSeed } from '../utils';
 import * as Haptics from 'expo-haptics';
+import { Jupiter, RouteInfo, TOKEN_LIST_URL } from '@jup-ag/core';
 
 type Props = {
 	navigation: Navigation;
 	route: Object;
 };
+
+interface Token {
+	chainId: number; // 101,
+	address: string; // 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+	symbol: string; // 'USDC',
+	name: string; // 'Wrapped USDC',
+	decimals: number; // 6,
+	logoURI: string; // 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW/logo.png',
+	tags: string[]; // [ 'stablecoin' ]
+}
 
 const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [modalVisible, setModalVisible] = useState(false);
@@ -40,64 +51,230 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const passcode = useStoreState((state) => state.passcode);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 
-	const submitJupTrade = async () => {
+	const getPossiblePairsTokenInfo = ({
+		tokens,
+		routeMap,
+		inputToken,
+	}: {
+		tokens: Token[];
+		routeMap: Map<string, string[]>;
+		inputToken?: Token;
+	}) => {
+		try {
+			if (!inputToken) {
+				return {};
+			}
+
+			const possiblePairs = inputToken
+				? routeMap.get(inputToken.address) || []
+				: []; // return an array of token mints that can be swapped with SOL
+			const possiblePairsTokenInfo: { [key: string]: Token | undefined } =
+				{};
+			possiblePairs.forEach((address) => {
+				possiblePairsTokenInfo[address] = tokens.find((t) => {
+					return t.address == address;
+				});
+			});
+			// Perform your conditionals here to use other outputToken
+			// const alternativeOutputToken = possiblePairsTokenInfo[USDT_MINT_ADDRESS]
+			return possiblePairsTokenInfo;
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	const getRoutes = async ({
+		jupiter,
+		inputToken,
+		outputToken,
+		inputAmount,
+		slippage,
+	}: {
+		jupiter: Jupiter;
+		inputToken?: Token;
+		outputToken?: Token;
+		inputAmount: number;
+		slippage: number;
+	}) => {
+		try {
+			if (!inputToken || !outputToken) {
+				return null;
+			}
+
+			console.log('Getting routes');
+			const inputAmountLamports = inputToken
+				? Math.round(inputAmount * 10 ** inputToken.decimals)
+				: 0; // Lamports based on token decimals
+			const routes =
+				inputToken && outputToken
+					? await jupiter.computeRoutes(
+							new PublicKey(inputToken.address),
+							new PublicKey(outputToken.address),
+							inputAmountLamports,
+							slippage,
+							true,
+					  )
+					: null;
+
+			if (routes && routes.routesInfos) {
+				console.log(
+					'Possible number of routes:',
+					routes.routesInfos.length,
+				);
+				console.log('Best quote: ', routes.routesInfos[0].outAmount);
+				return routes;
+			} else {
+				return null;
+			}
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	const executeSwap = async ({
+		jupiter,
+		route,
+	}: {
+		jupiter: Jupiter;
+		route: RouteInfo;
+	}) => {
+		try {
+			// Prepare execute exchange
+			const { execute } = await jupiter.exchange({
+				route,
+			});
+			// Execute swap
+			const swapResult: any = await execute(); // Force any to ignore TS misidentifying SwapResult type
+
+			if (swapResult.error) {
+				console.log(swapResult.error);
+			} else {
+				console.log(
+					`https://explorer.solana.com/tx/${swapResult.txid}`,
+				);
+				console.log(
+					`inputAddress=${swapResult.inputAddress.toString()} outputAddress=${swapResult.outputAddress.toString()}`,
+				);
+				console.log(
+					`inputAmount=${swapResult.inputAmount} outputAmount=${swapResult.outputAmount}`,
+				);
+			}
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	async function getJupObject() {
 		const connection = new Connection(
-			'https://solana-api.projectserum.com',
+			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5',
 		);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const seed = await mnemonicToSeed(mnemonic);
 		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
 
-		const wallet = new Wallet(fromWallet);
-		console.log('wallet: ', wallet);
-
-		// load Jupiter
 		const jupiter = await Jupiter.load({
 			connection,
 			cluster: 'mainnet-beta',
-			user: wallet.payer, // or public key
+			user: fromWallet, // or public key
 		});
-		console.log('jupiter: ', jupiter);
 
-		// RouteMap which map each tokenMint and their respective tokenMints that are swappable
-		const routeMap = jupiter.getRouteMap();
-		console.log('routeMap: ', routeMap);
-		const possibleSOLPairs = routeMap.get(
-			'So11111111111111111111111111111111111111112',
-		); // return an array of token mints that can be swapped with SOL
-		console.log('possibleSOLPairs: ', possibleSOLPairs);
+		return jupiter;
+	}
 
-		// Calculate routes for swapping 1 SOL to USDC with 1% slippage
-		// routes are sorted based on outputAmount, so ideally the first route is the best.
-		// const routes = await jupiter
-		// 	.computeRoutes(
-		// 		new PublicKey('So11111111111111111111111111111111111111112'),
-		// 		new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
-		// 		1_000_000_000,
-		// 		1,
-		// 	)
-		// 	.catch((err) => console.log('err: ', err));
+	async function getTokens() {
+		const tokens: Token[] = await (
+			await fetch(TOKEN_LIST_URL['mainnet-beta'])
+		).json();
+		return tokens;
+	}
 
-		const routes = await jupiter.computeRoutes(
-			new PublicKey('So11111111111111111111111111111111111111112'),
-			new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
-			1000000000,
-			1,
+	async function getPrice(inputMint, outPutMint, size) {
+		const jupiter = await getJupObject();
+		const tokens = await getTokens();
+
+		const inputToken = tokens.find((t) => t.address == inputMint);
+		const outputToken = tokens.find((t) => t.address == outPutMint);
+		//usdc token
+		const usdcToken = tokens.find(
+			(t) => t.address == 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 		);
 
-		// console.log('Quoted out amount', routes[0].outAmount);
-
-		// Prepare execute exchange
-		const { execute } = await jupiter.exchange({
-			route: routes[0],
+		//get usdc price
+		const usdcRoutes = await getRoutes({
+			jupiter,
+			inputToken,
+			outputToken: usdcToken,
+			inputAmount: 1, // 1 unit in UI
+			slippage: 1, // 1% slippage
 		});
-		console.log('execute: ', execute);
 
-		const swapResult = await execute();
-		console.log('swapResult: ', swapResult);
-		// const swapResult = await execute({ wallet: fromWallet, 'signTransaction' });
-		// console.log('swapResult: ', swapResult);
+		//get dollar price and convert it to dollars instead of lamports
+		const dollarPrice = usdcRoutes?.routesInfos[0]?.outAmount / 1000000;
+		setPrice(dollarPrice);
+		const tradeSize = parseFloat(tradeAmount) / dollarPrice;
+		setSize(tradeSize);
+
+		//get conversion price between tokens
+		const routes = await getRoutes({
+			jupiter,
+			inputToken,
+			outputToken,
+			inputAmount: tradeSize, // 1 unit in UI
+			slippage: 1, // 1% slippage
+		});
+
+		const bestRoute = routes?.routesInfos[0];
+		const ratio = bestRoute?.outAmount / bestRoute?.inAmount;
+		setDisplayPrice(ratio);
+	}
+
+	const submitJupTrade = async (inputMint, outPutMint, size) => {
+		const jupiter = await getJupObject();
+
+		const tokens = await getTokens();
+
+		// //usdc
+		// const INPUT_MINT_ADDRESS =
+		// 	'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+		// //usdt
+		// const OUTPUT_MINT_ADDRESS =
+		// 	'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB';
+
+		const routeMap = jupiter.getRouteMap();
+
+		const inputToken = tokens.find((t) => t.address == inputMint);
+		console.log('inputToken: ', inputToken);
+		const outputToken = tokens.find((t) => t.address == outPutMint);
+		console.log('outputToken: ', outputToken);
+
+		const possiblePairsTokenInfo = await getPossiblePairsTokenInfo({
+			tokens,
+			routeMap,
+			inputToken,
+		});
+
+		console.log('sisisisize: ', size);
+
+		console.log('routes stuff ', {
+			jupiter,
+			inputToken,
+			outputToken,
+			inputAmount: size, // 1 unit in UI
+			slippage: 1, // 1% slippage
+		});
+		const routes = await getRoutes({
+			jupiter,
+			inputToken,
+			outputToken,
+			inputAmount: size, // 1 unit in UI
+			slippage: 1, // 1% slippage
+		});
+		console.log('routes: ', routes);
+
+		const bestRoute = routes?.routesInfos[0];
+		console.log('bestRoute: ', bestRoute);
+		await executeSwap({ jupiter, route: bestRoute });
 	};
 
 	async function submitTrade() {
@@ -199,41 +376,45 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
-		const originalPair = fromTo.to.pairs.filter((pair) =>
-			pair.pair.includes(fromTo.from.symbol),
-		)[0].pair;
-
-		const pairIsNotOriginal =
-			fromTo.from.symbol + '/' + fromTo.to.symbol !== originalPair;
-
-		let marketName;
-		if (pairIsNotOriginal) {
-			marketName = fromTo.to.symbol + fromTo.from.symbol;
-			setSide('buy');
-		} else {
-			marketName = fromTo.from.symbol + fromTo.to.symbol;
-		}
-
-		console.log('marketName: ', marketName);
-
-		fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
-			.then((res) => res.json())
-			.then((resp) => {
-				console.log('marketname', marketName);
-
-				console.log(resp);
-				const recentPrice = resp.data[0].price;
-				const newPrice = recentPrice * 1.005;
-				console.log('newprice', newPrice);
-				pairIsNotOriginal
-					? setDisplayPrice(1 / newPrice)
-					: setDisplayPrice(newPrice);
-				setSize(parseFloat(tradeAmount) / newPrice);
-				setPrice(newPrice);
-				setMarketAddress(resp.data[0].marketAddress);
-			})
-			.catch((err) => console.log('error ', err));
+		getPrice(fromTo.from.mint, fromTo.to.mint, size);
 	}, []);
+
+	// useEffect(() => {
+	// 	const originalPair = fromTo.to.pairs.filter((pair) =>
+	// 		pair.pair.includes(fromTo.from.symbol),
+	// 	)[0].pair;
+
+	// 	const pairIsNotOriginal =
+	// 		fromTo.from.symbol + '/' + fromTo.to.symbol !== originalPair;
+
+	// 	let marketName;
+	// 	if (pairIsNotOriginal) {
+	// 		marketName = fromTo.to.symbol + fromTo.from.symbol;
+	// 		setSide('buy');
+	// 	} else {
+	// 		marketName = fromTo.from.symbol + fromTo.to.symbol;
+	// 	}
+
+	// 	console.log('marketName: ', marketName);
+
+	// 	fetch(`https://serum-api.bonfida.com/trades/${marketName}`)
+	// 		.then((res) => res.json())
+	// 		.then((resp) => {
+	// 			console.log('marketname', marketName);
+
+	// 			console.log(resp);
+	// 			const recentPrice = resp.data[0].price;
+	// 			const newPrice = recentPrice * 1.005;
+	// 			console.log('newprice', newPrice);
+	// 			pairIsNotOriginal
+	// 				? setDisplayPrice(1 / newPrice)
+	// 				: setDisplayPrice(newPrice);
+	// 			setSize(parseFloat(tradeAmount) / newPrice);
+	// 			setPrice(newPrice);
+	// 			setMarketAddress(resp.data[0].marketAddress);
+	// 		})
+	// 		.catch((err) => console.log('error ', err));
+	// }, []);
 
 	return (
 		<Background>
@@ -382,7 +563,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								$0.00
+								${normalizeNumber(tradeAmount * 0.004)}
 							</Text>
 						</View>
 					</View>
@@ -393,7 +574,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 					onPress={() => {
 						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						setModalVisible(true);
-						submitTrade();
+						submitJupTrade(fromTo.from.mint, fromTo.to.mint, size);
 					}}
 				>
 					Submit Trade

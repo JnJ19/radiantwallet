@@ -55,7 +55,7 @@ function shortenPublicKey(
 }
 
 function normalizeNumber(number: number) {
-	return number
+	return parseFloat(number)
 		?.toFixed(2)
 		.toString()
 		.replace(/\B(?=(\d{3})+(?!\d))/g, ',');

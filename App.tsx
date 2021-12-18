@@ -8,8 +8,7 @@ global.fetch = fetch;
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StoreProvider } from 'easy-peasy';
-import { LogBox } from 'react-native';
-import { View, Text } from 'react-native';
+import { LogBox, View, Text } from 'react-native';
 import bs58 from 'bs58';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
