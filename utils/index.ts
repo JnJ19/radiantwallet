@@ -363,6 +363,7 @@ async function getOwnedTokensData(
 		const combinedOwnedTokensArray = [];
 		for (let i = 0; i < ownedTokensArray.length; i++) {
 			const tokenObject = ownedTokensArray[i];
+			console.log('about data', aboutData);
 			const cmcToken = aboutData.find(
 				(token: object) => token.symbol === tokenObject.symbol,
 			);
@@ -491,7 +492,6 @@ async function getActiveSubWalletTokens(
 	console.log('get selected wallet tokens');
 	const newAccount = await getSolanaAccount(activeSubWallet, passcode);
 	// const tokenPairs = await getTokenPairs();
-	console.log('token pairs', tokenPairs);
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
 	const { publicKey } = newAccount;
@@ -629,7 +629,11 @@ async function getActiveSubWalletTokens(
 			ownedTokensSymbols.push(otherDetails.symbol);
 		}
 	}
-	const ownedSymbolsList = ownedTokensSymbols.join();
+	const filteredOwnedSymbols = ownedTokensSymbols.filter(
+		(symbol) => symbol !== 'soSUSHI',
+	);
+	const ownedSymbolsList = filteredOwnedSymbols.join();
+	console.log('ownedSymbolsList: ', ownedSymbolsList);
 
 	const aboutData = await fetch(
 		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
@@ -645,7 +649,10 @@ async function getActiveSubWalletTokens(
 			return response.json();
 		})
 		.then((res) => {
+			console.log('res', res);
 			if (res.status.error_code !== 0) {
+				console.log('helllooooooo');
+				console.log(res.status);
 				return {
 					description: 'No description available for this project.',
 					logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
@@ -658,8 +665,10 @@ async function getActiveSubWalletTokens(
 		})
 		.catch((err) => console.log('errerere', err));
 
+	console.log('aboutData: ', aboutData);
 	const combinedOwnedTokensArray = [];
 	for (let i = 0; i < ownedTokensArray.length; i++) {
+		console.log('hit hererere');
 		const tokenObject = ownedTokensArray[i];
 		const cmcToken = aboutData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
