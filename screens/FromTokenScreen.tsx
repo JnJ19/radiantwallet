@@ -24,11 +24,21 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	const [search, setSearch] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const firstLoadedTokens = useStoreState((state) => state.firstLoadedTokens);
+	const activeSubWallet = useStoreState((state) => state.activeSubWallet);
 
 	const [filteredTokens, setFilteredTokens] = useState(ownedTokens);
 
-	const searchFilter = (ownedTokens: Array<object>) => {
-		return ownedTokens.filter((token) => {
+	const searchFilter = () => {
+		if (activeSubWallet === 0) {
+			return firstLoadedTokens.filter((token) => {
+				return (
+					token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+					token.name.toLowerCase().includes(search.toLowerCase())
+				);
+			});
+		}
+		return ownedTokens[activeSubWallet].filter((token) => {
 			return (
 				token.symbol.toLowerCase().includes(search.toLowerCase()) ||
 				token.name.toLowerCase().includes(search.toLowerCase())
@@ -63,7 +73,7 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	}
 
 	useEffect(() => {
-		setFilteredTokens(searchFilter(ownedTokens));
+		setFilteredTokens(searchFilter());
 	}, [search]);
 
 	return (
@@ -71,7 +81,7 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 			<View style={{ marginBottom: 24 }}>
 				<SubPageHeader backButton={true}>
 					Select From Token
-					</SubPageHeader>
+				</SubPageHeader>
 
 				<View
 					style={{

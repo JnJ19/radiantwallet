@@ -223,6 +223,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			inputAmount: tradeSize, // 1 unit in UI
 			slippage: 1, // 1% slippage
 		});
+		console.log('routes: ', routes);
 
 		const bestRoute = routes?.routesInfos[0];
 		const ratio = bestRoute?.outAmount / bestRoute?.inAmount;

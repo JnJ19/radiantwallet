@@ -20,9 +20,7 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	const [search, setSearch] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
-	const [filteredTokens, setFilteredTokens] = useState(
-		route.params.filteredTo,
-	);
+	const [filteredTokens, setFilteredTokens] = useState(allTokens);
 
 	const searchFilter = (allTokens: Array<object>) => {
 		return allTokens.filter((token) => {
@@ -34,7 +32,7 @@ const SearchTokensScreen = ({ navigation, route }: Props) => {
 	};
 
 	useEffect(() => {
-		setFilteredTokens(searchFilter(route.params.filteredTo));
+		setFilteredTokens(searchFilter(allTokens));
 	}, [search]);
 
 	return (

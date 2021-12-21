@@ -116,7 +116,10 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			>
 				<TouchableOpacity
 					onPress={() =>
-						navigation.navigate('From Token', { pair, setPair })
+						navigation.navigate('From Token', {
+							pair,
+							setPair,
+						})
 					}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>
@@ -161,13 +164,10 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				</TouchableOpacity>
 				<TouchableOpacity
 					onPress={() =>
-						pair.from.pairs.length > 1
-							? navigation.navigate('To Token', {
-									filteredTo,
-									pair,
-									setPair,
-							  })
-							: null
+						navigation.navigate('To Token', {
+							pair,
+							setPair,
+						})
 					}
 					style={{ flexDirection: 'row', alignItems: 'center' }}
 				>

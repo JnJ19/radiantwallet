@@ -60,6 +60,9 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const setAllTokens = useStoreActions((actions) => actions.setAllTokens);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const setOwnedTokens = useStoreActions((actions) => actions.setOwnedTokens);
+	const setFirstLoadedTokens = useStoreActions(
+		(actions) => actions.setFirstLoadedTokens,
+	);
 	const selectedWallet = useStoreState(
 		(state) => state.selectedWallet,
 		(prev, next) => prev.selectedWallet === next.selectedWallet,
@@ -145,6 +148,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			tokenMap,
 			tokenPairs,
 		);
+		setFirstLoadedTokens(tokens);
 		setTokens(tokens);
 		let todayArray = [];
 		let d30Array = [];
@@ -274,21 +278,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			setOwnedTokensHasRendered(true);
 		}
 	}, [tokenMap, subWallets, tokens]);
-
-	// useEffect(() => {
-	// 	new TokenListProvider().resolve().then((tokens) => {
-	// 		const tokenList = tokens
-	// 			.filterByClusterSlug('mainnet-beta')
-	// 			.getList();
-
-	// 		setTokenMap(
-	// 			tokenList?.reduce((map, item) => {
-	// 				map.set(item.address, item);
-	// 				return map;
-	// 			}, new Map()),
-	// 		);
-	// 	});
-	// }, []);
 
 	useEffect(() => {
 		new TokenListProvider().resolve().then((tokens) => {
