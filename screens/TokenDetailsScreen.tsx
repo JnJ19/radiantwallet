@@ -116,66 +116,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		return result;
 	}
 
-	const main = async () => {
-		const connection = new Connection(
-			'https://solana-api.projectserum.com',
-		);
-
-		let mnemonic = await SecureStore.getItemAsync(passcode);
-		const seed = await mnemonicToSeed(mnemonic);
-		const fromWallet = accountFromSeed(seed, 0, 'bip44', 0);
-
-		const wallet = new Wallet(fromWallet);
-		console.log('wallet: ', wallet);
-
-		// load Jupiter
-		const jupiter = await Jupiter.load({
-			connection,
-			cluster: 'mainnet-beta',
-			user: wallet.payer, // or public key
-		});
-		console.log('jupiter: ', jupiter);
-
-		// RouteMap which map each tokenMint and their respective tokenMints that are swappable
-		const routeMap = jupiter.getRouteMap();
-		console.log('routeMap: ', routeMap);
-		const possibleSOLPairs = routeMap.get(
-			'So11111111111111111111111111111111111111112',
-		); // return an array of token mints that can be swapped with SOL
-		console.log('possibleSOLPairs: ', possibleSOLPairs);
-
-		// Calculate routes for swapping 1 SOL to USDC with 1% slippage
-		// routes are sorted based on outputAmount, so ideally the first route is the best.
-		// const routes = await jupiter
-		// 	.computeRoutes(
-		// 		new PublicKey('So11111111111111111111111111111111111111112'),
-		// 		new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
-		// 		1_000_000_000,
-		// 		1,
-		// 	)
-		// 	.catch((err) => console.log('err: ', err));
-
-		const routes = await jupiter.computeRoutes(
-			new PublicKey('So11111111111111111111111111111111111111112'),
-			new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
-			1000000000,
-			1,
-		);
-
-		// console.log('Quoted out amount', routes[0].outAmount);
-
-		// Prepare execute exchange
-		const { execute } = await jupiter.exchange({
-			route: routes[0],
-		});
-		console.log('execute: ', execute);
-
-		const swapResult = await execute();
-		console.log('swapResult: ', swapResult);
-		// const swapResult = await execute({ wallet: fromWallet, 'signTransaction' });
-		// console.log('swapResult: ', swapResult);
-	};
-
 	useEffect(() => {
 		getHistory();
 		if (token.pairs) {

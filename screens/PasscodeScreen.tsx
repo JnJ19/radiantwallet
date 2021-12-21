@@ -418,14 +418,14 @@ const styles = StyleSheet.create({
 	},
 	bigNumber: {
 		fontSize: 84,
-		fontFamily: 'Nunito Sans',
-		fontWeight: '400',
+		fontFamily: 'NunitoSans_Regular',
+		// fontWeight: '400',
 		color: colors.black_two,
 	},
 	mediumNumber: {
 		fontSize: 48,
-		fontFamily: 'Nunito Sans',
-		fontWeight: '400',
+		fontFamily: 'NunitoSans_Regular',
+		// fontWeight: '400',
 		color: colors.accent,
 	},
 	numberContainer: {
