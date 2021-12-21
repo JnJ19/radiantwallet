@@ -330,7 +330,12 @@ async function getOwnedTokensData(
 				ownedTokensSymbols.push(otherDetails.symbol);
 			}
 		}
-		const ownedSymbolsList = ownedTokensSymbols.join();
+
+		const filteredOwnedSymbols = ownedTokensSymbols.filter(
+			(symbol) => symbol !== 'soSUSHI',
+		);
+		const ownedSymbolsList = filteredOwnedSymbols.join();
+		console.log('ownedSymbolsList: ', ownedSymbolsList);
 
 		const aboutData = await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
@@ -651,8 +656,19 @@ async function getActiveSubWalletTokens(
 		.then((res) => {
 			console.log('res', res);
 			if (res.status.error_code !== 0) {
-				console.log('helllooooooo');
-				console.log(res.status);
+				// if (res.status.error_message.includes('symbol')) {
+				// 	const problemSymbol = res.status.error_message
+				// 		.split('\\')[0]
+				// 		.replace('Invalid value for ', '')
+				// 		.replace(/['"]+/g, '')
+				// 		.replace(' ', '')
+				// 		.replace('symbol', '')
+				// 		.replace(':', '')
+				// 		.replace('"', '')
+				// 		.toLowerCase();
+				// 	console.log('problemSymbolArray: ', problemSymbol)
+
+				// }
 				return {
 					description: 'No description available for this project.',
 					logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
