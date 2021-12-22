@@ -28,6 +28,12 @@ const TradeScreen = ({ navigation, route }: Props) => {
 		from: route.params.from,
 		to: route.params.to,
 	});
+	const firstLoadedTokens = useStoreState((state) => state.firstLoadedTokens);
+
+	let realOwnedTokens = ownedTokens;
+	if (!ownedTokens) {
+		realOwnedTokens = firstLoadedTokens;
+	}
 
 	function addNumber(numberString: string) {
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -139,29 +145,42 @@ const TradeScreen = ({ navigation, route }: Props) => {
 						</Text>
 					</View>
 				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.swapContainer}
-					onPress={() => {
-						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-						const fromToken2 = pair.from;
-						let toToken2 = pair.to;
-						const match = ownedTokens.find(
-							(token) => token.symbol === toToken2.symbol,
-						);
-						if (match) {
-							setPair({
-								...pair,
-								from: match,
-								to: fromToken2,
-							});
-						}
-					}}
-				>
-					<Image
-						source={require('../assets/icons/Swap.png')}
-						style={{ width: 24, height: 24 }}
-					/>
-				</TouchableOpacity>
+				{realOwnedTokens.find(
+					(token) => token.symbol === pair.to.symbol,
+				) ? (
+					<>
+						{console.log('hellooooooo')}
+						<TouchableOpacity
+							style={styles.swapContainer}
+							onPress={() => {
+								Haptics.impactAsync(
+									Haptics.ImpactFeedbackStyle.Medium,
+								);
+								const fromToken2 = pair.from;
+								let toToken2 = realOwnedTokens.find(
+									(token) => token.symbol === pair.to.symbol,
+								);
+								setPair({
+									...pair,
+									from: toToken2,
+									to: fromToken2,
+								});
+							}}
+						>
+							<Image
+								source={require('../assets/icons/Swap.png')}
+								style={{ width: 24, height: 24 }}
+							/>
+						</TouchableOpacity>
+					</>
+				) : (
+					<View style={styles.swapContainer} opacity={0.5}>
+						<Image
+							source={require('../assets/icons/Swap.png')}
+							style={{ width: 24, height: 24 }}
+						/>
+					</View>
+				)}
 				<TouchableOpacity
 					onPress={() =>
 						navigation.navigate('To Token', {
