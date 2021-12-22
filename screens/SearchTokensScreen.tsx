@@ -21,6 +21,7 @@ type Props = {
 const SearchTokensScreen = ({ navigation }: Props) => {
 	const [search, setSearch] = useState('');
 	const allTokens = useStoreState((state) => state.allTokens);
+	console.log('allTokens: ', allTokens);
 	const [filteredTokens, setFilteredTokens] = useState(allTokens);
 
 	const searchFilter = (allTokens) => {
@@ -35,7 +36,7 @@ const SearchTokensScreen = ({ navigation }: Props) => {
 	const renderItem = (token) => (
 		<TokenCard
 			token={token}
-			onPress={() => navigation.navigate('Token Details', { token })}
+			onPress={() => navigation.navigate('Token Details', token.item)}
 		/>
 	);
 

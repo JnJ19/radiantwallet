@@ -70,6 +70,8 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
 	const passcode = useStoreState((state) => state.passcode);
+	const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const firstLoadedTokens = useStoreState((state) => state.firstLoadedTokens);
 
 	async function getDefaultPairToken() {
 		const hasUSDC = token.pairs.find(
@@ -620,6 +622,11 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View
 							style={{ flexDirection: 'row', marginVertical: 24 }}
 						>
+							{console.log('tokens extensions', token.extensions)}
+							{console.log(
+								'tokens extensions twitter',
+								token.extensions.twitter,
+							)}
 							{token.extensions.twitter && (
 								<TouchableOpacity
 									onPress={() =>
@@ -769,7 +776,59 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						Trade
 					</Button>
 				</View>
-			) : null}
+			) : (
+				<View
+					style={{
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						position: 'absolute',
+						bottom: 0,
+						margin: 16,
+						width: '100%',
+						shadowColor: '#656565',
+						shadowOpacity: 0.25,
+						shadowOffset: { width: 0, height: 8 },
+						shadowRadius: 24,
+					}}
+				>
+					<Button
+						mode="contained"
+						onPress={() => {
+							let fromTokens = ownedTokens;
+							if (!ownedTokens) {
+								fromTokens = firstLoadedTokens;
+							}
+							const sortedOwnedTokens = fromTokens.sort(
+								(a, b) => {
+									return (
+										b.price * b.amount - a.price * a.amount
+									);
+								},
+							);
+							console.log('stuffff', token, defaultPair);
+							navigation.navigate('Trade', {
+								from: sortedOwnedTokens[0],
+								to: token,
+							});
+						}}
+						style={{
+							width: '100%',
+						}}
+						// icon={() => (
+						// 	<Image
+						// 		source={require('../assets/icons/Trade.png')}
+						// 		style={{
+						// 			width: 24,
+						// 			height: 24,
+						// 			// marginRight: -50,
+						// 		}}
+						// 	/>
+						// )}
+					>
+						Trade
+					</Button>
+				</View>
+			)}
 		</Background>
 	);
 };
