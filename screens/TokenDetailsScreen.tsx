@@ -465,7 +465,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								</Text>
 							</View>
 						</View>
-						<View
+						{/* <View
 							style={{
 								borderTopColor: colors.border,
 								borderTopWidth: 1,
@@ -486,7 +486,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								source={require('../assets/icons/Forward_Arrow.png')}
 								style={{ width: 24, height: 24 }}
 							/>
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</View>
 				) : null}
 
@@ -725,67 +725,49 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						shadowRadius: 24,
 					}}
 				>
-					{token.pairs ? (
-						<>
-							<Button
-								mode="outlined"
-								onPress={() =>
-									navigation.navigate('Send', token)
-								}
-								style={{ width: '50%' }}
-								icon={() => (
-									<Image
-										source={require('../assets/icons/Send.png')}
-										style={{
-											width: 24,
-											height: 24,
-											marginRight: -24,
-										}}
-									/>
-								)}
-							>
-								Send
-							</Button>
-							<View style={{ width: 8 }} />
-							<Button
-								mode="contained"
-								onPress={() => {
-									console.log('stuffff', token, defaultPair);
-									navigation.navigate('Trade', {
-										from: token,
-										to: defaultPair,
-									});
-								}}
+					<Button
+						mode="outlined"
+						onPress={() => navigation.navigate('Send', token)}
+						style={{ width: '50%' }}
+						icon={() => (
+							<Image
+								source={require('../assets/icons/Send.png')}
 								style={{
-									width: '50%',
+									width: 24,
+									height: 24,
+									marginRight: -24,
 								}}
-								icon={() => (
-									<Image
-										source={require('../assets/icons/Trade.png')}
-										style={{
-											width: 24,
-											height: 24,
-											marginRight: -20,
-										}}
-									/>
-								)}
-							>
-								Trade
-							</Button>
-						</>
-					) : (
-						<>
-							<Button
-								mode="contained"
-								onPress={() =>
-									navigation.navigate('Send', token)
-								}
-								style={{ width: '100%' }}
-							>
-								Send
-							</Button>
-						</>
-					)}
+							/>
+						)}
+					>
+						Send
+					</Button>
+					<View style={{ width: 8 }} />
+					<Button
+						mode="contained"
+						onPress={() => {
+							console.log('stuffff', token, defaultPair);
+							navigation.navigate('Trade', {
+								from: token,
+								to: defaultPair,
+							});
+						}}
+						style={{
+							width: '50%',
+						}}
+						icon={() => (
+							<Image
+								source={require('../assets/icons/Trade.png')}
+								style={{
+									width: 24,
+									height: 24,
+									marginRight: -20,
+								}}
+							/>
+						)}
+					>
+						Trade
+					</Button>
 				</View>
 			) : null}
 		</Background>

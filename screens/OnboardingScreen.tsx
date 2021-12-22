@@ -24,21 +24,20 @@ const OnboardingScreen = ({ navigation }: Props) => (
 				}}
 			/>
 			<Text style={theme.fonts.Nunito_Sans.Body_M_Regular}>
-				Import a wallet you already use or create a new wallet to
-				transfer Solana ecosystem.
+				Import a wallet you already use from the Solana ecosystem.
 			</Text>
 		</View>
 
 		<View style={{ height: 450, marginTop: 48 }}>
 			<View style={{ flexDirection: 'column' }}>
-				<View style={{ marginBottom: 16 }}>
+				{/* <View style={{ marginBottom: 16 }}>
 					<Button
 						mode="outlined"
 						onPress={() => navigation.navigate('Create Wallet')}
 					>
 						Create Wallet
 					</Button>
-				</View>
+				</View> */}
 				<Button
 					mode="contained"
 					onPress={() => navigation.navigate('Import Wallet')}

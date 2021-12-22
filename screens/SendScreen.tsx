@@ -320,6 +320,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 						borderColor: 'black',
 						borderWidth: 0,
 						...theme.fonts.Nunito_Sans.Body_M_Regular,
+						flex: 1,
 					}}
 					onChangeText={(text: string) => setRecipientAddress(text)}
 					value={recipientAddress}

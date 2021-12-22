@@ -17,7 +17,6 @@
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"supportsTablet": true,
 			"backgroundColor": "#ffffff",
 			"bundleIdentifier": "com.radiant.wallet2",
 			"buildNumber": "0.0.1"

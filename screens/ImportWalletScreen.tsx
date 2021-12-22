@@ -90,15 +90,16 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 							borderWidth: 0,
 							...theme.fonts.Nunito_Sans.Body_M_Regular,
 						}}
+						autoCapitalize="none"
 						onChangeText={(text) => setSecret(text)}
 						value={secret}
 						placeholder="Enter your secret phrase"
 						// placeholderTextColor: theme.colors.primary
 						keyboardType="default"
 						multiline={true}
-						minHeight={150}
+						minHeight={100}
 					/>
-					<View
+					{/* <View
 						style={{
 							borderBottomColor: theme.colors.black_seven,
 							borderBottomWidth: 1,
@@ -159,7 +160,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 								sport seek found
 							</Text>
 						</TouchableOpacity>
-					</View>
+					</View> */}
 				</View>
 				<TouchableOpacity
 					onPress={() => bottomSheetModalRef.current?.present()}

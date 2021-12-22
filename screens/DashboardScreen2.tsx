@@ -474,7 +474,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		<Background>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-				{SOL ? (
+				{/* {SOL ? (
 					<View
 						style={{
 							// borderColor: theme.colors.border,
@@ -536,7 +536,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							/>
 						</TouchableOpacity>
 					</View>
-				) : null}
+				) : null} */}
 				<View
 					style={{
 						borderWidth: 1,
