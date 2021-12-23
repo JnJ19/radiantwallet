@@ -109,6 +109,20 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					${tradeAmount}
 				</Text>
 			</View>
+			{pair.from.amount * pair.from.price < parseFloat(tradeAmount) ? (
+				<View>
+					<Text
+						style={{
+							alignSelf: 'center',
+							...theme.fonts.Nunito_Sans.Caption_M_Regular,
+							color: theme.colors.error_one,
+						}}
+					>
+						You can only trade {pair.from.symbol} that you have
+						available
+					</Text>
+				</View>
+			) : null}
 			<View
 				style={{
 					borderColor: colors.border,
@@ -291,14 +305,21 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					</TouchableOpacity>
 				</View>
 			</View>
-			<View style={{ marginBottom: 40 }}>
+			<View
+				style={{ marginBottom: 40 }}
+				opacity={parseFloat(tradeAmount) > 0 ? 1 : 0.65}
+			>
 				<Button
 					onPress={() => {
-						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-						navigation.navigate('Trade Preview', {
-							tradeAmount,
-							pair,
-						});
+						if (parseFloat(tradeAmount) > 0) {
+							Haptics.impactAsync(
+								Haptics.ImpactFeedbackStyle.Medium,
+							);
+							navigation.navigate('Trade Preview', {
+								tradeAmount,
+								pair,
+							});
+						}
 					}}
 				>
 					Review Trade
