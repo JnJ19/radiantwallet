@@ -17,7 +17,7 @@
 		"@expo/metro-config": "^0.3.2",
 		"@expo/vector-icons": "^12.0.0",
 		"@gorhom/bottom-sheet": "^2",
-		"@jup-ag/core": "^0.0.0-alpha.22",
+		"@jup-ag/core": "1.0.0-beta.1",
 		"@jup-ag/react-hook": "^0.0.0-alpha.22",
 		"@pragma-technologies/react-native-solana": "^1.0.0",
 		"@project-serum/anchor": "^0.17.1-beta.1",
@@ -34,6 +34,7 @@
 		"@solana/wallet-adapter-base": "^0.7.0",
 		"@solana/wallet-adapter-react": "^0.13.1",
 		"@solana/web3.js": "^1.24.1",
+		"@types/bn.js": "^5.1.0",
 		"@types/bs58": "^4.0.1",
 		"add": "^2.0.6",
 		"assert": "^2.0.0",
@@ -68,7 +69,7 @@
 		"expo-web-browser": "~10.0.3",
 		"fast-text-encoding": "^1.0.3",
 		"isomorphic-webcrypto": "^2.3.8",
-		"jsbi": "^4.1.0",
+		"jsbi": "^3.2.5",
 		"lottie-react-native": "4.0.3",
 		"node-libs-expo": "^0.0.3",
 		"react": "17.0.2",
@@ -110,7 +111,8 @@
 	},
 	"resolutions": {
 		"@solana/web3.js": "1.31.0",
-		"cross-fetch": "3.1.4"
+		"cross-fetch": "3.1.4",
+		"@solana/buffer-layout": "^4.0.0"
 	},
 	"browser": {
 		"fs": false

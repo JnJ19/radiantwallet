@@ -635,7 +635,7 @@ async function getActiveSubWalletTokens(
 		}
 	}
 	const filteredOwnedSymbols = ownedTokensSymbols.filter(
-		(symbol) => symbol !== 'soSUSHI',
+		(symbol) => symbol !== 'soSUSHI' && symbol !== 'SCAM_7BB4',
 	);
 	const ownedSymbolsList = filteredOwnedSymbols.join();
 	console.log('ownedSymbolsList: ', ownedSymbolsList);
