@@ -42,10 +42,13 @@ interface Token {
 const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [price, setPrice] = useState('');
+	const [outputDollarPrice, setOutputDollarPrice] = useState(0);
 	const [displayPrice, setDisplayPrice] = useState('');
 	const [size, setSize] = useState('');
 	const [side, setSide] = useState('sell');
 	const [marketAddress, setMarketAddress] = useState('');
+	const [fees, setFees] = useState({});
+	const [outAmount, setOutAmount] = useState(0);
 	const tradeAmount = route.params.tradeAmount;
 	const fromTo = route.params.pair;
 	const passcode = useStoreState((state) => state.passcode);
@@ -143,6 +146,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			const { execute } = await jupiter.exchange({
 				route,
 			});
+			console.log('execute: ', execute);
 			// Execute swap
 			const swapResult: any = await execute(); // Force any to ignore TS misidentifying SwapResult type
 
@@ -215,6 +219,20 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		const tradeSize = parseFloat(tradeAmount) / dollarPrice;
 		setSize(tradeSize);
 
+		//get usdc price of the output token
+		const usdcRoutes2 = await getRoutes({
+			jupiter,
+			inputToken: outputToken,
+			outputToken: usdcToken,
+			inputAmount: 1, // 1 unit in UI
+			slippage: 1, // 1% slippage
+		});
+
+		//get dollar price of output token and convert it to dollars instead of lamports
+		const dollarPrice2 = usdcRoutes2?.routesInfos[0]?.outAmount / 1000000;
+		console.log('dollarPrice2: ', dollarPrice2);
+		setOutputDollarPrice(dollarPrice2);
+
 		//get conversion price between tokens
 		const routes = await getRoutes({
 			jupiter,
@@ -223,9 +241,14 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			inputAmount: tradeSize, // 1 unit in UI
 			slippage: 1, // 1% slippage
 		});
-		console.log('routes: ', routes);
 
 		const bestRoute = routes?.routesInfos[0];
+		console.log('bestRoute: ', bestRoute);
+		bestRoute?.getDepositAndFee().then((r) => {
+			console.log('deposit and fees', r);
+			setFees(r);
+		});
+		setOutAmount(bestRoute?.outAmount / 100000000);
 		const ratio = bestRoute?.outAmount / bestRoute?.inAmount;
 		setDisplayPrice(ratio);
 	}
@@ -277,104 +300,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		console.log('bestRoute: ', bestRoute);
 		await executeSwap({ jupiter, route: bestRoute });
 	};
-
-	async function submitTrade() {
-		//prep trade
-		let mnemonic = await SecureStore.getItemAsync(passcode);
-		const bip39 = await import('bip39');
-		const seed = await bip39.mnemonicToSeed(mnemonic);
-		const newAccount = getAccountFromSeed(
-			seed,
-			0,
-			DERIVATION_PATH.bip44Change,
-		);
-
-		// const url = 'https://solana-api.projectserum.com';
-		const url =
-			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5';
-		const connection = new Connection(url);
-
-		//make the trade
-		const marketAddressKey = new PublicKey(marketAddress);
-		const programAddressKey = new PublicKey(
-			'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-		);
-
-		let market = await Market.load(
-			connection,
-			marketAddressKey,
-			{},
-			programAddressKey,
-		);
-		console.log('market: ', market);
-
-		let owner = new Account(newAccount.secretKey);
-		console.log('owner: ', owner);
-
-		console.log('minttt', fromTo.from);
-
-		const mintKey = new PublicKey(fromTo.from.mint);
-		console.log('mintKey: ', mintKey);
-
-		const associatedTokenAddress = findAssociatedTokenAddress(
-			owner.publicKey,
-			mintKey,
-		).catch((err) => console.log('errrrrror', err));
-
-		console.log('associatedTokenAddress: ', associatedTokenAddress);
-
-		const hash = (await associatedTokenAddress).toString('hex');
-		console.log('hash: ', hash);
-
-		let payer = new PublicKey(hash);
-		console.log('payer: ', payer);
-
-		await market
-			.placeOrder(connection, {
-				owner,
-				payer,
-				side: side, //sell is from left side (use dxl as payer), buy is from right (use usdc as payer)
-				price: price,
-				size: size,
-				orderType: 'ioc',
-			})
-			.then((response) => {
-				console.log('response hit');
-				console.log(response);
-				Haptics.notificationAsync(
-					Haptics.NotificationFeedbackType.Success,
-				);
-				setModalVisible(false);
-				navigation.navigate('Trade Success', {
-					tradeAmount,
-					price,
-					fromTo,
-				});
-			})
-			.catch((err) => console.log(err));
-
-		//Settle Funds
-		// for (let openOrders of await market.findOpenOrdersAccountsForOwner(
-		// 	connection,
-		// 	owner.publicKey,
-		// )) {
-		// 	if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
-		// 		// spl-token accounts to which to send the proceeds from trades
-		// 		await market
-		// 			.settleFunds(
-		// 				connection,
-		// 				owner,
-		// 				openOrders,
-		// 				baseTokenAccount,
-		// 				quoteTokenAccount,
-		// 			)
-		// 			.then((res) => console.log('response', res))
-		// 			.catch((err) => console.log('error', err));
-		// 	} else {
-		// 		console.log('hit other');
-		// 	}
-		// }
-	}
 
 	useEffect(() => {
 		getPrice(fromTo.from.mint, fromTo.to.mint, size);
@@ -468,7 +393,8 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								{fromTo.from.name}
+								{normalizeNumber(size)} {fromTo.from.symbol} ($
+								{tradeAmount})
 							</Text>
 						</View>
 						<View
@@ -498,7 +424,10 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								{fromTo.to.name}
+								{normalizeNumber(outAmount)} {fromTo.to.symbol}{' '}
+								($
+								{normalizeNumber(outAmount * outputDollarPrice)}
+								)
 							</Text>
 						</View>
 						<View
