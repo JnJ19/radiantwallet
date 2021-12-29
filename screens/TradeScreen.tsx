@@ -307,11 +307,20 @@ const TradeScreen = ({ navigation, route }: Props) => {
 			</View>
 			<View
 				style={{ marginBottom: 40 }}
-				opacity={parseFloat(tradeAmount) > 0 ? 1 : 0.65}
+				opacity={
+					parseFloat(tradeAmount) > 0 &&
+					pair.from.amount * pair.from.price > parseFloat(tradeAmount)
+						? 1
+						: 0.65
+				}
 			>
 				<Button
 					onPress={() => {
-						if (parseFloat(tradeAmount) > 0) {
+						if (
+							parseFloat(tradeAmount) > 0 &&
+							pair.from.amount * pair.from.price >
+								parseFloat(tradeAmount)
+						) {
 							Haptics.impactAsync(
 								Haptics.ImpactFeedbackStyle.Medium,
 							);
