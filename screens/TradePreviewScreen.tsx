@@ -53,6 +53,8 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const fromTo = route.params.pair;
 	const passcode = useStoreState((state) => state.passcode);
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
+	const [bestRoute2, setBestRoute2] = useState(null);
+	const [jupiterObject, setJupiterObject] = useState(null);
 
 	const getPossiblePairsTokenInfo = ({
 		tokens,
@@ -149,6 +151,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			console.log('execute: ', execute);
 			// Execute swap
 			const swapResult: any = await execute(); // Force any to ignore TS misidentifying SwapResult type
+			console.log('swapResult: ', swapResult);
 
 			if (swapResult.error) {
 				console.log(swapResult.error);
@@ -193,8 +196,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		return tokens;
 	}
 
-	async function getPrice(inputMint, outPutMint, size) {
+	async function getPrice(inputMint: string, outPutMint: string, size) {
 		const jupiter = await getJupObject();
+		setJupiterObject(jupiter);
 		const tokens = await getTokens();
 
 		const inputToken = tokens.find((t) => t.address == inputMint);
@@ -241,64 +245,27 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			inputAmount: tradeSize, // 1 unit in UI
 			slippage: 1, // 1% slippage
 		});
+		console.log('routes: ', routes);
 
 		const bestRoute = routes?.routesInfos[0];
+		setBestRoute2(bestRoute);
 		console.log('bestRoute: ', bestRoute);
 		bestRoute?.getDepositAndFee().then((r) => {
 			console.log('deposit and fees', r);
 			setFees(r);
 		});
+		console.log('bestRoute.outAmount: ', bestRoute?.outAmount);
 		setOutAmount(bestRoute?.outAmount / 100000000);
 		const ratio = bestRoute?.outAmount / bestRoute?.inAmount;
 		setDisplayPrice(ratio);
 	}
 
-	const submitJupTrade = async (inputMint, outPutMint, size) => {
-		const jupiter = await getJupObject();
-
-		const tokens = await getTokens();
-
-		// //usdc
-		// const INPUT_MINT_ADDRESS =
-		// 	'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-		// //usdt
-		// const OUTPUT_MINT_ADDRESS =
-		// 	'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB';
-
-		const routeMap = jupiter.getRouteMap();
-
-		const inputToken = tokens.find((t) => t.address == inputMint);
-		console.log('inputToken: ', inputToken);
-		const outputToken = tokens.find((t) => t.address == outPutMint);
-		console.log('outputToken: ', outputToken);
-
-		const possiblePairsTokenInfo = await getPossiblePairsTokenInfo({
-			tokens,
-			routeMap,
-			inputToken,
-		});
-
-		console.log('sisisisize: ', size);
-
-		console.log('routes stuff ', {
-			jupiter,
-			inputToken,
-			outputToken,
-			inputAmount: size, // 1 unit in UI
-			slippage: 1, // 1% slippage
-		});
-		const routes = await getRoutes({
-			jupiter,
-			inputToken,
-			outputToken,
-			inputAmount: size, // 1 unit in UI
-			slippage: 1, // 1% slippage
-		});
-		console.log('routes: ', routes);
-
-		const bestRoute = routes?.routesInfos[0];
-		console.log('bestRoute: ', bestRoute);
-		await executeSwap({ jupiter, route: bestRoute });
+	const submitJupTrade = async () => {
+		console.log('hit');
+		console.log('jupiterobject', jupiterObject);
+		console.log('bestRoute', bestRoute2);
+		await executeSwap({ jupiter: jupiterObject, route: bestRoute2 });
+		navigation.navigate('Trade Success', { tradeAmount, fromTo });
 	};
 
 	useEffect(() => {
@@ -364,14 +331,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 					}}
 				>
 					<View style={{ margin: 16 }}>
-						<Text
-							style={{
-								...Azeret_Mono.Body_M_SemiBold,
-								marginBottom: 16,
-							}}
-						>
-							Details
-						</Text>
 						<View
 							style={{
 								flexDirection: 'row',
@@ -385,7 +344,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_five,
 								}}
 							>
-								Pay With
+								Pay
 							</Text>
 							<Text
 								style={{
@@ -395,6 +354,39 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 							>
 								{normalizeNumber(size)} {fromTo.from.symbol} ($
 								{tradeAmount})
+							</Text>
+						</View>
+						<View
+							style={{
+								height: 1,
+								backgroundColor: colors.border,
+							}}
+						/>
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								marginVertical: 16,
+							}}
+						>
+							<Text
+								style={{
+									...Nunito_Sans.Caption_M_SemiBold,
+									color: colors.black_five,
+								}}
+							>
+								Fees
+							</Text>
+							<Text
+								style={{
+									...Nunito_Sans.Body_M_SemiBold,
+									color: colors.black_one,
+								}}
+							>
+								{normalizeNumber(
+									parseFloat(tradeAmount) -
+										outAmount * outputDollarPrice,
+								)}
 							</Text>
 						</View>
 						<View
@@ -428,72 +420,6 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 								($
 								{normalizeNumber(outAmount * outputDollarPrice)}
 								)
-							</Text>
-						</View>
-						<View
-							style={{
-								height: 1,
-								backgroundColor: theme.colors.border,
-							}}
-						/>
-						<View
-							style={{
-								flexDirection: 'row',
-								justifyContent: 'space-between',
-								marginVertical: 16,
-							}}
-						>
-							<Text
-								style={{
-									...Nunito_Sans.Caption_M_SemiBold,
-									color: colors.black_five,
-								}}
-							>
-								Exchange Rate
-							</Text>
-							<Text
-								style={{
-									...Nunito_Sans.Body_M_SemiBold,
-									color: colors.black_one,
-								}}
-							>
-								{price
-									? `1 ${
-											fromTo.from.symbol
-									  } = ${normalizeNumber(displayPrice)} ${
-											fromTo.to.symbol
-									  }`
-									: 'loading...'}
-							</Text>
-						</View>
-						<View
-							style={{
-								height: 1,
-								backgroundColor: colors.border,
-							}}
-						/>
-						<View
-							style={{
-								flexDirection: 'row',
-								justifyContent: 'space-between',
-								marginVertical: 16,
-							}}
-						>
-							<Text
-								style={{
-									...Nunito_Sans.Caption_M_SemiBold,
-									color: colors.black_five,
-								}}
-							>
-								Radiant Fee
-							</Text>
-							<Text
-								style={{
-									...Nunito_Sans.Body_M_SemiBold,
-									color: colors.black_one,
-								}}
-							>
-								${normalizeNumber(tradeAmount * 0.004)}
 							</Text>
 						</View>
 					</View>
