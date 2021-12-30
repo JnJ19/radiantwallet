@@ -1,6 +1,12 @@
 import React, { memo, useState, useEffect, useCallback, useRef } from 'react';
-import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Background, Button } from '../components';
+import {
+	Text,
+	ScrollView,
+	StyleSheet,
+	Alert,
+	ActivityIndicator,
+} from 'react-native';
+import { Background, Button, DashboardLoading } from '../components';
 import { Navigation } from '../types';
 import { View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
@@ -428,42 +434,59 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	if (loading) {
 		return (
 			<Background>
-				<ScrollView showsVerticalScrollIndicator={false}>
-					<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
-				</ScrollView>
-
-				<Modal
-					isVisible={modalVisible}
-					backdropColor={theme.colors.black_two}
-					backdropOpacity={0.35}
-					// onBackdropPress={() => setModalVisible(false)}
+				<SubPageHeader backButton={false}>Dashboard</SubPageHeader>
+				<View
+					style={{
+						borderWidth: 1,
+						borderRadius: 18,
+						borderColor: theme.colors.border,
+						padding: 16,
+					}}
 				>
-					<TouchableOpacity
-						onPress={() => {
-							setModalVisible(false);
-						}}
+					<View
 						style={{
-							paddingHorizontal: 32,
-							paddingBottom: 32,
-							paddingTop: 8,
-							backgroundColor: '#111111',
-							borderRadius: 32,
-							width: 194,
-							alignItems: 'center',
-							alignSelf: 'center',
+							width: 140,
+							height: 20,
+							borderRadius: 4,
+							backgroundColor: theme.colors.black_seven,
+							marginBottom: 24,
 						}}
-					>
-						<Image
-							source={require('../assets/images/logo_loader.png')}
+					/>
+					<View style={{ flexDirection: 'row' }}>
+						<View
 							style={{
-								width: 110,
-								height: 114,
-								marginBottom: 2,
+								width: 70,
+								height: 32,
+								borderRadius: 4,
+								backgroundColor: theme.colors.black_seven,
+								marginRight: 16,
 							}}
 						/>
-						<Text style={styles.loaderLabel}>loading...</Text>
-					</TouchableOpacity>
-				</Modal>
+						<View
+							style={{
+								width: 85,
+								height: 20,
+								borderRadius: 4,
+								backgroundColor: theme.colors.black_seven,
+							}}
+						/>
+					</View>
+					<View style={{ marginVertical: 48 }}>
+						<ActivityIndicator />
+					</View>
+				</View>
+				<View style={{ marginTop: 24, marginBottom: 8 }}>
+					<Text
+						style={{
+							marginBottom: 8,
+							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+						}}
+					>
+						Portfolio
+					</Text>
+
+					<DashboardLoading />
+				</View>
 			</Background>
 		);
 	}
