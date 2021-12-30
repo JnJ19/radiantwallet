@@ -48,7 +48,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const [side, setSide] = useState('sell');
 	const [marketAddress, setMarketAddress] = useState('');
 	const [fees, setFees] = useState({});
-	const [outAmount, setOutAmount] = useState(0);
+	const [outAmount, setOutAmount] = useState('');
 	const tradeAmount = route.params.tradeAmount;
 	const fromTo = route.params.pair;
 	const passcode = useStoreState((state) => state.passcode);
@@ -201,13 +201,53 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		return tokens;
 	}
 
+	function addDecimals(number, decimals) {
+		let stringNumber = number.toString();
+		const length = stringNumber.length;
+		if (decimals > length) {
+			const difference = decimals - length;
+			for (let i = 0; i < difference; i++) {
+				stringNumber = '0' + stringNumber;
+			}
+		}
+
+		console.log('stringNumber after adding zeroes', stringNumber);
+
+		const index = stringNumber.length - decimals;
+
+		if (index > 0) {
+			console.log('hit');
+			stringNumber =
+				stringNumber.substring(0, index) +
+				'.' +
+				stringNumber.substr(index);
+		} else {
+			stringNumber = '.' + stringNumber;
+		}
+
+		const floatNumber = parseFloat(stringNumber);
+		return floatNumber;
+	}
+
 	async function getPrice(inputMint: string, outPutMint: string, size) {
 		const jupiter = await getJupObject();
 		setJupiterObject(jupiter);
 		const tokens = await getTokens();
 
 		const inputToken = tokens.find((t) => t.address == inputMint);
-		const outputToken = tokens.find((t) => t.address == outPutMint);
+		let outputToken = tokens.find((t) => {
+			let outPutMintAddress = outPutMint;
+			if (
+				outPutMintAddress ===
+				'G79qAryn3Urn4pyJyTSiX6XNz3Zk1epwJbsnLA5Yntz5'
+			) {
+				outPutMintAddress =
+					'So11111111111111111111111111111111111111112';
+			}
+			return t.address == outPutMintAddress;
+		});
+		const outPutDecimals = outputToken?.decimals;
+
 		//usdc token
 		const usdcToken = tokens.find(
 			(t) => t.address == 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
@@ -260,7 +300,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			setFees(r);
 		});
 		console.log('bestRoute.outAmount: ', bestRoute?.outAmount);
-		setOutAmount(bestRoute?.outAmount / 100000000);
+		setOutAmount(addDecimals(bestRoute?.outAmount, outPutDecimals));
 		const ratio = bestRoute?.outAmount / bestRoute?.inAmount;
 		setDisplayPrice(ratio);
 	}
@@ -424,10 +464,13 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								{normalizeNumber(outAmount)} {fromTo.to.symbol}{' '}
-								($
-								{normalizeNumber(outAmount * outputDollarPrice)}
-								)
+								{outAmount
+									? `${normalizeNumber(outAmount)} ${
+											fromTo.to.symbol
+									  } ($${normalizeNumber(
+											outAmount * outputDollarPrice,
+									  )})`
+									: 'loading...'}
 							</Text>
 						</View>
 					</View>
