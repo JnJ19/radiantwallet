@@ -66,7 +66,6 @@ type Props = {
 
 const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const token = route.params;
-	console.log('token: ', token);
 	const [defaultPair, setDefaultPair] = useState();
 	const allTokens = useStoreState((state) => state.allTokens);
 	const passcode = useStoreState((state) => state.passcode);
@@ -99,6 +98,51 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		}
 	}
 
+	function getMonthText(number: number) {
+		if (number === 1) {
+			return 'January';
+		}
+		if (number === 2) {
+			return 'February';
+		}
+		if (number === 3) {
+			return 'March';
+		}
+		if (number === 4) {
+			return 'April';
+		}
+		if (number === 5) {
+			return 'May';
+		}
+		if (number === 6) {
+			return 'June';
+		}
+		if (number === 7) {
+			return 'July';
+		}
+		if (number === 8) {
+			return 'August';
+		}
+		if (number === 9) {
+			return 'September';
+		}
+		if (number === 10) {
+			return 'October';
+		}
+		if (number === 11) {
+			return 'November';
+		}
+		if (number === 12) {
+			return 'December';
+		}
+	}
+
+	function getYearText(year: number) {
+		const string = year.toString();
+		const newString = string.slice(2, 4);
+		return "'" + newString;
+	}
+
 	async function getHistory(options = { limit: 20 }) {
 		let mnemonic = await SecureStore.getItemAsync(passcode);
 		const seed = await mnemonicToSeed(mnemonic);
@@ -114,7 +158,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 			options,
 		);
 
-		console.log('result of history: ', result);
 		return result;
 	}
 
@@ -195,16 +238,43 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 		const date = () => {
 			var today = new Date();
 			if (positionX === 0) {
-				return 'Today';
+				const date = new Date(
+					new Date(today).setDate(today.getDate() - 90),
+				);
+				return (
+					date.getDate() +
+					' ' +
+					getMonthText(date.getMonth()) +
+					' ' +
+					getYearText(date.getFullYear())
+				);
 			}
 			if (positionX === 1) {
-				return new Date().setDate(today.getDate() - 30);
+				const date = new Date(
+					new Date(today).setDate(today.getDate() - 60),
+				);
+				return (
+					date.getDate() +
+					' ' +
+					getMonthText(date.getMonth()) +
+					' ' +
+					getYearText(date.getFullYear())
+				);
 			}
 			if (positionX === 2) {
-				return new Date().setDate(today.getDate() - 60);
+				const date = new Date(
+					new Date(today).setDate(today.getDate() - 30),
+				);
+				return (
+					date.getDate() +
+					' ' +
+					getMonthText(date.getMonth()) +
+					' ' +
+					getYearText(date.getFullYear())
+				);
 			}
 			if (positionX === 3) {
-				return new Date().setDate(today.getDate() - 90);
+				return 'Today';
 			}
 		};
 
@@ -218,7 +288,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						y={-apx(24 + 24 + 20) / 2}
 						rx={apx(12)} // borderRadius
 						ry={apx(12)} // borderRadius
-						width={apx(200)}
+						width={apx(250)}
 						height={apx(96)}
 						stroke="rgba(254, 190, 24, 0.27)"
 						fill={theme.colors.black_one}
@@ -288,10 +358,10 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 	const todayTotal = parseFloat(normalizeNumber(token.price));
 	// setChartData([d90, d60, d30, todayTotal]);
 	const priceList = [d90, d60, d30, todayTotal];
-	console.log('priceList: ', priceList);
 
 	return (
 		<Background>
+			{console.log('hello 23')}
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				style={token.amount > 0 ? { marginBottom: 80 } : null}
@@ -622,11 +692,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						<View
 							style={{ flexDirection: 'row', marginVertical: 24 }}
 						>
-							{console.log('tokens extensions', token.extensions)}
-							{console.log(
-								'tokens extensions twitter',
-								token.extensions.twitter,
-							)}
 							{token.extensions.twitter && (
 								<TouchableOpacity
 									onPress={() =>
@@ -753,7 +818,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 					<Button
 						mode="contained"
 						onPress={() => {
-							console.log('stuffff', token, defaultPair);
 							navigation.navigate('Trade', {
 								from: token,
 								to: defaultPair,
@@ -805,7 +869,6 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 									);
 								},
 							);
-							console.log('stuffff', token, defaultPair);
 							navigation.navigate('Trade', {
 								from: sortedOwnedTokens[0],
 								to: token,
