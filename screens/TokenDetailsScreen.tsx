@@ -1,22 +1,13 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
-import {
-	SafeAreaView,
-	Text,
-	ScrollView,
-	PanResponder,
-	Dimensions,
-} from 'react-native';
+import { Text, ScrollView, PanResponder, Dimensions } from 'react-native';
 import { Background, Button } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Shadow } from 'react-native-shadow-2';
-import { BlurView } from 'expo-blur';
 import { AreaChart, Path } from 'react-native-svg-charts';
 import {
 	Circle,
 	Defs,
 	G,
-	Line,
 	LinearGradient,
 	Rect,
 	Stop,
@@ -27,25 +18,10 @@ import * as shape from 'd3-shape';
 import { theme } from '../core/theme';
 import { normalizeNumber } from '../utils';
 import * as WebBrowser from 'expo-web-browser';
-import TestChart from '../components/TestChart';
 import * as Serum from '@project-serum/anchor';
-import { Jupiter } from '@jup-ag/core';
-import { Wallet } from '@project-serum/anchor';
 import * as SecureStore from 'expo-secure-store';
-import {
-	Account,
-	Connection,
-	PublicKey,
-	Keypair,
-	Transaction,
-	TransactionSignature,
-} from '@solana/web3.js';
-import * as walletAdapter from '@solana/wallet-adapter-base';
+import { Connection } from '@solana/web3.js';
 import { accountFromSeed, mnemonicToSeed } from '../utils/index';
-
-console.log('walletAdapter: ', walletAdapter.BaseSignerWalletAdapter);
-console.log('Transaction: ', Transaction);
-console.log('Serum: ', Serum.Wallet);
 
 const {
 	colors,
