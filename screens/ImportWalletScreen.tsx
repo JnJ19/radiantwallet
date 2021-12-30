@@ -1,5 +1,5 @@
 import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
-import { Background, Button, SubPageHeader } from '../components';
+import { Background, Button, SubPageHeader, Callout } from '../components';
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import {
@@ -93,7 +93,7 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 						autoCapitalize="none"
 						onChangeText={(text) => setSecret(text)}
 						value={secret}
-						placeholder="Enter your secret phrase"
+						placeholder={'Enter phrase with a space between words'}
 						// placeholderTextColor: theme.colors.primary
 						keyboardType="default"
 						multiline={true}
@@ -162,6 +162,11 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 						</TouchableOpacity>
 					</View> */}
 				</View>
+				<Callout
+					text="Your secret phrase will be encrypted and never leave this device. "
+					iconName="shield_small.png"
+				/>
+				<View style={{ height: 24 }} />
 				<TouchableOpacity
 					onPress={() => bottomSheetModalRef.current?.present()}
 				>

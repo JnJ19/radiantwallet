@@ -48,8 +48,8 @@ const IntroScreen = ({ navigation }: Props) => {
 							...theme.fonts.Nunito_Sans.Body_M_Regular,
 						}}
 					>
-						Import a wallet you already use or create a new wallet
-						to transfer Solana ecosystem.
+						Get access to the lowest token trade prices, widest
+						selection, staking, NFT's and more.
 					</Text>
 				</View>
 

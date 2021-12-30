@@ -25,6 +25,7 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	const updatePasscode = useStoreActions((actions) => actions.updatePasscode);
 	const passcode = useStoreState((state) => state.passcode);
 	const setTokenMap = useStoreActions((actions) => actions.setTokenMap);
+	const setTokenPairs = useStoreActions((actions) => actions.setTokenPairs);
 
 	function getTokenPairs() {
 		//get a clean list of all symbols in bonfida (remove all the perps ones), dedupe them, then grab their symbols, then grab their pairs, then list if it's buy side or sell side for each one
