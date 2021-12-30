@@ -150,7 +150,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			});
 			console.log('execute: ', execute);
 			// Execute swap
-			const swapResult: any = await execute(); // Force any to ignore TS misidentifying SwapResult type
+			const swapResult: any = await execute().catch((err) =>
+				console.log('error with trade', err),
+			); // Force any to ignore TS misidentifying SwapResult type
 			console.log('swapResult: ', swapResult);
 
 			if (swapResult.error) {
@@ -172,8 +174,11 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	};
 
 	async function getJupObject() {
+		// const connection = new Connection(
+		// 	'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5',
+		// );
 		const connection = new Connection(
-			'https://solana--mainnet.datahub.figment.io/apikey/5d2d7ea54a347197ccc56fd24ecc2ac5',
+			'https://solana-api.projectserum.com',
 		);
 
 		let mnemonic = await SecureStore.getItemAsync(passcode);
@@ -261,16 +266,18 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	}
 
 	const submitJupTrade = async () => {
-		console.log('hit');
-		console.log('jupiterobject', jupiterObject);
-		console.log('bestRoute', bestRoute2);
-		await executeSwap({ jupiter: jupiterObject, route: bestRoute2 });
+		console.log('best route', bestRoute2);
+		console.log('jupiter object', jupiterObject);
+		await executeSwap({ jupiter: jupiterObject, route: bestRoute2 }).catch(
+			(err) => console.log('eroror', err),
+		);
+		setModalVisible(false);
 		navigation.navigate('Trade Success', { tradeAmount, fromTo });
 	};
 
 	useEffect(() => {
 		getPrice(fromTo.from.mint, fromTo.to.mint, size);
-	}, []);
+	}, [fromTo.from.mint, fromTo.to.mint]);
 
 	// useEffect(() => {
 	// 	const originalPair = fromTo.to.pairs.filter((pair) =>
@@ -383,6 +390,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
+								$
 								{normalizeNumber(
 									parseFloat(tradeAmount) -
 										outAmount * outputDollarPrice,
