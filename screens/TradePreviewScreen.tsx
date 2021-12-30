@@ -211,12 +211,9 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 			}
 		}
 
-		console.log('stringNumber after adding zeroes', stringNumber);
-
 		const index = stringNumber.length - decimals;
 
 		if (index > 0) {
-			console.log('hit');
 			stringNumber =
 				stringNumber.substring(0, index) +
 				'.' +
@@ -430,11 +427,12 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 									color: colors.black_one,
 								}}
 							>
-								$
-								{normalizeNumber(
-									parseFloat(tradeAmount) -
-										outAmount * outputDollarPrice,
-								)}
+								{outAmount
+									? `$${normalizeNumber(
+											parseFloat(tradeAmount) -
+												outAmount * outputDollarPrice,
+									  )}`
+									: 'loading...'}
 							</Text>
 						</View>
 						<View
@@ -476,12 +474,23 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 					</View>
 				</View>
 			</View>
-			<View style={{ marginBottom: 40 }}>
+			<View
+				style={{ marginBottom: 40 }}
+				opacity={jupiterObject && bestRoute2 ? 1 : 0.65}
+			>
 				<Button
 					onPress={() => {
-						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-						setModalVisible(true);
-						submitJupTrade(fromTo.from.mint, fromTo.to.mint, size);
+						if (jupiterObject && bestRoute2) {
+							Haptics.impactAsync(
+								Haptics.ImpactFeedbackStyle.Medium,
+							);
+							setModalVisible(true);
+							submitJupTrade(
+								fromTo.from.mint,
+								fromTo.to.mint,
+								size,
+							);
+						}
 					}}
 				>
 					Submit Trade
