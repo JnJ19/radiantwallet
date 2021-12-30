@@ -27,8 +27,8 @@ const TokenCard = (info: object) => {
 		logo = info.logo;
 		percent_change_24h = info.percent_change_24h;
 	}
+	//console.log('token', info.token);
 	const { onPress } = info;
-
 	const renderPercentChange = () => {
 		return (
 			<>

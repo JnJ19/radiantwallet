@@ -26,7 +26,11 @@ export const theme = {
 		success_two: '#8BECB8',
 		success_three: '#C5F6DB',
 		success_four: '#DDFAEA',
-		selection_border: '#C9F977'
+		selection_border: '#C9F977',
+		grey_two: '#F1F4F9',
+		grey_four: '#DFE4EB',
+		grey_seven: '#727D8D',
+		grey_eight: '#555F6F',
 	},
 	fonts: {
 		Nunito_Sans: {

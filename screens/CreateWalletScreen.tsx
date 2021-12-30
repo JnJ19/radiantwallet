@@ -6,7 +6,7 @@ import React, {
 	useCallback,
 	useEffect,
 } from 'react';
-import { Background, Button, SubPageHeader } from '../components';
+import { Background, ThemeButton, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import {
@@ -176,12 +176,12 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 				{/* <View style={{ height: 250 }}></View> */}
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					mode="contained"
 					onPress={() => storePhraseAndContinue(passcode, secret)}
 				>
 					Save & Continue
-				</Button>
+				</ThemeButton>
 			</View>
 			<BottomSheetModalProvider>
 				<BottomSheetModal
@@ -248,14 +248,14 @@ const CreateWalletScreen = ({ navigation }: Props) => {
 							Be sure to enter it in the exact word order you
 							received it with a space between each word.
 						</Text>
-						<Button
+						<ThemeButton
 							onPress={() =>
 								bottomSheetModalRef.current?.dismiss()
 							}
 						>
 							{' '}
 							I Understand
-						</Button>
+						</ThemeButton>
 					</View>
 				</BottomSheetModal>
 			</BottomSheetModalProvider>

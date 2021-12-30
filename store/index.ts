@@ -47,6 +47,10 @@ const store = createStore({
 	setFinalSubWallets: action((state, payload) => {
 		state.finalSubWallets = payload;
 	}),
+	subWalletNftsArray: '',
+	setSubWalletNftsArray: action((state, payload) => {
+		state.subWalletNftsArray = payload;
+	})
 });
 
 // const store = createStore<WalletModel>(

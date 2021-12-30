@@ -18,3 +18,6 @@ export { default as EditWalletNameScreen } from './EditWalletNameScreen';
 export { default as SendScreen } from './SendScreen';
 export { default as SendSuccessScreen } from './SendSuccessScreen';
 export { default as CreateWalletScreen } from './CreateWalletScreen';
+export { default as myNFTsScreen } from './MyNFTsScreen';
+export { default as NFTdetailsScreen } from './NFTdetailsScreen';
+export { default as NFTdisplayScreen } from './NFTdisplayScreen';

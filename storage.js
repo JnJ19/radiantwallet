@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const storage = {
+const Storage = {
   async getItem(key) {
     return JSON.parse(await AsyncStorage.getItem(key));
   },
@@ -12,4 +12,4 @@ const storage = {
   },
 };
 
-export default storage;
+export default Storage;

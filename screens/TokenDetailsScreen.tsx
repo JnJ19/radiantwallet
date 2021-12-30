@@ -6,7 +6,7 @@ import {
 	PanResponder,
 	Dimensions,
 } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
@@ -512,7 +512,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								marginVertical: 16,
 							}}
 						/>
-						<TouchableOpacity style={{ flexDirection: 'row' }}>
+						<TouchableOpacity style={{ flexDirection: 'row'}}>
 							<Text
 								style={{
 									...Nunito_Sans.Body_M_Bold,
@@ -767,7 +767,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 				>
 					{token.pairs ? (
 						<>
-							<Button
+							<ThemeButton
 								mode="outlined"
 								onPress={() =>
 									navigation.navigate('Send', token)
@@ -785,9 +785,9 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								)}
 							>
 								Send
-							</Button>
+							</ThemeButton>
 							<View style={{ width: 8 }} />
-							<Button
+							<ThemeButton
 								mode="contained"
 								onPress={() => {
 									console.log('stuffff', token, defaultPair);
@@ -811,11 +811,11 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								)}
 							>
 								Trade
-							</Button>
+							</ThemeButton>
 						</>
 					) : (
 						<>
-							<Button
+							<ThemeButton
 								mode="contained"
 								onPress={() =>
 									navigation.navigate('Send', token)
@@ -823,7 +823,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								style={{ width: '100%' }}
 							>
 								Send
-							</Button>
+							</ThemeButton>
 						</>
 					)}
 				</View>

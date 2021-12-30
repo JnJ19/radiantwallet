@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet } from 'react-native';
 import { theme } from '../core/theme';
@@ -51,9 +51,9 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button onPress={() => navigation.navigate('Dashboard')}>
+				<ThemeButton onPress={() => navigation.navigate('Dashboard')}>
 					Done
-				</Button>
+				</ThemeButton>
 			</View>
 		</Background>
 	);

@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
@@ -329,7 +329,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					onPress={() => {
 						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						setModalVisible(true);
@@ -337,7 +337,7 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 					}}
 				>
 					Submit Trade
-				</Button>
+				</ThemeButton>
 			</View>
 			<Modal
 				isVisible={modalVisible}

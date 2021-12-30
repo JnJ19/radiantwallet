@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { Background, Button, TextInput, SubPageHeader } from '../components';
+import { Background, ThemeButton, TextInput, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { View } from 'react-native';
 
@@ -46,12 +46,12 @@ const GetStartedScreen = ({ navigation }: Props) => {
 			/>
 
 			<View style={{ height: 250 }}></View>
-			<Button
+			<ThemeButton
 				mode="contained"
 				onPress={() => navigation.navigate('Dashboard')}
 			>
 				Import
-			</Button>
+			</ThemeButton>
 		</Background>
 	);
 };

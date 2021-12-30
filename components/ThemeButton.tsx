@@ -5,7 +5,7 @@ import { theme } from '../core/theme';
 
 type Props = React.ComponentProps<typeof PaperButton>;
 
-const Button = ({ mode, style, children, icon, ...props }: Props) => {
+const ThemeButton = ({ mode, style, children, icon, ...props }: Props) => {
 	return (
 		<PaperButton
 			style={[
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default memo(Button);
+export default memo(ThemeButton);

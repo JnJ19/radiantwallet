@@ -27,6 +27,9 @@ import {
 	SendScreen,
 	SendSuccessScreen,
 	CreateWalletScreen,
+	myNFTsScreen,
+	NFTdetailsScreen,
+	NFTdisplayScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -344,6 +347,21 @@ function RootNavigator3() {
 					component={CreateWalletScreen}
 					options={{ headerShown: false }}
 				/>
+				<Stack.Screen
+					name="NFT Wallet"
+					component={myNFTsScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="NFT Details"
+					component={NFTdetailsScreen}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="NFT Display"
+					component={NFTdisplayScreen}
+					options={{ headerShown: false }}
+				/>
 			</Stack.Navigator>
 		);
 	}
@@ -435,6 +453,21 @@ function RootNavigator3() {
 				component={TradeSuccessScreen}
 				options={{ headerShown: false }}
 			/>
+			<Stack.Screen
+				name="NFT Wallet"
+				component={myNFTsScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+					name="NFT Details"
+					component={NFTdetailsScreen}
+					options={{ headerShown: false }}
+				/>
+			<Stack.Screen
+					name="NFT Display"
+					component={NFTdisplayScreen}
+					options={{ headerShown: false }}
+				/>	
 		</Stack.Navigator>
 	);
 }

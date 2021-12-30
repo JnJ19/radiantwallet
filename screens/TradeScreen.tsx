@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
@@ -273,7 +273,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					onPress={() => {
 						Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 						navigation.navigate('Trade Preview', {
@@ -283,7 +283,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					}}
 				>
 					Review Trade
-				</Button>
+				</ThemeButton>
 			</View>
 		</Background>
 	);

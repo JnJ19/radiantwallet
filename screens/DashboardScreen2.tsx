@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect, useCallback, useRef, } from 'react';
-import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Background, Button } from '../components';
+import { Text, ScrollView, StyleSheet, Alert, } from 'react-native';
+import { Background, ThemeButton } from '../components';
+import { Button } from 'react-native-paper';
 import { Navigation } from '../types';
 import { View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
@@ -24,6 +25,7 @@ import {
 	getAllTokensData,
 	settleFundsData,
 	getActiveSubWalletTokens,
+	getOwnedNftsData,
 } from '../utils';
 import { derivePath } from 'ed25519-hd-key';
 import TokenCard from '../components/TokenCard';
@@ -35,9 +37,11 @@ import { Jupiter } from '@jup-ag/core';
 import { accountFromSeed, mnemonicToSeed } from '../utils/index';
 import Storage from '../storage';
 import { useFocusEffect } from '@react-navigation/core';
-
+import NFTcard from '../components/NFTcard';
+import { Snackbar } from 'react-native-paper';
 import { useContext } from 'react';
 import AppContext from '../components/AppContext';
+import { myNFTsScreen } from '.';
 
 type Props = {
 	navigation: Navigation;
@@ -70,6 +74,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	);
 	const subWallets = useStoreState((state) => state.subWallets);
 	const setSubWallets = useStoreActions((actions) => actions.setSubWallets);
+	const subWalletNftsArray = useStoreState((state) => state.subWalletNftsArray);
+	const setSubWalletNftsArray = useStoreActions((actions) => actions.setSubWalletNftsArray);
 	const subWalletTokensArray = useStoreState(
 		(state) => state.subWalletTokensArray,
 	);
@@ -90,6 +96,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	const myContext = useContext(AppContext);
 
 	const [ownedTokensHasRendered, setOwnedTokensHasRendered] = useState(false);
+
+	const [snackIsVisible, setSnackIsVisible] = useState(false);
+
+	const onToggleSnackBar = () => setSnackIsVisible(true)
+
+	const onDismissSnackBar = () => setSnackIsVisible(false);
 
 	function sortTokens(tokens) {
 		const sortedTokens = tokens.sort((a, b) => {
@@ -187,6 +199,12 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		setAllTokens(result);
 	}
 
+	async function getOwnedNfts() {
+		let result = await getOwnedNftsData(subWallets[activeSubWallet].publicKey);
+		setSubWalletNftsArray(result);
+	}
+
+
 	// async function settleFunds() {
 	// 	let result = await settleFundsData(account, Market, connection);
 
@@ -240,6 +258,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		if (!subWallets) {
 			getSubWallets();
 		}
+		getOwnedNfts();
+
 	}, [tokens]);
 
 	useEffect(() => {
@@ -293,6 +313,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			previousActiveSubWallet.current = myContext.globalActiveWallet;
 		};
 	}, [myContext.globalActiveWallet])
+	
+	//console.log('stuff', sortedTokens)
 
 	if (!loading && tokens.length === 0 && account) {
 		return (
@@ -377,12 +399,10 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						<TouchableOpacity
 							style={{ flexDirection: 'row' }}
 							onPress={() => {
-								setCopied(
-									subWallets[
-										activeSubWallet
-									].publicKey.toString('hex'),
-								);
-								copyToClipboard(copied);
+								copyToClipboard(subWallets[
+									activeSubWallet
+								].publicKey.toString('hex'));
+								onToggleSnackBar();
 							}}
 						>
 							<Text
@@ -413,6 +433,30 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						</Text>
 					</View>
 				</ScrollView>
+				<View style={{justifyContent: 'center', marginBottom: 8, marginHorizontal: -8, }} >
+                <Snackbar 
+                    visible={snackIsVisible} 
+                    onDismiss={onDismissSnackBar}
+                    theme={{ colors: { accent: '#FFFFFF' }}}
+                    action={{
+                        label: '',
+                        onPress: async () => {
+                            setSnackIsVisible(false);
+                        },
+                        icon: () => (
+                            <Image
+                            source={require('../assets/icons/close_white.png')}
+                            style={{width: 14, height: 14, marginRight: 4, marginLeft: 85, marginVertical: 4}}
+                            />
+                        )
+                    }}
+                    style={{borderRadius: 18, height: 56, alignSelf: 'stretch' , backgroundColor: '#1E2122', justifyContent: 'center'}}
+                >
+                    <Text style={{color: '#FFFFFF', ...theme.fonts.Nunito_Sans.Caption_M_SemiBold}} >
+                        Address Copied!	
+                    </Text>
+                </Snackbar>
+			</View>
 			</Background>
 		);
 	}
@@ -478,7 +522,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
 						}}
 					>
-						Portfolio History
+						Portfolio Value
 					</Text>
 					<View
 						style={{ flexDirection: 'row', alignItems: 'flex-end' }}
@@ -544,7 +588,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						)}
 					</View>
 					<AreaChart
-						style={{ height: 200 }}
+						style={{ height: 200}}
 						data={chartData}
 						// data={[1, 2, 3, 4]}
 						showGrid={false}
@@ -559,15 +603,64 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 						<Line />
 					</AreaChart>
 				</View>
+				<View style={{}}>
+					<View 
+						style={{
+							flexDirection: 'row', 
+							justifyContent: 'space-between', 
+							alignItems: 'center', 
+						}}>
+						<Text 
+							style={{
+								...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+								marginTop: 28,
+								marginBottom: 14,
+								alignItems: 'center',
+								paddingTop: 4,
+								paddingBottom: 1
+							}}>
+							My NFTs
+						</Text>
+						<TouchableOpacity style={{marginTop: 28, marginBottom: 14}}
+							onPress={() =>
+								navigation.navigate(
+								'NFT Wallet',
+							)}
+						>
+							<Text style={{...theme.fonts.Nunito_Sans.Body_M_Bold, color: theme.colors.black_four, }}>
+								See All
+							</Text>
+						</TouchableOpacity>
+					</View>
+					<View>
+						<FlatList
+							horizontal = {true}
+							data = {subWalletNftsArray}
+							renderItem={(nft) => (
+								<NFTcard 
+									nft = {nft}
+									fullCard={false}
+									onPress={() =>
+										navigation.navigate(
+											'NFT Details',
+											nft.index,
+											
+										)
+									}
+								/>
+							)}
+							keyExtractor={(item) => item.address}
+						/>
+					</View>
+				</View>
 
-				<View style={{ marginTop: 24, marginBottom: 8 }}>
+				<View style={{ }}>
 					<Text
 						style={{
-							marginBottom: 8,
-							...theme.fonts.Azeret_Mono.Body_M_SemiBold,
+							...theme.fonts.Azeret_Mono.Body_M_SemiBold, marginBottom: 14, 
 						}}
 					>
-						Portfolio
+						My Tokens
 					</Text>
 
 					{tokens ? (
