@@ -217,6 +217,7 @@ async function getOwnedTokensData(
 				},
 			)
 				.then((response) => {
+					console.log('whhhat');
 					return response.json();
 				})
 				.then((data) => {
@@ -334,43 +335,72 @@ async function getOwnedTokensData(
 		}
 
 		const filteredOwnedSymbols = ownedTokensSymbols.filter(
-			(symbol) => symbol !== 'soSUSHI',
+			(symbol) => symbol !== 'SCAM_7BB4',
 		);
-		const ownedSymbolsList = filteredOwnedSymbols.join();
+		let ownedSymbolsList = filteredOwnedSymbols.join();
 		console.log('ownedSymbolsList: ', ownedSymbolsList);
 
-		const aboutData = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
-			{
-				headers: {
-					'X-CMC_PRO_API_KEY': apiKey,
-					Accept: 'application/json',
-					'Accept-Encoding': 'deflate, gzip',
+		let iterate = true;
+		let counter = 0;
+		const aboutData: Array<object> = [];
+
+		while (counter < 10 && iterate) {
+			console.log('whiel route hit' + ' ' + iterate);
+			await fetch(
+				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
+				{
+					headers: {
+						'X-CMC_PRO_API_KEY': apiKey,
+						Accept: 'application/json',
+						'Accept-Encoding': 'deflate, gzip',
+					},
 				},
-			},
-		)
-			.then((response) => {
-				return response.json();
-			})
-			.then((res) => {
-				if (res.status.error_code !== 0) {
-					return {
-						description:
-							'No description available for this project.',
-						logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
-						name: 'unkown',
-						extensions: {},
-					};
-				} else {
-					return Object.values(res.data);
-				}
-			})
-			.catch((err) => console.log('errerere', err));
+			)
+				.then((response) => {
+					return response.json();
+				})
+				.then((res) => {
+					console.log('res', res);
+					if (res.status.error_code !== 0) {
+						if (res.status.error_message.includes('symbol')) {
+							//remove the symbol causing the error
+							const problemSymbol = res.status.error_message
+								.split('\\')[0]
+								.replace('Invalid value for ', '')
+								.replace(/['"]+/g, '')
+								.replace(' ', '')
+								.replace('symbol', '')
+								.replace(':', '')
+								.replace('"', '')
+								.toUpperCase();
+							const index =
+								ownedSymbolsList.indexOf(problemSymbol);
+							const length = problemSymbol.length + 1;
+							const newArray =
+								ownedSymbolsList.substr(0, index) +
+								ownedSymbolsList.substr(
+									index + length,
+									ownedSymbolsList.length - 1,
+								);
+							ownedSymbolsList = newArray;
+
+							console.log(
+								'ownedSymbolsList Fixed: ',
+								ownedSymbolsList,
+							);
+						}
+						counter++;
+					} else {
+						iterate = false;
+						return aboutData.push(...Object.values(res.data));
+					}
+				})
+				.catch((err) => console.log('errerere', err));
+		}
 
 		const combinedOwnedTokensArray = [];
 		for (let i = 0; i < ownedTokensArray.length; i++) {
 			const tokenObject = ownedTokensArray[i];
-			console.log('about data', aboutData);
 			const cmcToken = aboutData.find(
 				(token: object) => token.symbol === tokenObject.symbol,
 			);
@@ -698,7 +728,7 @@ async function getActiveSubWalletTokens(
 		ownedTokensArray.push(tokenObject);
 		solToken = tokenObject;
 	}
-	const ownedTokensSymbols = [];
+	let ownedTokensSymbols = [];
 	for (let i = 0; i < ownedTokens.value.length; i++) {
 		const result = await connection.getParsedAccountInfo(
 			ownedTokens.value[i].pubkey,
@@ -737,55 +767,68 @@ async function getActiveSubWalletTokens(
 				associatedTokenAddress,
 			};
 			ownedTokensArray.push(tokenObject);
-			ownedTokensSymbols.push(otherDetails.symbol);
+			ownedTokensSymbols.push(otherDetails.symbol.toUpperCase());
 		}
 	}
-	const filteredOwnedSymbols = ownedTokensSymbols.filter(
-		(symbol) => symbol !== 'soSUSHI' && symbol !== 'SCAM_7BB4',
-	);
-	const ownedSymbolsList = filteredOwnedSymbols.join();
-	console.log('ownedSymbolsList: ', ownedSymbolsList);
+	let filteredOwnedSymbols = ownedTokensSymbols;
+	let ownedSymbolsList = filteredOwnedSymbols.join();
 
-	const aboutData = await fetch(
-		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
-		{
-			headers: {
-				'X-CMC_PRO_API_KEY': apiKey,
-				Accept: 'application/json',
-				'Accept-Encoding': 'deflate, gzip',
+	let iterate = true;
+	let counter = 0;
+	const aboutData: Array<object> = [];
+
+	while (counter < 10 && iterate) {
+		console.log('whiel route hit' + ' ' + iterate);
+		await fetch(
+			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
+			{
+				headers: {
+					'X-CMC_PRO_API_KEY': apiKey,
+					Accept: 'application/json',
+					'Accept-Encoding': 'deflate, gzip',
+				},
 			},
-		},
-	)
-		.then((response) => {
-			return response.json();
-		})
-		.then((res) => {
-			console.log('res', res);
-			if (res.status.error_code !== 0) {
-				// if (res.status.error_message.includes('symbol')) {
-				// 	const problemSymbol = res.status.error_message
-				// 		.split('\\')[0]
-				// 		.replace('Invalid value for ', '')
-				// 		.replace(/['"]+/g, '')
-				// 		.replace(' ', '')
-				// 		.replace('symbol', '')
-				// 		.replace(':', '')
-				// 		.replace('"', '')
-				// 		.toLowerCase();
-				// 	console.log('problemSymbolArray: ', problemSymbol)
+		)
+			.then((response) => {
+				return response.json();
+			})
+			.then((res) => {
+				console.log('res', res);
+				if (res.status.error_code !== 0) {
+					if (res.status.error_message.includes('symbol')) {
+						//remove the symbol causing the error
+						const problemSymbol = res.status.error_message
+							.split('\\')[0]
+							.replace('Invalid value for ', '')
+							.replace(/['"]+/g, '')
+							.replace(' ', '')
+							.replace('symbol', '')
+							.replace(':', '')
+							.replace('"', '')
+							.toUpperCase();
+						const index = ownedSymbolsList.indexOf(problemSymbol);
+						const length = problemSymbol.length + 1;
+						const newArray =
+							ownedSymbolsList.substr(0, index) +
+							ownedSymbolsList.substr(
+								index + length,
+								ownedSymbolsList.length - 1,
+							);
+						ownedSymbolsList = newArray;
 
-				// }
-				return {
-					description: 'No description available for this project.',
-					logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
-					name: 'unkown',
-					extensions: {},
-				};
-			} else {
-				return Object.values(res.data);
-			}
-		})
-		.catch((err) => console.log('errerere', err));
+						console.log(
+							'ownedSymbolsList Fixed: ',
+							ownedSymbolsList,
+						);
+					}
+					counter++;
+				} else {
+					iterate = false;
+					return aboutData.push(...Object.values(res.data));
+				}
+			})
+			.catch((err) => console.log('errerere', err));
+	}
 
 	console.log('aboutData: ', aboutData);
 	const combinedOwnedTokensArray = [];
@@ -819,6 +862,7 @@ async function getActiveSubWalletTokens(
 		})
 		.then((res) => {
 			if (res.status.error_code !== 0) {
+				console.log('no price error hit');
 				return {
 					description: 'No description available for this project.',
 					logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
@@ -894,61 +938,6 @@ async function getActiveSubWalletTokens(
 	}
 
 	return finalCombinedOwnedTokensArray;
-}
-
-async function settleFundsData(account: any, Market: any, connection: any) {
-	let owner = new Account(account.secretKey);
-	//dxl to usdc pulled from https://serum-api.bonfida.com/trades/DXLUSDC
-	const marketAddress = new PublicKey(
-		'DYfigimKWc5VhavR4moPBibx9sMcWYVSjVdWvPztBPTa',
-	);
-	//serum v3 program address pulled from Solana Explorer
-	const programAddress = new PublicKey(
-		'9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-	);
-
-	let market = await Market.load(
-		connection,
-		marketAddress,
-		{},
-		programAddress,
-	);
-
-	// const openOrders = await market.findOpenOrdersAccountsForOwner(
-	// 	connection,
-	// 	owner.publicKey,
-	// );
-
-	//usdc associated token account
-	const quoteTokenAccount = new PublicKey(
-		'2To9gKdDUxcBaavSY8wgDQTZaEYVXPy9uQ38mmTDbWAW',
-	);
-
-	//dxl associated token account
-	const baseTokenAccount = new PublicKey(
-		'4MJYFcV2WN7PBr17e6iACbxxgnTDzpG1cTTvBE11zMey',
-	);
-
-	for (let openOrders of await market.findOpenOrdersAccountsForOwner(
-		connection,
-		owner.publicKey,
-	)) {
-		if (openOrders.baseTokenFree > 0 || openOrders.quoteTokenFree > 0) {
-			// spl-token accounts to which to send the proceeds from trades
-			await market
-				.settleFunds(
-					connection,
-					owner,
-					openOrders,
-					baseTokenAccount,
-					quoteTokenAccount,
-				)
-				.then((res) => console.log('response', res))
-				.catch((err) => console.log('error', err));
-		} else {
-			console.log('hit other');
-		}
-	}
 }
 
 async function getAllTokensData(tokenMapSymbols: any) {
@@ -1297,7 +1286,6 @@ export {
 	getSubWalletsData,
 	getOwnedTokensData,
 	getAllTokensData,
-	settleFundsData,
 	getActiveSubWalletTokens,
 	getOwnedNftsData,
 };
