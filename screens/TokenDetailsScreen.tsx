@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
 import { Text, ScrollView, PanResponder, Dimensions } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { AreaChart, Path } from 'react-native-svg-charts';
@@ -520,7 +520,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 								marginVertical: 16,
 							}}
 						/>
-						<TouchableOpacity style={{ flexDirection: 'row' }}>
+						<TouchableOpacity style={{ flexDirection: 'row'}}>
 							<Text
 								style={{
 									...Nunito_Sans.Body_M_Bold,
@@ -773,7 +773,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						shadowRadius: 24,
 					}}
 				>
-					<Button
+					<ThemeButton
 						mode="outlined"
 						onPress={() => navigation.navigate('Send', token)}
 						style={{ width: '50%' }}
@@ -789,9 +789,9 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						)}
 					>
 						Send
-					</Button>
+					</ThemeButton>
 					<View style={{ width: 8 }} />
-					<Button
+					<ThemeButton
 						mode="contained"
 						onPress={() => {
 							navigation.navigate('Trade', {
@@ -814,7 +814,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						)}
 					>
 						Trade
-					</Button>
+					</ThemeButton>
 				</View>
 			) : (
 				<View
@@ -831,7 +831,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						shadowRadius: 24,
 					}}
 				>
-					<Button
+					<ThemeButton
 						mode="contained"
 						onPress={() => {
 							let fromTokens = ownedTokens;
@@ -865,7 +865,7 @@ const TokenDetailsScreen = ({ navigation, route }: Props) => {
 						// )}
 					>
 						Trade
-					</Button>
+					</ThemeButton>
 				</View>
 			)}
 		</Background>

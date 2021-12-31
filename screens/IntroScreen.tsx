@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Text, Image } from 'react-native';
@@ -63,13 +63,13 @@ const IntroScreen = ({ navigation }: Props) => {
 							marginTop: 180,
 						}}
 					>
-						<Button
+						<ThemeButton
 							mode="contained"
 							onPress={() => navigation.navigate('Set Passcode')}
 							style={{ backgroundColor: 'black' }}
 						>
 							Get Started
-						</Button>
+						</ThemeButton>
 					</View>
 					<Text
 						style={{

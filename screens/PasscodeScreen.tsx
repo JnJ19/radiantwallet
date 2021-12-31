@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background } from '../components';
+import { Background, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import {
 	View,
@@ -262,133 +262,133 @@ const PassCodeScreen = ({ navigation, route }: Props) => {
 
 	return (
 		<Background blackBackground={true}>
-			<Image
-				source={require('../assets/images/logo_passcode.png')}
-				style={{
-					width: 120,
-					height: 124,
-					alignSelf: 'center',
-					marginTop: 64,
-				}}
-			/>
-
-			<View
-				style={{
-					flexDirection: 'row',
-					width: 160,
-					justifyContent: 'space-between',
-					alignSelf: 'center',
-				}}
-			>
-				<View
-					style={code.length >= 1 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 2 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 3 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 4 ? styles.filled : styles.outlined}
-				/>
-			</View>
-			{error ? (
-				<Text
+				<Image
+					source={require('../assets/images/logo_passcode.png')}
 					style={{
-						...Nunito_Sans.Body_M_Regular,
-						color: 'white',
-						opacity: 0.75,
+						width: 120,
+						height: 124,
+						alignSelf: 'center',
+						marginTop: 64,
+					}}
+				/>
+
+				<View
+					style={{
+						flexDirection: 'row',
+						width: 160,
+						justifyContent: 'space-between',
 						alignSelf: 'center',
 					}}
 				>
-					Incorrect passcode, try again.
-				</Text>
-			) : null}
+					<View
+						style={code.length >= 1 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 2 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 3 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 4 ? styles.filled : styles.outlined}
+					/>
+				</View>
+				{error ? (
+					<Text
+						style={{
+							...Nunito_Sans.Body_M_Regular,
+							color: 'white',
+							opacity: 0.75,
+							alignSelf: 'center',
+						}}
+					>
+						Incorrect passcode, try again.
+					</Text>
+				) : null}
 
-			<View style={{ marginBottom: 40 }}>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('1')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>1</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('2')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>2</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('3')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>3</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('4')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>4</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('5')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>5</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('6')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>6</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('7')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>7</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('8')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>8</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('9')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>9</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={{ ...styles.numRow, marginBottom: 0 }}>
-					<View style={styles.numberContainer}>
-						<Text style={styles.mediumNumber}></Text>
+				<View style={{ marginBottom: 40 }}>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('1')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('2')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>2</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('3')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>3</Text>
+						</TouchableOpacity>
 					</View>
-					<TouchableOpacity
-						onPress={() => addNumber('0')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>0</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => removeNumber()}
-						style={styles.numberContainer}
-					>
-						{/* <Text style={styles.mediumNumber}>3</Text> */}
-						<Image
-							source={require('../assets/icons/arrow-left-big-green.png')}
-							style={{ width: 40, height: 40 }}
-						/>
-					</TouchableOpacity>
-				</View>
-			</View>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('4')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>4</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('5')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>5</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('6')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>6</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('7')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>7</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('8')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>8</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('9')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>9</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={{ ...styles.numRow, marginBottom: 0 }}>
+						<View style={styles.numberContainer}>
+							<Text style={styles.mediumNumber}></Text>
+						</View>
+						<TouchableOpacity
+							onPress={() => addNumber('0')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>0</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => removeNumber()}
+							style={styles.numberContainer}
+						>
+							{/* <Text style={styles.mediumNumber}>3</Text> */}
+							<Image
+								source={require('../assets/icons/arrow-left-big-green.png')}
+								style={{ width: 40, height: 40 }}
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>	
 		</Background>
 	);
 };

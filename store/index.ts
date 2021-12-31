@@ -63,6 +63,10 @@ const store = createStore({
 	setFirstLoadedTokens: action((state, payload) => {
 		state.firstLoadedTokens = payload;
 	}),
+	subWalletNftsArray: '',
+	setSubWalletNftsArray: action((state, payload) => {
+		state.subWalletNftsArray = payload;
+	}),
 });
 
 export default store;

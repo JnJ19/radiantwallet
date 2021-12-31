@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
@@ -168,131 +168,129 @@ const SetPassCodeScreen = ({ navigation, route }: Props) => {
 	}
 
 	return (
-		<Background blackBackground={true}>
-			<Text style={{ ...Azeret_Mono.Header_S_SemiBold, color: 'white' }}>
-				Set Passcode
-			</Text>
-			<View
-				style={{
-					flexDirection: 'row',
-					width: 160,
-					justifyContent: 'space-between',
-					alignSelf: 'center',
-				}}
-			>
+		<Background blackBackground={true} fullView={false}>
+			<SubPageHeader backButton={true} whiteBackButton={true} >Set Passcode</SubPageHeader>
 				<View
-					style={code.length >= 1 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 2 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 3 ? styles.filled : styles.outlined}
-				/>
-				<View
-					style={code.length >= 4 ? styles.filled : styles.outlined}
-				/>
-			</View>
-
-			<View>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('1')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>1</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('2')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>2</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('3')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>3</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('4')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>4</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('5')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>5</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('6')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>6</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={styles.numRow}>
-					<TouchableOpacity
-						onPress={() => addNumber('7')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>7</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('8')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>8</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => addNumber('9')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>9</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={{ ...styles.numRow, marginBottom: 0 }}>
-					<View style={styles.numberContainer}>
-						<Text style={styles.mediumNumber}></Text>
-					</View>
-					<TouchableOpacity
-						onPress={() => addNumber('0')}
-						style={styles.numberContainer}
-					>
-						<Text style={styles.mediumNumber}>0</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => removeNumber()}
-						style={styles.numberContainer}
-					>
-						{/* <Text style={styles.mediumNumber}>3</Text> */}
-						<Image
-							source={require('../assets/icons/arrow-left-big-green.png')}
-							style={{ width: 40, height: 40 }}
-						/>
-					</TouchableOpacity>
-				</View>
-			</View>
-			<View
-				style={{
-					borderColor: '#C9F977',
-					borderWidth: 1,
-					borderRadius: 18,
-					marginBottom: 40,
-				}}
-			>
-				<Button
-					mode="contained"
-					onPress={() => storeCodeAndContinue()}
-					style={{ backgroundColor: 'black' }}
+					style={{
+						flexDirection: 'row',
+						width: 160,
+						justifyContent: 'space-between',
+						alignSelf: 'center',
+					}}
 				>
-					Save & Continue
-				</Button>
-			</View>
+					<View
+						style={code.length >= 1 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 2 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 3 ? styles.filled : styles.outlined}
+					/>
+					<View
+						style={code.length >= 4 ? styles.filled : styles.outlined}
+					/>
+				</View>
+
+				<View>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('1')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('2')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>2</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('3')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>3</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('4')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>4</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('5')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>5</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('6')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>6</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.numRow}>
+						<TouchableOpacity
+							onPress={() => addNumber('7')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>7</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('8')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>8</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => addNumber('9')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>9</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={{ ...styles.numRow, marginBottom: 0 }}>
+						<View style={styles.numberContainer}>
+							<Text style={styles.mediumNumber}></Text>
+						</View>
+						<TouchableOpacity
+							onPress={() => addNumber('0')}
+							style={styles.numberContainer}
+						>
+							<Text style={styles.mediumNumber}>0</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => removeNumber()}
+							style={styles.numberContainer}
+						>
+							{/* <Text style={styles.mediumNumber}>3</Text> */}
+							<Image
+								source={require('../assets/icons/arrow-left-big-green.png')}
+								style={{ width: 40, height: 40 }}
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>
+				<View
+					style={{
+						borderColor: '#C9F977',
+						borderWidth: 1,
+						borderRadius: 18,
+						marginBottom: 40,
+					}}
+				>
+					<ThemeButton
+						mode="contained"
+						onPress={() => storeCodeAndContinue()}
+						style={{ backgroundColor: 'black' }}
+					>
+						Save & Continue
+					</ThemeButton>
+				</View>
 		</Background>
 	);
 };

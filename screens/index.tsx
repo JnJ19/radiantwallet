@@ -20,3 +20,6 @@ export { default as StakeScreen } from './StakeScreen';
 export { default as StakePreviewScreen } from './StakePreviewScreen';
 export { default as SendSuccessScreen } from './SendSuccessScreen';
 export { default as CreateWalletScreen } from './CreateWalletScreen';
+export { default as myNFTsScreen } from './MyNFTsScreen';
+export { default as NFTdetailsScreen } from './NFTdetailsScreen';
+export { default as NFTdisplayScreen } from './NFTdisplayScreen';

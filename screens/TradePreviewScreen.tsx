@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
@@ -478,23 +478,19 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 				style={{ marginBottom: 40 }}
 				opacity={jupiterObject && bestRoute2 ? 1 : 0.65}
 			>
-				<Button
+				<ThemeButton
 					onPress={() => {
 						if (jupiterObject && bestRoute2) {
 							Haptics.impactAsync(
 								Haptics.ImpactFeedbackStyle.Medium,
 							);
 							setModalVisible(true);
-							submitJupTrade(
-								fromTo.from.mint,
-								fromTo.to.mint,
-								size,
-							);
+							submitJupTrade();
 						}
 					}}
 				>
 					Submit Trade
-				</Button>
+				</ThemeButton>
 			</View>
 			<Modal
 				isVisible={modalVisible}

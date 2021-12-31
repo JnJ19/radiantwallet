@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Background, Button, SubPageHeader } from '../components';
+import { Background, ThemeButton, SubPageHeader } from '../components';
 import { Navigation } from '../types';
 import { View, StyleSheet, Text, Image } from 'react-native';
 import { theme } from '../core/theme';
@@ -31,19 +31,19 @@ const OnboardingScreen = ({ navigation }: Props) => (
 		<View style={{ height: 450, marginTop: 48 }}>
 			<View style={{ flexDirection: 'column' }}>
 				{/* <View style={{ marginBottom: 16 }}>
-					<Button
+					<ThemeButton
 						mode="outlined"
 						onPress={() => navigation.navigate('Create Wallet')}
 					>
 						Create Wallet
-					</Button>
+					</ThemeButton>
 				</View> */}
-				<Button
+				<ThemeButton
 					mode="contained"
 					onPress={() => navigation.navigate('Import Wallet')}
 				>
 					Import Wallet
-				</Button>
+				</ThemeButton>
 			</View>
 		</View>
 	</Background>

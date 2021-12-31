@@ -176,12 +176,12 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 				</TouchableOpacity>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					mode="contained"
 					onPress={() => storePhraseAndContinue(passcode, secret)}
 				>
 					Import Wallet
-				</Button>
+				</ThemeButton>
 			</View>
 			<BottomSheetModalProvider>
 				<BottomSheetModal
@@ -248,14 +248,14 @@ const ImportWalletScreen = ({ navigation }: Props) => {
 							Be sure to enter it in the exact word order you
 							received it with a space between each word.
 						</Text>
-						<Button
+						<ThemeButton
 							onPress={() =>
 								bottomSheetModalRef.current?.dismiss()
 							}
 						>
 							{' '}
 							I Understand
-						</Button>
+						</ThemeButton>
 					</View>
 				</BottomSheetModal>
 			</BottomSheetModalProvider>

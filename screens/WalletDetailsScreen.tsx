@@ -1,17 +1,16 @@
 import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Background, Button, SubPageHeader, RedButton } from '../components';
+import { Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Background, ThemeButton, SubPageHeader, RedButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image } from 'react-native';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { shortenPublicKey, copyToClipboard } from '../utils';
+import { Snackbar } from 'react-native-paper';
 
 import { useContext } from 'react';
 import AppContext from '../components/AppContext';
-
-
 
 type Props = {
 	navigation: Navigation;
@@ -24,9 +23,6 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 	);
 	const selectedWallet = useStoreState((state) => state.selectedWallet);
 	const finalSubWallets = useStoreState((state) => state.finalSubWallets);
-	const [copied, setCopied] = useState(
-		finalSubWallets[selectedWallet].publicKey,
-	);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const snapPoints = useMemo(() => [0, '40%'], []);
 	const handlePresentModalPress = useCallback(() => {
@@ -36,6 +32,11 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 	const handleSheetChanges = useCallback((index: number) => {}, []);
 
 	const myContext = useContext(AppContext);
+	const [snackIsVisible, setSnackIsVisible] = useState(false);
+
+	const onToggleSnackBar = () => setSnackIsVisible(true)
+
+	const onDismissSnackBar = () => setSnackIsVisible(false);
 
 	if (finalSubWallets.length === 0) {
 		return <Text>Loading...</Text>;
@@ -46,6 +47,7 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 		myContext.setGlobalActiveWallet(selectedWallet);
 		
 	}
+
 	// console.log('active WD', activeSubWallet);
 	// console.log('selected WD', selectedWallet);
 	// console.log('global', myContext.globalActiveWalletName);
@@ -77,7 +79,7 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 						${finalSubWallets[selectedWallet].totalBalance}
 					</Text>
 				</View>
-				<TouchableOpacity
+				{/* <TouchableOpacity
 					style={styles.pressableContainer}
 					onPress={() => {
 						navigation.navigate('Edit Wallet Name');
@@ -110,12 +112,13 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 						source={require('../assets/icons/Chevron_Left.png')}
 						style={styles.iconRightArrow}
 					/>
-				</TouchableOpacity>
+				</TouchableOpacity> */}
 				<TouchableOpacity
 					style={styles.pressableContainer}
 					onPress={() => {
-						setCopied(finalSubWallets[selectedWallet].publicKey);
-						copyToClipboard(copied);
+						copyToClipboard(finalSubWallets[selectedWallet].publicKey);
+						onToggleSnackBar();
+						
 						//setLocalSelectedWallet(index);
 						//setSelectedWallet(index);
 					}}
@@ -149,43 +152,72 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 						style={styles.iconRightCopy}
 					/>
 				</TouchableOpacity>
+				
+			</View>
+			<View style={{alignContent: 'flex-end'}}>
+				<View style={{justifyContent: 'center', marginBottom: 8, marginHorizontal: -8, }} >
+					<Snackbar 
+						visible={snackIsVisible} 
+						onDismiss={onDismissSnackBar}
+						theme={{ colors: { accent: '#FFFFFF' }}}
+						action={{
+							label: '',
+							onPress: async () => {
+								setSnackIsVisible(false);
+							},
+							icon: () => (
+								<Image
+								source={require('../assets/icons/close_white.png')}
+								style={{width: 14, height: 14, marginRight: 4, marginLeft: 85, marginVertical: 4}}
+								/>
+							)
+						}}
+						style={{borderRadius: 18, height: 56, alignSelf: 'stretch' , backgroundColor: '#1E2122', justifyContent: 'center'}}
+					>
+						<Text style={{color: '#FFFFFF', ...theme.fonts.Nunito_Sans.Caption_M_SemiBold}} >
+							Address Copied!	
+						</Text>
+					</Snackbar>
+				</View>
+				<View>
+					{selectedWallet === activeSubWallet ? (
+						<View>
+							{/* <View style={styles.setAsActiveButton}>
+								<RedButton
+									mode="outlined"
+									onPress={async () =>
+										bottomSheetModalRef.current?.present()
+									}
+								>
+									Remove Wallet
+								</RedButton>
+							</View> */}
+						</View>
+					) : (
+						<View >
+							{/* <View style={styles.removeWalletButton}>
+								<RedButton
+									mode="outlined"
+									onPress={async () =>
+										bottomSheetModalRef.current?.present()
+									}
+								>
+									Remove Wallet
+								</RedButton>
+							</View> */}
+							<View style={styles.setAsActiveButton}>
+								<ThemeButton
+									mode="contained"
+									onPress={async () => updateActiveWallet()}
+								>
+									Set as Active
+								</ThemeButton>
+							</View>
+						</View>
+					)}
+				</View>
 			</View>
 
-			{selectedWallet === activeSubWallet ? (
-				<View>
-					<View style={styles.removeWalletButton}>
-						<RedButton
-							mode="outlined"
-							onPress={() =>
-								bottomSheetModalRef.current?.present()
-							}
-						>
-							Remove Wallet
-						</RedButton>
-					</View>
-				</View>
-			) : (
-				<View>
-					<View style={styles.removeWalletButton}>
-						<RedButton
-							mode="outlined"
-							onPress={() =>
-								bottomSheetModalRef.current?.present()
-							}
-						>
-							Remove Wallet
-						</RedButton>
-					</View>
-					<View style={styles.setAsActiveButton}>
-						<Button
-							mode="contained"
-							onPress={() => updateActiveWallet()}
-						>
-							Set as Active
-						</Button>
-					</View>
-				</View>
-			)}
 			<BottomSheetModal
 				handleStyle
 				ref={bottomSheetModalRef}
@@ -252,13 +284,13 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 						</RedButton>
 					</View>
 					<View style={styles.setAsActiveButton}>
-						<Button
+						<ThemeButton
 							onPress={() =>
 								bottomSheetModalRef.current?.dismiss()
 							}
 						>
 							No, Keep Wallet
-						</Button>
+						</ThemeButton>
 					</View>
 				</View>
 			</BottomSheetModal>

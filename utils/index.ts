@@ -13,6 +13,7 @@ import { Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard'; // <-- might have to change to '@react-native-community/clipboard' when not using expo but '@react-native-community/clipboard' will not work on Android with expo.
 import * as SecureStore from 'expo-secure-store';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
+import SnackBar from 'react-native-snackbar';
 
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
@@ -104,9 +105,10 @@ const deriveSeed2 = (
 
 const copyToClipboard = async (copied: string) => {
 	Clipboard.setString(copied);
-	Alert.alert('Address Copied!', copied, [
-		{ text: 'Okay', style: 'destructive' },
-	]);
+	console.log('copied', copied);
+	// Alert.alert('Address Copied!', copied, [
+	// 	{ text: 'Okay', style: 'destructive' },
+	// ]);
 };
 
 const generateMnemonic = async () => {
@@ -488,6 +490,110 @@ async function getSolanaAccount(activeSubWallet: number, passcode: string) {
 	return newAccount;
 }
 
+async function getOwnedNftsData(activeSubWalletAddress: string) {
+	const ownedNfts = await fetch(
+		`https://api.all.art/v1/wallet/${activeSubWalletAddress}`,
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			return data;
+		})
+		.catch((eerror) => console.log('helllllo error', eerror));
+
+	const nftArray = [];
+	const { Pubkey, __v, _id, createdAt, listedNfts, unlistedNfts } = ownedNfts;
+
+	for (let i = 0; i < unlistedNfts.length; i++) {
+		const nft = unlistedNfts[i];
+
+		const {
+			Creators,
+			Description,
+			Items,
+			LicenseTitle,
+			License_URL,
+			Mint,
+			Preview_URL,
+			Properties,
+			PubKey,
+			Standard,
+			Title,
+			__v,
+			_id,
+			adminReported,
+			collectionKey,
+			createdAt,
+			isNFTPRO,
+			jsonURL,
+			liked,
+			listed,
+			nft_colletion,
+			nsfw,
+			reported,
+			tags,
+			updatedAt,
+			verfied,
+		} = nft;
+
+		const newObject = {
+			Creators,
+			Description,
+			Items,
+			LicenseTitle,
+			License_URL,
+			Mint,
+			Preview_URL,
+			Properties,
+			PubKey,
+			Standard,
+			Title,
+			__v,
+			_id,
+			adminReported,
+			collectionKey,
+			createdAt,
+			isNFTPRO,
+			jsonURL,
+			liked,
+			listed,
+			nft_colletion,
+			nsfw,
+			reported,
+			tags,
+			updatedAt,
+			verfied,
+		};
+
+		nftArray.push(newObject);
+	}
+	console.log('nft object: ', nftArray);
+	return nftArray;
+
+	// for (let [key, value] of Object.entries(ownedNFTs)) {
+	// 	console.log(`${key}: ${value}`);
+	// }
+	// for (const name of Object.getOwnPropertyNames(ownedNFTs)) {
+	// 	const value = ownedNFTs[name];
+	// 	console.log(`${String(name)}: ${value}`);
+	// }
+
+	// for (let i = 0; i < ownedNFTs.length; i++) {
+
+	// 	const nft = ownedNFTs[i];
+
+	// 	const {
+	// 		Title,
+	// 		id,
+	// 	} = nft;
+	// 	const newObject = {
+	// 		Title,
+	// 		id,
+	// 	};
+	// 	nftArray.push(newObject);
+	// }
+	//console.log('NFT test: ', nftArray)
+}
+
 async function getActiveSubWalletTokens(
 	activeSubWallet: number,
 	passcode: string,
@@ -845,9 +951,8 @@ async function settleFundsData(account: any, Market: any, connection: any) {
 	}
 }
 
-async function getAllTokensData(tokenMapSymbols: any, tokenPairs: any) {
-	console.log('get all tokens');
-	// const tokenPairs = await getTokenPairs();
+async function getAllTokensData(tokenMapSymbols: any) {
+	const tokenPairs = await getTokenPairs();
 
 	const symbolsList = await getCleanTokenList();
 
@@ -870,6 +975,7 @@ async function getAllTokensData(tokenMapSymbols: any, tokenPairs: any) {
 		})
 		.catch((err) => console.log('error', err));
 	//combine token pairs and coinmarketcap data
+	//console.log('CMC Data: ', coinMarketCapTokens)
 
 	const combinedArray = [];
 	for (let i = 0; i < coinMarketCapTokens.length; i++) {
@@ -877,7 +983,7 @@ async function getAllTokensData(tokenMapSymbols: any, tokenPairs: any) {
 		const pairs = tokenPairs.find(
 			(pair: object) => pair.symbol === cmToken.symbol,
 		);
-		// console.log('pairs: ', pairs);
+		//console.log('pairs: ', pairs);
 
 		if (pairs) {
 			const {
@@ -1193,4 +1299,5 @@ export {
 	getAllTokensData,
 	settleFundsData,
 	getActiveSubWalletTokens,
+	getOwnedNftsData,
 };

@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { SafeAreaView, Text } from 'react-native';
 import {
 	Background,
-	Button,
+	ThemeButton,
 	BackButton,
 	Paragraph,
 	TextInput,

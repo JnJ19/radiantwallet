@@ -13,7 +13,8 @@ import {
 type Props = {
 	children: React.ReactNode;
 	position?: String;
-	// blackBackground: boolean;
+	blackBackground: boolean;
+	fullView: boolean;
 };
 
 const DismissKeyboard = ({ children }) => (
@@ -27,12 +28,9 @@ const Background = ({
 	position,
 	blackBackground = false,
 	dismissKeyboard = false,
+	fullView = false,
+
 }: Props) =>
-	// <ImageBackground
-	//   source={require("../assets/images/background.jpg")}
-	//   resizeMode="cover"
-	//   style={styles.background}
-	// >
 	dismissKeyboard ? (
 		<DismissKeyboard>
 			<View
@@ -42,12 +40,19 @@ const Background = ({
 					{ paddingTop: 24 },
 				]}
 			>
-				<KeyboardAvoidingView
-					style={styles.container}
-					// behavior="padding"
-				>
-					{children}
-				</KeyboardAvoidingView>
+				{fullView ? (
+					<KeyboardAvoidingView
+						style={styles.containerNftDisplay}
+					>
+						{children}
+					</KeyboardAvoidingView>
+				): (
+					<KeyboardAvoidingView
+						style={styles.container}
+					>
+						{children}
+					</KeyboardAvoidingView>
+				)}	
 			</View>
 		</DismissKeyboard>
 	) : (
@@ -58,20 +63,38 @@ const Background = ({
 				{ paddingTop: 24 },
 			]}
 		>
-			<KeyboardAvoidingView
-				style={styles.container}
-				// behavior="padding"
-			>
-				{children}
-			</KeyboardAvoidingView>
+			{fullView ? (
+				<KeyboardAvoidingView
+					style={styles.containerNftDisplay}
+				>
+					{children}
+				</KeyboardAvoidingView>
+			): (
+				<KeyboardAvoidingView
+					style={styles.container}
+				>
+					{children}
+				</KeyboardAvoidingView>
+			)}	
 		</View>
 	);
-// </ImageBackground>
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: 16,
+		paddingBottom: 0,
+		// paddingBottom: 32,
+		width: '100%',
+		// maxWidth: 340,
+		// alignSelf: "center",
+		// alignItems: "center",
+		justifyContent: 'space-between',
+		// backgroundColor: 'white',
+	},
+	containerNftDisplay: {
+		flex: 1,
+		padding: 0,
 		paddingBottom: 0,
 		// paddingBottom: 32,
 		width: '100%',

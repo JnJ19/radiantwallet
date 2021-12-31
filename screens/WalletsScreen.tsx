@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import {
 	Text,
-	TouchableOpacity,
 	StyleSheet,
 	DevSettings,
 	View,
@@ -17,18 +16,19 @@ import {
 import {
 	Background,
 	SubPageHeader,
-	Button,
+	ThemeButton,
 	RedButton,
 	LoadingCards,
 } from '../components';
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { shortenPublicKey, normalizeNumber } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Storage from '../storage';
+import { Indexed } from 'ethers/lib/utils';
 
 type Props = {
 	navigation: Navigation;
@@ -57,12 +57,14 @@ const WalletsScreen = ({ navigation }: Props) => {
 	);
 
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-	const snapPoints = useMemo(() => [0, '48%'], []);
+	const snapPoints = useMemo(() => ['10%', '53%'], []);
 	const handlePresentModalPress = useCallback(() => {
 		bottomSheetModalRef.current?.present();
 	}, []);
 
-	const handleSheetChanges = useCallback((index: number) => {}, []);
+	const handleSheetChanges = useCallback((index: number) => {
+		//console.log('handleSheetChanges', index)
+	}, []);
 
 	function summarySubWallet(subWalletTokensArray: any, subWallets: any) {
 		const totalBalance = subWalletTokensArray?.map((item) => {
@@ -95,18 +97,11 @@ const WalletsScreen = ({ navigation }: Props) => {
 		if (subWallets && subWalletTokensArray) {
 			summarySubWallet(subWalletTokensArray, subWallets);
 		}
-		console.log('here');
 	}, [subWallets, subWalletTokensArray]);
 
 	useEffect(() => {
 		getFirstWallet();
-		console.log('here1');
 	}, []);
-
-	useEffect(() => { console.log('here3')}, [subWallets]);
-
-	console.log('active W', activeSubWallet);
-	console.log('selected W', selectedWallet);
 
 	if (localSubWallets.length === 0) {
 		return (
@@ -173,7 +168,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 								Logout of Main Wallet
 							</Text>
 							<TouchableOpacity
-								onPress={() =>
+								onPress={async () =>
 									bottomSheetModalRef.current?.dismiss()
 								}
 							>
@@ -219,13 +214,13 @@ const WalletsScreen = ({ navigation }: Props) => {
 							</RedButton>
 						</View>
 						<View style={styles.setAsActiveButton}>
-							<Button
-								onPress={() =>
+							<ThemeButton
+								onPress={async () =>
 									bottomSheetModalRef.current?.dismiss()
 								}
 							>
 								No, Stay Logged In
-							</Button>
+							</ThemeButton>
 						</View>
 					</View>
 				</BottomSheetModal>
@@ -244,7 +239,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<SubPageHeader>Wallets</SubPageHeader>
 					<TouchableOpacity
 						onPress={async () => {
-							bottomSheetModalRef.current?.present();
+							bottomSheetModalRef.current?.present()
 						}}
 						style={{
 							borderWidth: 1,
@@ -389,8 +384,9 @@ const WalletsScreen = ({ navigation }: Props) => {
 							Logout of Main Wallet
 						</Text>
 						<TouchableOpacity
-							onPress={() =>
+							onPress={async () => {
 								bottomSheetModalRef.current?.dismiss()
+								}
 							}
 						>
 							<Image
@@ -433,13 +429,27 @@ const WalletsScreen = ({ navigation }: Props) => {
 						</RedButton>
 					</View>
 					<View style={styles.setAsActiveButton}>
-						<Button
-							onPress={() =>
+						{/* <TouchableOpacity
+							style={{borderRadius: 20, height: 56, backgroundColor: '#1E2122', justifyContent: 'center', alignItems: 'center', borderColor: theme.colors.black_one, borderWidth: 1,}}
+							onPress={async () => {
 								bottomSheetModalRef.current?.dismiss()
-							}
+								console.log('closed')
+							}}
+						>
+							<Text
+								style={{...theme.fonts.Azeret_Mono.Body_M_Bold, lineHeight: 26, color: '#C9F977', justifyContent: 'center',}}
+							>
+								No, Stay Logged In
+							</Text>
+						</TouchableOpacity> */}
+						<ThemeButton
+							onPress={async () => {
+								bottomSheetModalRef.current?.dismiss()
+								console.log('closed')
+							}}
 						>
 							No, Stay Logged In
-						</Button>
+						</ThemeButton>
 					</View>
 				</View>
 			</BottomSheetModal>

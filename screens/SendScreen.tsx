@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import {
 	Text,
@@ -415,7 +415,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					onPress={() => {
 						if (tradeAmount !== '0' && recipientAddress !== '') {
 							Haptics.impactAsync(
@@ -427,7 +427,7 @@ const SendScreen = ({ navigation, route }: Props) => {
 					}}
 				>
 					Send ${tradeAmount}
-				</Button>
+				</ThemeButton>
 			</View>
 			<Modal
 				isVisible={modalVisible}

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet } from 'react-native';
 import { theme } from '../core/theme';
@@ -70,11 +70,11 @@ const SendSuccessScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<Button
+				<ThemeButton
 					onPress={() => navigation.navigate('Token Details', token)}
 				>
 					Done
-				</Button>
+				</ThemeButton>
 			</View>
 		</Background>
 	);

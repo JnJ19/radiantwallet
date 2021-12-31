@@ -27,17 +27,8 @@ const TokenCard = (info: object) => {
 		logo = info.logo;
 		percent_change_24h = info.percent_change_24h;
 	}
-	// } else {
-	// 	mint = info.address;
-	// 	price = 0;
-	// 	amount = 0;
-	// 	name = info.name;
-	// 	symbol = info.symbol;
-	// 	logo = info.logoURI;
-	// 	percent_change_24h = 0;
-	// }
+	//console.log('token', info.token);
 	const { onPress } = info;
-
 	const renderPercentChange = () => {
 		return (
 			<>

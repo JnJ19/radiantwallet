@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { Background, Button } from '../components';
+import { Background, ThemeButton } from '../components';
 import { Navigation } from '../types';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../core/theme';
@@ -314,7 +314,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 						: 0.65
 				}
 			>
-				<Button
+				<ThemeButton
 					onPress={() => {
 						if (
 							parseFloat(tradeAmount) > 0 &&
@@ -332,7 +332,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 					}}
 				>
 					Review Trade
-				</Button>
+				</ThemeButton>
 			</View>
 		</Background>
 	);
