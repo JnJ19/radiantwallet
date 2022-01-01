@@ -105,7 +105,6 @@ const deriveSeed2 = (
 
 const copyToClipboard = async (copied: string) => {
 	Clipboard.setString(copied);
-	console.log('copied', copied);
 	// Alert.alert('Address Copied!', copied, [
 	// 	{ text: 'Okay', style: 'destructive' },
 	// ]);
@@ -150,7 +149,6 @@ async function getSubWalletsData(passcode: string) {
 	const subWallets1 = [];
 	let iterate = true;
 	let i = 0;
-	console.warn('hello');
 
 	while (iterate === true) {
 		const newAccount = await getSolanaAccount(i, passcode);
@@ -185,7 +183,6 @@ async function getOwnedTokensData(
 	tokenMap: any,
 	tokenPairs: any,
 ) {
-	console.log('get owned tokens');
 	// const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
@@ -217,7 +214,6 @@ async function getOwnedTokensData(
 				},
 			)
 				.then((response) => {
-					console.log('whhhat');
 					return response.json();
 				})
 				.then((data) => {
@@ -338,14 +334,12 @@ async function getOwnedTokensData(
 			(symbol) => symbol !== 'SCAM_7BB4',
 		);
 		let ownedSymbolsList = filteredOwnedSymbols.join();
-		console.log('ownedSymbolsList: ', ownedSymbolsList);
 
 		let iterate = true;
 		let counter = 0;
 		const aboutData: Array<object> = [];
 
 		while (counter < 10 && iterate) {
-			console.log('whiel route hit' + ' ' + iterate);
 			await fetch(
 				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 				{
@@ -360,9 +354,12 @@ async function getOwnedTokensData(
 					return response.json();
 				})
 				.then((res) => {
-					console.log('res', res);
 					if (res.status.error_code !== 0) {
-						if (res.status.error_message.includes('symbol')) {
+						if (
+							res.status.error_message.includes(
+								'Invalid value for "symbol"',
+							)
+						) {
 							//remove the symbol causing the error
 							const problemSymbol = res.status.error_message
 								.split('\\')[0]
@@ -383,11 +380,6 @@ async function getOwnedTokensData(
 									ownedSymbolsList.length - 1,
 								);
 							ownedSymbolsList = newArray;
-
-							console.log(
-								'ownedSymbolsList Fixed: ',
-								ownedSymbolsList,
-							);
 						}
 						counter++;
 					} else {
@@ -412,7 +404,7 @@ async function getOwnedTokensData(
 			};
 			combinedOwnedTokensArray.push(newTokenObject);
 		}
-
+		console.log('price owned symbolslist', ownedSymbolsList);
 		const priceData = await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
 			{
@@ -596,7 +588,6 @@ async function getOwnedNftsData(activeSubWalletAddress: string) {
 
 		nftArray.push(newObject);
 	}
-	console.log('nft object: ', nftArray);
 	return nftArray;
 
 	// for (let [key, value] of Object.entries(ownedNFTs)) {
@@ -770,7 +761,13 @@ async function getActiveSubWalletTokens(
 			ownedTokensSymbols.push(otherDetails.symbol.toUpperCase());
 		}
 	}
-	let filteredOwnedSymbols = ownedTokensSymbols;
+
+	console.log('owned token symbols', ownedTokensSymbols);
+	const filteredOwnedSymbols = ownedTokensSymbols.filter((symbol) => {
+		const filter = /\d+/;
+		const filteredSymbol = symbol.match(filter);
+		return filteredSymbol ? false : true;
+	});
 	let ownedSymbolsList = filteredOwnedSymbols.join();
 
 	let iterate = true;
@@ -778,7 +775,7 @@ async function getActiveSubWalletTokens(
 	const aboutData: Array<object> = [];
 
 	while (counter < 10 && iterate) {
-		console.log('whiel route hit' + ' ' + iterate);
+		console.log('while route hi in getactivesubwallet' + ' ' + iterate);
 		await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 			{
@@ -815,7 +812,6 @@ async function getActiveSubWalletTokens(
 								ownedSymbolsList.length - 1,
 							);
 						ownedSymbolsList = newArray;
-
 						console.log(
 							'ownedSymbolsList Fixed: ',
 							ownedSymbolsList,
@@ -846,7 +842,7 @@ async function getActiveSubWalletTokens(
 		};
 		combinedOwnedTokensArray.push(newTokenObject);
 	}
-
+	console.log('price data owned symbolslist', ownedSymbolsList);
 	const priceData = await fetch(
 		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
 		{
@@ -876,13 +872,14 @@ async function getActiveSubWalletTokens(
 		.catch((err) => console.log('errerere', err));
 
 	const finalCombinedOwnedTokensArray = [];
-
+	console.log('price data', priceData);
+	console.log('combined otkens array', combinedOwnedTokensArray);
 	for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
 		const tokenObject = combinedOwnedTokensArray[i];
-		console.log('tokenObject: ', tokenObject.symbol);
 		const cmcToken = priceData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
 		);
+		console.log('tokenObject: ', tokenObject);
 		console.log('cmcToken: ', cmcToken);
 
 		if (cmcToken && cmcToken.quote) {
@@ -912,7 +909,6 @@ async function getActiveSubWalletTokens(
 			};
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		} else {
-			console.log('hello');
 			const newTokenObject = {
 				price: 0,
 				percent_change_24h: 0,
@@ -927,12 +923,10 @@ async function getActiveSubWalletTokens(
 				price_90d: 0,
 				...tokenObject,
 			};
-			console.log('newTokenObject: ', newTokenObject);
 
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		}
 	}
-	console.log('hello');
 	if (solToken) {
 		finalCombinedOwnedTokensArray.push(solToken);
 	}

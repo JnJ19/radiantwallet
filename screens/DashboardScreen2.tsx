@@ -266,11 +266,8 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	function getSOL(tokens) {
-		console.log('tokennnns', tokens);
-
 		const sol = tokens.find((token: object) => {
 			if (token.symbol === 'SOL') {
-				console.log('hello');
 				return token;
 			}
 		});
