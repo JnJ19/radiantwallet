@@ -12,6 +12,7 @@ import {
 	DevSettings,
 	View,
 	Image,
+	TouchableOpacity,
 } from 'react-native';
 import {
 	Background,
@@ -23,7 +24,7 @@ import {
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-import { BottomSheetModal, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { shortenPublicKey, normalizeNumber } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -239,7 +240,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 					<SubPageHeader>Wallets</SubPageHeader>
 					<TouchableOpacity
 						onPress={async () => {
-							bottomSheetModalRef.current?.present()
+							bottomSheetModalRef.current?.present();
 						}}
 						style={{
 							borderWidth: 1,
@@ -320,7 +321,8 @@ const WalletsScreen = ({ navigation }: Props) => {
 									>
 										<Text
 											style={{
-												...theme.fonts.Nunito_Sans.Body_M_Bold,
+												...theme.fonts.Nunito_Sans
+													.Body_M_Bold,
 												color: '#1F1F1F',
 												marginBottom: 4,
 											}}
@@ -329,9 +331,14 @@ const WalletsScreen = ({ navigation }: Props) => {
 										</Text>
 										<Image
 											source={require('../assets/icons/Bullet.png')}
-											style={{marginLeft: 4}}
+											style={{ marginLeft: 4 }}
 										/>
-										<Text style={{...styles.address, marginLeft: 4}}>
+										<Text
+											style={{
+												...styles.address,
+												marginLeft: 4,
+											}}
+										>
 											{shortenPublicKey(
 												finalSubWallet.publicKey,
 												0,
@@ -342,9 +349,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 									</View>
 								</View>
 							</View>
-							<View>
-								
-							</View>
+							<View></View>
 						</TouchableOpacity>
 					);
 				})}
@@ -385,9 +390,8 @@ const WalletsScreen = ({ navigation }: Props) => {
 						</Text>
 						<TouchableOpacity
 							onPress={async () => {
-								bottomSheetModalRef.current?.dismiss()
-								}
-							}
+								bottomSheetModalRef.current?.dismiss();
+							}}
 						>
 							<Image
 								source={require('../assets/icons/Close.png')}
@@ -444,8 +448,8 @@ const WalletsScreen = ({ navigation }: Props) => {
 						</TouchableOpacity> */}
 						<ThemeButton
 							onPress={async () => {
-								bottomSheetModalRef.current?.dismiss()
-								console.log('closed')
+								bottomSheetModalRef.current?.dismiss();
+								console.log('closed');
 							}}
 						>
 							No, Stay Logged In

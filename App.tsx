@@ -20,30 +20,6 @@ import Navigation from './navigation';
 
 import AppContext from './components/AppContext';
 import * as Sentry from 'sentry-expo';
-import { Jupiter, RouteInfo, TOKEN_LIST_URL } from '@jup-ag/core';
-import { PublicKey, Connection, Keypair } from '@solana/web3.js';
-console.log('fetch: ', fetch);
-console.log('Jupiter: ', Jupiter);
-
-async function jupTest() {
-	const connection = new Connection('https://mercurial.rpcpool.com');
-	const publicKey = new PublicKey(
-		'GfaY1fZfTF9WRqtdXhno9FS8Wn71fbj8qZawnGak5DLs',
-	);
-
-	const WALLET_PRIVATE_KEY =
-		'2ctFe1fPcPas9yksTtU27CnvEB9UU9g5LKQM5nPqYBVxKdHPau1QmeunzhLsGkL27AzxifektRhN4zZ6o6FDNALs';
-	const USER_PRIVATE_KEY = bs58.decode(WALLET_PRIVATE_KEY);
-	const USER_KEYPAIR = Keypair.fromSecretKey(USER_PRIVATE_KEY);
-
-	await Jupiter.load({
-		connection,
-		cluster: 'mainnet-beta',
-		user: USER_KEYPAIR,
-	})
-		.then((res) => console.log('res: ', res))
-		.catch((err) => console.log('err: ', err));
-}
 
 const routingInstrumentation =
 	new Sentry.Native.ReactNavigationInstrumentation();
@@ -78,9 +54,6 @@ export default function App() {
 	const [globalPreviousActiveWallet, setGlobalPreviousActiveWallet] =
 		useState(0);
 
-	React.useEffect(() => {
-		jupTest();
-	}, []);
 	const globalActions = {
 		globalActiveWallet: globalActiveWallet,
 		globalPreviousActiveWallet: globalPreviousActiveWallet,
