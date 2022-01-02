@@ -10,6 +10,9 @@ const {
 } = theme;
 import { SubPageHeader } from '../components';
 
+import { useContext } from 'react';
+import AppContext from '../components/AppContext';
+
 type Props = {
 	navigation: Navigation;
 	route: Object;
@@ -51,7 +54,10 @@ const TradeSuccessScreen = ({ navigation, route }: Props) => {
 				</View>
 			</View>
 			<View style={{ marginBottom: 40 }}>
-				<ThemeButton onPress={() => navigation.navigate('Dashboard')}>
+				<ThemeButton 
+					onPress={() => {
+						navigation.navigate('Dashboard')
+					}}>
 					Done
 				</ThemeButton>
 			</View>

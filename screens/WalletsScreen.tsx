@@ -12,6 +12,7 @@ import {
 	DevSettings,
 	View,
 	Image,
+	TouchableOpacity
 } from 'react-native';
 import {
 	Background,
@@ -23,7 +24,7 @@ import {
 import { Navigation } from '../types';
 import { theme } from '../core/theme';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-import { BottomSheetModal, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, } from '@gorhom/bottom-sheet';
 import { shortenPublicKey, normalizeNumber } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -273,6 +274,7 @@ const WalletsScreen = ({ navigation }: Props) => {
 							key={index}
 							style={styles.pressableContainer}
 							onPress={() => {
+								console.log('here')
 								navigation.navigate('Wallet Details');
 								setLocalSelectedWallet(index);
 								setSelectedWallet(index);

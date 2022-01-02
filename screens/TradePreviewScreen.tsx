@@ -24,6 +24,9 @@ import { normalizeNumber, mnemonicToSeed, accountFromSeed } from '../utils';
 import * as Haptics from 'expo-haptics';
 import { Jupiter, RouteInfo, TOKEN_LIST_URL } from '@jup-ag/core';
 
+import { useContext } from 'react';
+import AppContext from '../components/AppContext';
+
 type Props = {
 	navigation: Navigation;
 	route: Object;
@@ -55,6 +58,8 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const [bestRoute2, setBestRoute2] = useState(null);
 	const [jupiterObject, setJupiterObject] = useState(null);
+	
+	const myContext = useContext(AppContext);
 
 	const getPossiblePairsTokenInfo = ({
 		tokens,
@@ -302,12 +307,17 @@ const TradePreviewScreen = ({ navigation, route }: Props) => {
 		setDisplayPrice(ratio);
 	}
 
+	const updateActiveWallet = () => {
+		myContext.setUpdateGlobalActiveSubWallet(true);
+	}
+
 	const submitJupTrade = async () => {
 		console.log('best route', bestRoute2);
 		console.log('jupiter object', jupiterObject);
 		await executeSwap({ jupiter: jupiterObject, route: bestRoute2 }).catch(
 			(err) => console.log('eroror', err),
 		);
+		updateActiveWallet();
 		setModalVisible(false);
 		navigation.navigate('Trade Success', { tradeAmount, fromTo });
 	};

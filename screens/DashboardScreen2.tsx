@@ -117,19 +117,6 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 
 	const onDismissSnackBar = () => setSnackIsVisible(false);
 
-	function sortTokens(tokens) {
-		const sortedTokens = tokens.sort((a, b) => {
-			return b.price * b.amount - a.price * a.amount;
-		});
-		setSortedTokens(sortedTokens);
-	}
-
-	useEffect(() => {
-		if (tokens) {
-			sortTokens(tokens);
-		}
-	}, [tokens]);
-
 	//chart stuff
 	const Line = ({ line }) => (
 		<Path key={'line'} d={line} stroke={'black'} fill={'none'} />
@@ -170,6 +157,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			tokenMap,
 			tokenPairs,
 		);
+		console.log('getActive...', tokens);
 		setFirstLoadedTokens(tokens);
 		setTokens(tokens);
 		let todayArray = [];
@@ -266,7 +254,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 	}
 
 	function getSOL(tokens) {
-		console.log('tokennnns', tokens);
+		//console.log('tokennnns', tokens);
 
 		const sol = tokens.find((token: object) => {
 			if (token.symbol === 'SOL') {
@@ -276,6 +264,19 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 		});
 		return sol;
 	}
+
+	function sortTokens(tokens) {
+		const sortedTokens = tokens.sort((a, b) => {
+			return b.price * b.amount - a.price * a.amount;
+		});
+		setSortedTokens(sortedTokens);
+	}
+
+	useEffect(() => {
+		if (tokens) {
+			sortTokens(tokens);
+		}
+	}, [tokens]);
 
 	useEffect(() => {
 		if (subWalletTokensArray) {
@@ -323,6 +324,15 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 			);
 		});
 	}, []);
+
+	useEffect(() => {
+		if (myContext.updateGlobalActiveSubWallet === true) {
+			console.log('wallet update function on dash');
+			getActiveSubWalletOwnedTokens();
+			populateDashboard();
+			myContext.setUpdateGlobalActiveSubWallet(false);
+		}
+	}, [myContext.updateGlobalActiveSubWallet]);
 
 	useEffect(() => {
 		if (previousActiveSubWallet.current !== myContext.globalActiveWallet) {
@@ -763,6 +773,7 @@ const DashboardScreen2 = ({ navigation }: Props) => {
 					</View>
 					<View>
 						<FlatList
+							showsHorizontalScrollIndicator={false}
 							horizontal={true}
 							data={subWalletNftsArray}
 							renderItem={(nft) => (

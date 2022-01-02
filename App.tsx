@@ -22,47 +22,25 @@ import AppContext from './components/AppContext';
 import * as Sentry from 'sentry-expo';
 import { Jupiter, RouteInfo, TOKEN_LIST_URL } from '@jup-ag/core';
 import { PublicKey, Connection, Keypair } from '@solana/web3.js';
-console.log('fetch: ', fetch);
-console.log('Jupiter: ', Jupiter);
 
-async function jupTest() {
-	const connection = new Connection('https://mercurial.rpcpool.com');
-	const publicKey = new PublicKey(
-		'GfaY1fZfTF9WRqtdXhno9FS8Wn71fbj8qZawnGak5DLs',
-	);
+// const routingInstrumentation =
+// 	new Sentry.Native.ReactNavigationInstrumentation();
+// console.log('routingInstrumentation: ', routingInstrumentation);
 
-	const WALLET_PRIVATE_KEY =
-		'2ctFe1fPcPas9yksTtU27CnvEB9UU9g5LKQM5nPqYBVxKdHPau1QmeunzhLsGkL27AzxifektRhN4zZ6o6FDNALs';
-	const USER_PRIVATE_KEY = bs58.decode(WALLET_PRIVATE_KEY);
-	const USER_KEYPAIR = Keypair.fromSecretKey(USER_PRIVATE_KEY);
-
-	await Jupiter.load({
-		connection,
-		cluster: 'mainnet-beta',
-		user: USER_KEYPAIR,
-	})
-		.then((res) => console.log('res: ', res))
-		.catch((err) => console.log('err: ', err));
-}
-
-const routingInstrumentation =
-	new Sentry.Native.ReactNavigationInstrumentation();
-console.log('routingInstrumentation: ', routingInstrumentation);
-
-Sentry.init({
-	dsn: 'https://8622adb754c3410cbb75dc3a947de79d@o1082874.ingest.sentry.io/6091873',
-	enableInExpoDevelopment: true,
-	debug: true,
-	enableAutoSessionTracking: true,
-	// Sessions close after app is 10 seconds in the background.
-	sessionTrackingIntervalMillis: 10000,
-	integrations: [
-		new Sentry.Native.ReactNativeTracing({
-			tracingOrigins: ['localhost', /^\//, /^https:\/\//],
-			routingInstrumentation,
-		}),
-	],
-});
+// Sentry.init({
+// 	dsn: 'https://8622adb754c3410cbb75dc3a947de79d@o1082874.ingest.sentry.io/6091873',
+// 	enableInExpoDevelopment: true,
+// 	debug: true,
+// 	enableAutoSessionTracking: true,
+// 	// Sessions close after app is 10 seconds in the background.
+// 	sessionTrackingIntervalMillis: 10000,
+// 	integrations: [
+// 		new Sentry.Native.ReactNativeTracing({
+// 			tracingOrigins: ['localhost', /^\//, /^https:\/\//],
+// 			routingInstrumentation,
+// 		}),
+// 	],
+// });
 
 // Access any @sentry/react-native exports via:
 // Sentry.Native.*
@@ -77,15 +55,15 @@ export default function App() {
 	const [globalActiveWallet, setGlobalActiveWallet] = useState(0);
 	const [globalPreviousActiveWallet, setGlobalPreviousActiveWallet] =
 		useState(0);
+	const [updateGlobalActiveSubWallet, setUpdateGlobalActiveSubWallet] = useState(false);
 
-	React.useEffect(() => {
-		jupTest();
-	}, []);
 	const globalActions = {
 		globalActiveWallet: globalActiveWallet,
-		globalPreviousActiveWallet: globalPreviousActiveWallet,
 		setGlobalActiveWallet,
+		globalPreviousActiveWallet: globalPreviousActiveWallet,
 		setGlobalPreviousActiveWallet,
+		updateGlobalActiveSubWallet: updateGlobalActiveSubWallet,
+		setUpdateGlobalActiveSubWallet,
 	};
 
 	if (!isLoadingComplete) {

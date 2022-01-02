@@ -11,6 +11,8 @@ const {
 import { SubPageHeader } from '../components';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
 import * as Haptics from 'expo-haptics';
+import { tokenAccount } from 'easy-spl';
+import { getSingleOwnedTokenValue } from '../utils';
 
 type Props = {
 	navigation: Navigation;
@@ -24,6 +26,7 @@ const TradeScreen = ({ navigation, route }: Props) => {
 	const ownedTokens = useStoreState((state) => state.ownedTokens);
 	const allTokens = useStoreState((state) => state.allTokens);
 	const [filteredTo, setFilteredTo] = useState('');
+	const [accuratePrice, setAccuratePrice] = useState();
 	const [pair, setPair] = useState({
 		from: route.params.from,
 		to: route.params.to,
@@ -93,14 +96,28 @@ const TradeScreen = ({ navigation, route }: Props) => {
 		}
 	}, [token]);
 
+
+	async function getAccuratePrice(symbol) {
+		let unformattedPrice = await getSingleOwnedTokenValue(symbol);
+		setAccuratePrice(unformattedPrice);
+	}
+
+	useEffect(() => {
+		getAccuratePrice(pair.from.symbol);
+	}, [])
+
 	return (
 		<Background>
 			{console.log('pair from', pair.from.amount, pair.from.price)}
 			<SubPageHeader
-				subText={`$${(pair.from.amount * pair.from.price).toFixed(
-					2,
-				)} available`}
-				backButton
+				// subText={`$${(pair.from.amount * pair.from.price).toFixed(
+				// 	2,
+				// )} available`}
+				// backButton
+				subText={`$${(pair.from.amount * accuratePrice).toFixed(
+						2,
+					)} available`}
+					backButton
 			>
 				Trade {pair.from.name}{' '}
 			</SubPageHeader>

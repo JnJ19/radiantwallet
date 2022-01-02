@@ -46,14 +46,7 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 		setActiveSubWallet(selectedWallet);
 		myContext.setGlobalActiveWallet(selectedWallet);
 		
-	}
-
-	// console.log('active WD', activeSubWallet);
-	// console.log('selected WD', selectedWallet);
-	// console.log('global', myContext.globalActiveWalletName);
-	// myContext.setGlobalActiveWallet(1);
-	// console.log('global2', myContext.globalActiveWalletName);
-	
+	}	
 
 	return (
 		<Background>
@@ -118,9 +111,6 @@ const WalletDetailsScreen = ({ navigation }: Props) => {
 					onPress={() => {
 						copyToClipboard(finalSubWallets[selectedWallet].publicKey);
 						onToggleSnackBar();
-						
-						//setLocalSelectedWallet(index);
-						//setSelectedWallet(index);
 					}}
 				>
 					<View style={styles.cardSubTitleContainer}>

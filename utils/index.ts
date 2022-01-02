@@ -13,7 +13,6 @@ import { Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard'; // <-- might have to change to '@react-native-community/clipboard' when not using expo but '@react-native-community/clipboard' will not work on Android with expo.
 import * as SecureStore from 'expo-secure-store';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
-import SnackBar from 'react-native-snackbar';
 
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
 	'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
@@ -31,7 +30,6 @@ async function findAssociatedTokenAddress(
 	walletAddress: PublicKey,
 	tokenMintAddress: PublicKey,
 ): Promise<PublicKey> {
-	//console.log('here');
 	return (
 		await PublicKey.findProgramAddress(
 			[
@@ -154,16 +152,10 @@ async function getSubWalletsData(passcode: string) {
 
 	while (iterate === true) {
 		const newAccount = await getSolanaAccount(i, passcode);
-
 		const { publicKey } = newAccount;
 		const subWalletName = 'SubWallet ' + (1 + i); //this needs to get the name from user input or a default name
-		const programId = new PublicKey(
-			'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-		);
-		const ownedTokens = await connection
-			.getTokenAccountsByOwner(publicKey, { programId })
-			.catch((err) => console.warn('errorr', err));
-		const result2 = await connection.getParsedAccountInfo(publicKey);
+
+		const result2 = await connection.getParsedAccountInfo(publicKey).catch((err) => console.warn('errorr', err));;
 
 		if (!result2.value) {
 			iterate = false;
@@ -185,7 +177,7 @@ async function getOwnedTokensData(
 	tokenMap: any,
 	tokenPairs: any,
 ) {
-	console.log('get owned tokens');
+	//console.log('get owned tokens');
 	// const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
@@ -337,7 +329,7 @@ async function getOwnedTokensData(
 			(symbol) => symbol !== 'soSUSHI',
 		);
 		const ownedSymbolsList = filteredOwnedSymbols.join();
-		console.log('ownedSymbolsList: ', ownedSymbolsList);
+		//console.log('ownedSymbolsList: ', ownedSymbolsList);
 
 		const aboutData = await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
@@ -370,7 +362,7 @@ async function getOwnedTokensData(
 		const combinedOwnedTokensArray = [];
 		for (let i = 0; i < ownedTokensArray.length; i++) {
 			const tokenObject = ownedTokensArray[i];
-			console.log('about data', aboutData);
+			//console.log('about data', aboutData);
 			const cmcToken = aboutData.find(
 				(token: object) => token.symbol === tokenObject.symbol,
 			);
@@ -476,8 +468,10 @@ async function getOwnedTokensData(
 }
 
 async function getSolanaAccount(activeSubWallet: number, passcode: string) {
-	let mnemonic = await SecureStore.getItemAsync(passcode);
-	const bip39 = await import('bip39');
+	let mnemonicPromise = SecureStore.getItemAsync(passcode);
+	const bip39Promise = import('bip39');
+	const [mnemonic, bip39] = await Promise.all([mnemonicPromise, bip39Promise]);
+
 	const seed = await bip39.mnemonicToSeed(mnemonic); //returns 64 byte array
 
 	const newAccount = accountFromSeed(
@@ -566,7 +560,7 @@ async function getOwnedNftsData(activeSubWalletAddress: string) {
 
 		nftArray.push(newObject);
 	}
-	console.log('nft object: ', nftArray);
+	//console.log('nft object: ', nftArray);
 	return nftArray;
 
 	// for (let [key, value] of Object.entries(ownedNFTs)) {
@@ -594,24 +588,46 @@ async function getOwnedNftsData(activeSubWalletAddress: string) {
 	//console.log('NFT test: ', nftArray)
 }
 
+async function getSingleOwnedTokenValue(symbol) {
+	const coinMarketCapPrice = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}`,
+		{
+			headers: {
+				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+				Accept: 'application/json',
+				'Accept-Encoding': 'deflate, gzip',
+			},
+		},
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			const dataArray = Object.values(data.data);
+			const price = dataArray[0].quote.USD.price;
+			return price;
+		});
+		//console.log('price', coinMarketCapPrice);
+		return coinMarketCapPrice;
+};
+
 async function getActiveSubWalletTokens(
 	activeSubWallet: number,
 	passcode: string,
 	tokenMap: any,
 	tokenPairs: any,
 ) {
-	console.log('get selected wallet tokens');
-	const newAccount = await getSolanaAccount(activeSubWallet, passcode);
-	// const tokenPairs = await getTokenPairs();
-	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
+	const newAccount = await getSolanaAccount(activeSubWallet, passcode);
+	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 	const { publicKey } = newAccount;
 
-	const ownedTokens = await connection
+	const ownedTokensPromise = connection
 		.getTokenAccountsByOwner(publicKey, { programId })
 		.catch((err) => console.log('errorr', err));
 
-	const solBalance = await connection.getBalance(publicKey);
+	const solBalancePromise = connection.getBalance(publicKey);
+	
+	const [ownedTokens, solBalance] = await Promise.all([ownedTokensPromise, solBalancePromise]);
+
 	const realSolBalance = solBalance * 0.000000001;
 	console.log('realSolBalance: ', realSolBalance);
 
@@ -744,9 +760,9 @@ async function getActiveSubWalletTokens(
 		(symbol) => symbol !== 'soSUSHI' && symbol !== 'SCAM_7BB4',
 	);
 	const ownedSymbolsList = filteredOwnedSymbols.join();
-	console.log('ownedSymbolsList: ', ownedSymbolsList);
+	//console.log('ownedSymbolsList: ', ownedSymbolsList);
 
-	const aboutData = await fetch(
+	const aboutDataPromise = fetch(
 		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 		{
 			headers: {
@@ -787,24 +803,9 @@ async function getActiveSubWalletTokens(
 		})
 		.catch((err) => console.log('errerere', err));
 
-	console.log('aboutData: ', aboutData);
-	const combinedOwnedTokensArray = [];
-	for (let i = 0; i < ownedTokensArray.length; i++) {
-		console.log('hit hererere');
-		const tokenObject = ownedTokensArray[i];
-		const cmcToken = aboutData.find(
-			(token: object) => token.symbol === tokenObject.symbol,
-		);
-		const newTokenObject = {
-			description: cmcToken?.description
-				? cmcToken.description
-				: 'No description available',
-			...tokenObject,
-		};
-		combinedOwnedTokensArray.push(newTokenObject);
-	}
+	
 
-	const priceData = await fetch(
+	const priceDataPromise = fetch(
 		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
 		{
 			headers: {
@@ -831,15 +832,35 @@ async function getActiveSubWalletTokens(
 		})
 		.catch((err) => console.log('errerere', err));
 
+	
+
 	const finalCombinedOwnedTokensArray = [];
+
+	const [aboutData, priceData] = await Promise.all([aboutDataPromise, priceDataPromise]);
+
+	const combinedOwnedTokensArray = [];
+	for (let i = 0; i < ownedTokensArray.length; i++) {
+		console.log('hit hererere');
+		const tokenObject = ownedTokensArray[i];
+		const cmcToken = aboutData.find(
+			(token: object) => token.symbol === tokenObject.symbol,
+		);
+		const newTokenObject = {
+			description: cmcToken?.description
+				? cmcToken.description
+				: 'No description available',
+			...tokenObject,
+		};
+		combinedOwnedTokensArray.push(newTokenObject);
+	}
 
 	for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
 		const tokenObject = combinedOwnedTokensArray[i];
-		console.log('tokenObject: ', tokenObject.symbol);
+		//console.log('tokenObject: ', tokenObject.symbol);
 		const cmcToken = priceData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
 		);
-		console.log('cmcToken: ', cmcToken);
+		//console.log('cmcToken: ', cmcToken);
 
 		if (cmcToken && cmcToken.quote) {
 			const {
@@ -868,7 +889,7 @@ async function getActiveSubWalletTokens(
 			};
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		} else {
-			console.log('hello');
+			//console.log('hello');
 			const newTokenObject = {
 				price: 0,
 				percent_change_24h: 0,
@@ -883,12 +904,12 @@ async function getActiveSubWalletTokens(
 				price_90d: 0,
 				...tokenObject,
 			};
-			console.log('newTokenObject: ', newTokenObject);
+			//console.log('newTokenObject: ', newTokenObject);
 
 			finalCombinedOwnedTokensArray.push(newTokenObject);
 		}
 	}
-	console.log('hello');
+	//console.log('hello');
 	if (solToken) {
 		finalCombinedOwnedTokensArray.push(solToken);
 	}
@@ -1300,4 +1321,5 @@ export {
 	settleFundsData,
 	getActiveSubWalletTokens,
 	getOwnedNftsData,
+	getSingleOwnedTokenValue,
 };

@@ -33,6 +33,7 @@ const NFTdisplayScreen = ({ navigation, route }: Props) => {
     }
 
     function getCategory() {
+        console.log('nft', subWalletNftsArray[nftIndex]);
         const category = subWalletNftsArray[nftIndex].Properties.category;
         if (category === 'video') {
             return (
@@ -45,7 +46,7 @@ const NFTdisplayScreen = ({ navigation, route }: Props) => {
                         bottom: 0,
                         right: 0,
                     }}
-                    source={{uri: subWalletNftsArray[nftIndex].Properties.files[0].uri}}
+                    source={{uri: subWalletNftsArray[nftIndex].Properties.animation_url}}
                     useNativeControls
                     resizeMode='contain'
                     isLooping
@@ -57,7 +58,7 @@ const NFTdisplayScreen = ({ navigation, route }: Props) => {
             return (
                 <Image 
                     style={{flex: 1, height: undefined, width: undefined, resizeMode:"contain"}}
-                    source={{uri: subWalletNftsArray[nftIndex].Properties.files[0].uri}}
+                    source={{uri: subWalletNftsArray[nftIndex].Preview_URL}}
                     
                 />
             );
