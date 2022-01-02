@@ -10,6 +10,12 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { derivePath } from 'ed25519-hd-key';
 import * as bip32 from 'bip32';
 import { Alert } from 'react-native';
+import {
+	fullSymbolsList,
+	symbolList1,
+	symbolList2,
+	symbolList3,
+} from '../tokensList';
 import * as Clipboard from 'expo-clipboard'; // <-- might have to change to '@react-native-community/clipboard' when not using expo but '@react-native-community/clipboard' will not work on Android with expo.
 import * as SecureStore from 'expo-secure-store';
 import { useStoreState, useStoreActions } from '../hooks/storeHooks';
@@ -940,8 +946,8 @@ async function getAllTokensData(tokenMapSymbols: any) {
 	const symbolsList = await getCleanTokenList();
 
 	const combinedSymbolList = symbolsList.join();
-	const coinMarketCapTokens = await fetch(
-		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${combinedSymbolList}`,
+	const coinMarketCapTokens1 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbolList1}`,
 		{
 			headers: {
 				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
@@ -954,60 +960,101 @@ async function getAllTokensData(tokenMapSymbols: any) {
 			return response.json();
 		})
 		.then((data) => {
+			console.log('data: ', data);
 			return Object.values(data.data);
 		})
 		.catch((err) => console.log('error', err));
+
+	const coinMarketCapTokens2 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbolList2}`,
+		{
+			headers: {
+				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+				Accept: 'application/json',
+				'Accept-Encoding': 'deflate, gzip',
+			},
+		},
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.then((data) => {
+			console.log('data: ', data);
+			return Object.values(data.data);
+		})
+		.catch((err) => console.log('error', err));
+
+	const coinMarketCapTokens3 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${symbolList3}`,
+		{
+			headers: {
+				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+				Accept: 'application/json',
+				'Accept-Encoding': 'deflate, gzip',
+			},
+		},
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.then((data) => {
+			console.log('data: ', data);
+			return Object.values(data.data);
+		})
+		.catch((err) => console.log('error', err));
+
 	//combine token pairs and coinmarketcap data
 	//console.log('CMC Data: ', coinMarketCapTokens)
 
+	const combinedCmcTokensArray = [
+		...coinMarketCapTokens1,
+		...coinMarketCapTokens2,
+		...coinMarketCapTokens3,
+	];
+	console.log('combinedCmcTokensArray: ', combinedCmcTokensArray);
+
 	const combinedArray = [];
-	for (let i = 0; i < coinMarketCapTokens.length; i++) {
-		const cmToken = coinMarketCapTokens[i];
-		const pairs = tokenPairs.find(
-			(pair: object) => pair.symbol === cmToken.symbol,
-		);
-		//console.log('pairs: ', pairs);
+	for (let i = 0; i < combinedCmcTokensArray.length; i++) {
+		const cmToken = combinedCmcTokensArray[i];
 
-		if (pairs) {
-			const {
-				name,
-				logo,
-				symbol,
-				description,
-				urls: { twitter, discord, website },
-			} = cmToken;
+		const {
+			name,
+			logo,
+			symbol,
+			description,
+			urls: { twitter, discord, website },
+		} = cmToken;
 
-			let mint;
-			if (symbol === 'USDC') {
-				mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-			} else {
-				const mintObject = tokenMapSymbols.get(symbol);
-				mint = mintObject?.address;
-			}
-
-			const newObject = {
-				name,
-				mint,
-				logo,
-				symbol,
-				description,
-				extensions: {
-					twitter,
-					discord,
-					website,
-				},
-				pairs: pairs.pairs,
-			};
-
-			combinedArray.push(newObject);
+		let mint;
+		if (symbol === 'USDC') {
+			mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+		} else {
+			const mintObject = tokenMapSymbols.get(symbol);
+			mint = mintObject?.address;
 		}
+
+		const newObject = {
+			name,
+			mint,
+			logo,
+			symbol,
+			description,
+			extensions: {
+				twitter,
+				discord,
+				website,
+			},
+			pairs: [],
+		};
+
+		combinedArray.push(newObject);
 	}
 
 	// console.log('combeind array', combinedArray);
 
 	//get and combine prices now too
-	const coinMarketCapPrices = await fetch(
-		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${combinedSymbolList}`,
+	const coinMarketCapPrices1 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbolList1}`,
 		{
 			headers: {
 				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
@@ -1021,10 +1068,46 @@ async function getAllTokensData(tokenMapSymbols: any) {
 			return Object.values(data.data);
 		});
 
+	const coinMarketCapPrices2 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbolList2}`,
+		{
+			headers: {
+				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+				Accept: 'application/json',
+				'Accept-Encoding': 'deflate, gzip',
+			},
+		},
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			return Object.values(data.data);
+		});
+
+	const coinMarketCapPrices3 = await fetch(
+		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbolList3}`,
+		{
+			headers: {
+				'X-CMC_PRO_API_KEY': 'f7353e06-2e44-4912-9fff-05929a5681a7',
+				Accept: 'application/json',
+				'Accept-Encoding': 'deflate, gzip',
+			},
+		},
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			return Object.values(data.data);
+		});
+
+	const combinedPricesArray = [
+		...coinMarketCapPrices1,
+		...coinMarketCapPrices2,
+		...coinMarketCapPrices3,
+	];
+
 	const combinedArrayWithPrices = [];
 	for (let i = 0; i < combinedArray.length; i++) {
 		const element = combinedArray[i];
-		const prices = coinMarketCapPrices.find(
+		const prices = combinedPricesArray.find(
 			(priceSet) => priceSet.symbol === element.symbol,
 		);
 
