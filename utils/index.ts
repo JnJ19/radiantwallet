@@ -189,6 +189,7 @@ async function getOwnedTokensData(
 	tokenMap: any,
 	tokenPairs: any,
 ) {
+	console.log('hello get owned');
 	// const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
 
@@ -336,16 +337,20 @@ async function getOwnedTokensData(
 			}
 		}
 
-		const filteredOwnedSymbols = ownedTokensSymbols.filter(
-			(symbol) => symbol !== 'SCAM_7BB4',
-		);
+		const filteredOwnedSymbols = ownedTokensSymbols.filter((symbol) => {
+			const filter = /\d+/;
+			const filteredSymbol = symbol.match(filter);
+			return filteredSymbol ? false : true;
+		});
 		let ownedSymbolsList = filteredOwnedSymbols.join();
+		console.log('ownedSymbolsList: ', ownedSymbolsList);
 
 		let iterate = true;
 		let counter = 0;
 		const aboutData: Array<object> = [];
 
 		while (counter < 10 && iterate) {
+			console.log('get owned while route for about data' + ' ' + iterate);
 			await fetch(
 				`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 				{
@@ -360,12 +365,9 @@ async function getOwnedTokensData(
 					return response.json();
 				})
 				.then((res) => {
+					console.log('res', res);
 					if (res.status.error_code !== 0) {
-						if (
-							res.status.error_message.includes(
-								'Invalid value for "symbol"',
-							)
-						) {
+						if (res.status.error_message.includes('symbol')) {
 							//remove the symbol causing the error
 							const problemSymbol = res.status.error_message
 								.split('\\')[0]
@@ -386,6 +388,10 @@ async function getOwnedTokensData(
 									ownedSymbolsList.length - 1,
 								);
 							ownedSymbolsList = newArray;
+							console.log(
+								'ownedSymbolsList Fixed: ',
+								ownedSymbolsList,
+							);
 						}
 						counter++;
 					} else {
@@ -395,6 +401,8 @@ async function getOwnedTokensData(
 				})
 				.catch((err) => console.log('errerere', err));
 		}
+
+		console.log('aboutData in get owned', aboutData);
 
 		const combinedOwnedTokensArray = [];
 		for (let i = 0; i < ownedTokensArray.length; i++) {
@@ -410,7 +418,7 @@ async function getOwnedTokensData(
 			};
 			combinedOwnedTokensArray.push(newTokenObject);
 		}
-		console.log('price owned symbolslist', ownedSymbolsList);
+		console.log('price get owned symbolslist', ownedSymbolsList);
 		const priceData = await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
 			{
@@ -439,14 +447,17 @@ async function getOwnedTokensData(
 			})
 			.catch((err) => console.log('errerere', err));
 
+		console.log('price get owned priceData', priceData);
 		const finalCombinedOwnedTokensArray = [];
 
 		for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
 			const tokenObject = combinedOwnedTokensArray[i];
+			console.log('tokenObject get owned: ', tokenObject);
 			const cmcToken = priceData.find(
 				(token: object) => token.symbol === tokenObject.symbol,
 			);
-			if (cmcToken.quote) {
+			console.log('cmcToken get owned: ', cmcToken);
+			if (cmcToken && cmcToken.quote) {
 				const {
 					price,
 					percent_change_24h,
@@ -493,6 +504,11 @@ async function getOwnedTokensData(
 		if (solToken) {
 			finalCombinedOwnedTokensArray.push(solToken);
 		}
+
+		console.log(
+			'finalCombinedOwnedTokensArray get owned',
+			finalCombinedOwnedTokensArray,
+		);
 
 		tokensBySubWallet.push(finalCombinedOwnedTokensArray);
 		newAccountArray.push(newAccount);
@@ -627,7 +643,6 @@ async function getActiveSubWalletTokens(
 	tokenMap: any,
 	tokenPairs: any,
 ) {
-	console.log('get selected wallet tokens');
 	const newAccount = await getSolanaAccount(activeSubWallet, passcode);
 	// const tokenPairs = await getTokenPairs();
 	const solPairs = tokenPairs.find((pair: object) => (pair.symbol = 'SOL'));
@@ -768,7 +783,6 @@ async function getActiveSubWalletTokens(
 		}
 	}
 
-	console.log('owned token symbols', ownedTokensSymbols);
 	const filteredOwnedSymbols = ownedTokensSymbols.filter((symbol) => {
 		const filter = /\d+/;
 		const filteredSymbol = symbol.match(filter);
@@ -781,7 +795,6 @@ async function getActiveSubWalletTokens(
 	const aboutData: Array<object> = [];
 
 	while (counter < 10 && iterate) {
-		console.log('while route hi in getactivesubwallet' + ' ' + iterate);
 		await fetch(
 			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=${ownedSymbolsList}`,
 			{
@@ -796,7 +809,6 @@ async function getActiveSubWalletTokens(
 				return response.json();
 			})
 			.then((res) => {
-				console.log('res', res);
 				if (res.status.error_code !== 0) {
 					if (res.status.error_message.includes('symbol')) {
 						//remove the symbol causing the error
@@ -832,10 +844,8 @@ async function getActiveSubWalletTokens(
 			.catch((err) => console.log('errerere', err));
 	}
 
-	console.log('aboutData: ', aboutData);
 	const combinedOwnedTokensArray = [];
 	for (let i = 0; i < ownedTokensArray.length; i++) {
-		console.log('hit hererere');
 		const tokenObject = ownedTokensArray[i];
 		const cmcToken = aboutData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
@@ -848,7 +858,6 @@ async function getActiveSubWalletTokens(
 		};
 		combinedOwnedTokensArray.push(newTokenObject);
 	}
-	console.log('price data owned symbolslist', ownedSymbolsList);
 	const priceData = await fetch(
 		`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ownedSymbolsList}`,
 		{
@@ -864,7 +873,6 @@ async function getActiveSubWalletTokens(
 		})
 		.then((res) => {
 			if (res.status.error_code !== 0) {
-				console.log('no price error hit');
 				return {
 					description: 'No description available for this project.',
 					logo: 'https://radiantwallet.s3.us-east-2.amazonaws.com/Random_Token.png',
@@ -878,15 +886,11 @@ async function getActiveSubWalletTokens(
 		.catch((err) => console.log('errerere', err));
 
 	const finalCombinedOwnedTokensArray = [];
-	console.log('price data', priceData);
-	console.log('combined otkens array', combinedOwnedTokensArray);
 	for (let i = 1; i < combinedOwnedTokensArray.length; i++) {
 		const tokenObject = combinedOwnedTokensArray[i];
 		const cmcToken = priceData.find(
 			(token: object) => token.symbol === tokenObject.symbol,
 		);
-		console.log('tokenObject: ', tokenObject);
-		console.log('cmcToken: ', cmcToken);
 
 		if (cmcToken && cmcToken.quote) {
 			const {
