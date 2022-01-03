@@ -23,3 +23,4 @@ export { default as CreateWalletScreen } from './CreateWalletScreen';
 export { default as myNFTsScreen } from './MyNFTsScreen';
 export { default as NFTdetailsScreen } from './NFTdetailsScreen';
 export { default as NFTdisplayScreen } from './NFTdisplayScreen';
+export { default as QrScanScreen } from './QrScanScreen';

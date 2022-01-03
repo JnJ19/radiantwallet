@@ -32,6 +32,7 @@ import {
 	myNFTsScreen,
 	NFTdetailsScreen,
 	NFTdisplayScreen,
+	QrScanScreen,
 } from '../screens';
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -374,6 +375,11 @@ function RootNavigator3() {
 					component={NFTdisplayScreen}
 					options={{ headerShown: false }}
 				/>
+				<Stack.Screen
+					name="QR Scan"
+					component={QrScanScreen}
+					options={{ headerShown: false }}
+				/>
 			</Stack.Navigator>
 		);
 	}
@@ -476,15 +482,20 @@ function RootNavigator3() {
 				options={{ headerShown: false }}
 			/>
 			<Stack.Screen
-					name="NFT Details"
-					component={NFTdetailsScreen}
-					options={{ headerShown: false }}
-				/>
+				name="NFT Details"
+				component={NFTdetailsScreen}
+				options={{ headerShown: false }}
+			/>
 			<Stack.Screen
-					name="NFT Display"
-					component={NFTdisplayScreen}
-					options={{ headerShown: false }}
-				/>	
+				name="NFT Display"
+				component={NFTdisplayScreen}
+				options={{ headerShown: false }}
+			/>
+			<Stack.Screen
+				name="QR Scan"
+				component={QrScanScreen}
+				options={{ headerShown: false }}
+			/>
 		</Stack.Navigator>
 	);
 }

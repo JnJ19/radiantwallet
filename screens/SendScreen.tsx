@@ -38,6 +38,7 @@ import * as web3 from '@solana/web3.js';
 import * as splToken from '@solana/spl-token';
 import * as spl from 'easy-spl';
 import * as Haptics from 'expo-haptics';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 type Props = {
 	navigation: Navigation;
@@ -57,6 +58,8 @@ const SendScreen = ({ navigation, route }: Props) => {
 		(state) => state.selectedWallet,
 		(prev, next) => prev.selectedWalle === next.selectedWallet,
 	);
+	const [scanned, setScanned] = useState(false);
+	const [hasPermission, setHasPermission] = useState(null);
 
 	// async function findAssociatedTokenAddress(
 	// 	walletAddress: PublicKey,
@@ -73,6 +76,17 @@ const SendScreen = ({ navigation, route }: Props) => {
 	// 		)
 	// 	)[0];
 	// }
+
+	async function getPermission() {
+		const { status } = await BarCodeScanner.requestPermissionsAsync();
+		console.log('status: ', status);
+		setHasPermission(status === 'granted');
+	}
+
+	const handleBarCodeScanned = ({ type, data }) => {
+		setScanned(true);
+		alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+	};
 
 	async function transferStuff() {
 		const url =
@@ -328,6 +342,13 @@ const SendScreen = ({ navigation, route }: Props) => {
 					keyboardType="default"
 				/>
 			</View>
+			{/* <TouchableOpacity
+				onPress={() => {
+					navigation.navigate('QR Scan');
+				}}
+			>
+				<Text>Test</Text>
+			</TouchableOpacity> */}
 			<View>
 				<View style={styles.numRow}>
 					<TouchableOpacity
@@ -462,6 +483,13 @@ const SendScreen = ({ navigation, route }: Props) => {
 };
 
 const styles = StyleSheet.create({
+	absoluteFillObject: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	},
 	tableLabel: {
 		fontSize: 14,
 		color: '#727D8D',
